@@ -75,12 +75,43 @@ class ProxmoxClient:
     
     def get_vm_logs(self, node_id, vm_id, vm_type='qemu', limit=100):
         """Get logs for a specific VM or CT"""
+        import subprocess
         try:
             if vm_type == 'qemu':
-                logs = self.proxmox.nodes(node_id).qemu(vm_id).log.get(limit=limit)
+                try:
+                    logs = self.proxmox.nodes(node_id).qemu(vm_id).log.get(limit=limit)
+                    return [log.get('t', '') for log in logs] if logs else []
+                except:
+                    return []
             else:
-                logs = self.proxmox.nodes(node_id).lxc(vm_id).log.get(limit=limit)
-            return logs
+                # For LXC containers, use SSH to Proxmox host and execute pct
+                try:
+                    # Execute pct command on Proxmox host via SSH
+                    result = subprocess.run(
+                        ['ssh', '-o', 'StrictHostKeyChecking=no',
+                         f'root@{self.host}',
+                         f'pct exec {vm_id} -- journalctl -n {limit} --no-pager'],
+                        capture_output=True,
+                        text=True,
+                        timeout=10
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        return result.stdout.strip().split('\n')
+
+                    # Fallback to syslog
+                    result = subprocess.run(
+                        ['ssh', '-o', 'StrictHostKeyChecking=no',
+                         f'root@{self.host}',
+                         f'pct exec {vm_id} -- tail -n {limit} /var/log/syslog'],
+                        capture_output=True,
+                        text=True,
+                        timeout=10
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        return result.stdout.strip().split('\n')
+                except Exception as e:
+                    print(f"Error executing SSH command: {e}")
+                return []
         except Exception as e:
             print(f"Error getting logs for {vm_type} {vm_id}: {e}")
             return []
