@@ -10,47 +10,44 @@ class AIAgent:
         self.auto_confirm = Config.AUTO_CONFIRM
     
     async def analyze_logs(self, logs, context=""):
-        """Analyze logs using Claude Code and OmniRoute to identify issues"""
-        prompt = f"""
-        Analyze the following system logs for errors and potential issues.
-        Context: {context}
-        
-        Logs:
-        {logs}
-        
-        Provide:
-        1. Summary of errors found
-        2. Root cause analysis
-        3. Recommended fix commands
-        4. Confidence level (high/medium/low)
-        
-        Format response as JSON with keys: summary, root_cause, commands, confidence
-        """
-        
-        try:
-            # Use Claude Code with OmniRoute for analysis
-            cmd = [
-                self.claude_path,
-                "--route", self.omniroute_path,
-                "--prompt", prompt,
-                "--json"
-            ]
-            
-            result = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            
-            stdout, stderr = await result.communicate()
-            
-            if result.returncode == 0:
-                return json.loads(stdout.decode())
-            else:
-                return {"error": stderr.decode(), "summary": "Analysis failed"}
-                
-        except Exception as e:
-            return {"error": str(e), "summary": "Analysis exception"}
+        """Simple log analysis without external AI"""
+        issues = []
+        commands = []
+
+        # Analyze common error patterns
+        if "systemd-networkd-wait-online" in logs and "error code (1)" in logs:
+            issues.append("Таймаут ожидания сети при операциях apt")
+            commands.append("systemctl disable systemd-networkd-wait-online.service")
+            commands.append("systemctl mask systemd-networkd-wait-online.service")
+
+        if "out of memory" in logs.lower() or "oom" in logs.lower():
+            issues.append("Обнаружена нехватка памяти")
+            commands.append("free -h")
+            commands.append("# Рассмотрите увеличение лимита памяти")
+
+        if "disk full" in logs.lower() or "no space left" in logs.lower():
+            issues.append("Закончилось место на диске")
+            commands.append("df -h")
+            commands.append("du -sh /* | sort -h")
+
+        if "connection refused" in logs.lower():
+            issues.append("Обнаружены ошибки отказа в соединении")
+            commands.append("netstat -tlnp")
+
+        if "failed" in logs.lower() and "service" in logs.lower():
+            issues.append("Обнаружены сбои служб")
+            commands.append("systemctl --failed")
+            commands.append("journalctl -xe")
+
+        if not issues:
+            return {"message": "Критических проблем не обнаружено"}
+
+        return {
+            "summary": "; ".join(issues),
+            "root_cause": "Обнаружены системные ошибки в логах",
+            "commands": commands,
+            "confidence": "средняя" if len(issues) > 1 else "низкая"
+        }
     
     async def generate_fix_proposal(self, error_context, logs):
         """Generate a fix proposal using AI"""
