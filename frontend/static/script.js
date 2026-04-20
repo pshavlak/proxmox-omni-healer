@@ -79,9 +79,9 @@ async function loadResources() {
         const html = data.resources.map(resource => {
             const statusClass = resource.status === 'running' ? 'status-running' : 'status-stopped';
             const typeIcon = resource.type === 'qemu' ? '🖥️' : '📦';
-            
+
             return `
-                <div class="resource-item">
+                <div class="resource-item" onclick="openContainerLogs('${resource.node}', '${resource.vmid}', '${resource.type}')" style="cursor: pointer;">
                     <div class="resource-info">
                         <div class="resource-name">${typeIcon} ${resource.name || resource.vmid} (${resource.type.toUpperCase()})</div>
                         <div class="resource-meta">Node: ${resource.node} | ID: ${resource.vmid}</div>
@@ -249,4 +249,264 @@ async function executeProposal() {
     } catch (error) {
         alert('Ошибка выполнения: ' + error.message);
     }
+}
+
+
+// Terminal functionality
+let term = null;
+let fitAddon = null;
+let ws = null;
+
+function initTerminal() {
+    if (term) return;
+    
+    term = new Terminal({
+        cursorBlink: true,
+        fontSize: 14,
+        fontFamily: 'Courier New, monospace',
+        theme: {
+            background: '#1e1e1e',
+            foreground: '#d4d4d4',
+            cursor: '#ffffff'
+        }
+    });
+    
+    fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    
+    term.open(document.getElementById('terminal-container'));
+    fitAddon.fit();
+    
+    term.writeln('\x1b[1;32mProxmox Omni-Healer AI Terminal\x1b[0m');
+    term.writeln('Нажмите "Запустить Claude Code" для начала работы\n');
+    
+    // Handle terminal input
+    term.onData(data => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'input', data: data }));
+        }
+    });
+}
+
+function startClaudeTerminal() {
+    if (!term) initTerminal();
+    
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${protocol}//${window.location.host}/ws/terminal`);
+    
+    ws.onopen = () => {
+        term.writeln('\x1b[1;32m[Подключено к Claude Code]\x1b[0m\n');
+        document.getElementById('startTerminalBtn').disabled = true;
+        document.getElementById('stopTerminalBtn').disabled = false;
+    };
+    
+    ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === 'output') {
+            term.write(msg.data);
+        }
+    };
+    
+    ws.onerror = (error) => {
+        term.writeln('\x1b[1;31m[Ошибка подключения]\x1b[0m\n');
+    };
+    
+    ws.onclose = () => {
+        term.writeln('\n\x1b[1;33m[Отключено от Claude Code]\x1b[0m\n');
+        document.getElementById('startTerminalBtn').disabled = false;
+        document.getElementById('stopTerminalBtn').disabled = true;
+    };
+}
+
+function stopClaudeTerminal() {
+    if (ws) {
+        ws.close();
+        ws = null;
+    }
+}
+
+function clearTerminal() {
+    if (term) {
+        term.clear();
+    }
+}
+
+// Add event listeners for terminal buttons
+document.addEventListener('DOMContentLoaded', () => {
+    initTerminal();
+    
+    document.getElementById('startTerminalBtn').addEventListener('click', startClaudeTerminal);
+    document.getElementById('stopTerminalBtn').addEventListener('click', stopClaudeTerminal);
+    document.getElementById('clearTerminalBtn').addEventListener('click', clearTerminal);
+});
+
+// Terminal Modal Management
+function openTerminalModal() {
+    document.getElementById('terminalModal').classList.remove('hidden');
+    if (!term) {
+        initTerminal();
+    }
+}
+
+function closeTerminalModal() {
+    document.getElementById('terminalModal').classList.add('hidden');
+    if (ws) {
+        stopClaudeTerminal();
+    }
+}
+
+function openTerminalTab() {
+    // Create standalone terminal page
+    const terminalWindow = window.open('', '_blank');
+    terminalWindow.document.write(`
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Terminal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1e1e1e;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .header {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #fff;
+            margin: 0;
+            font-size: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+        .btn-secondary { background: #718096; color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #terminal-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 10px;
+            height: calc(100vh - 150px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Claude Code Terminal</h1>
+        <div class="controls">
+            <button id="startBtn" class="btn btn-success">Запустить</button>
+            <button id="stopBtn" class="btn btn-danger" disabled>Остановить</button>
+            <button id="clearBtn" class="btn btn-secondary">Очистить</button>
+        </div>
+    </div>
+    <div id="terminal-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+    <script>
+        let term = new Terminal({
+            cursorBlink: true,
+            fontSize: 14,
+            fontFamily: 'Courier New, monospace',
+            theme: {
+                background: '#1e1e1e',
+                foreground: '#d4d4d4',
+                cursor: '#ffffff'
+            }
+        });
+        
+        let fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById('terminal-container'));
+        fitAddon.fit();
+        
+        term.writeln('\\x1b[1;32mClaude Code Terminal\\x1b[0m');
+        term.writeln('Нажмите "Запустить" для начала работы\\n');
+        
+        let ws = null;
+        
+        document.getElementById('startBtn').onclick = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(\`\${protocol}//\${window.location.host}/ws/terminal\`);
+            
+            ws.onopen = () => {
+                term.writeln('\\x1b[1;32m[Подключено]\\x1b[0m\\n');
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+            };
+            
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'output') {
+                    term.write(msg.data);
+                }
+            };
+            
+            ws.onclose = () => {
+                term.writeln('\\n\\x1b[1;33m[Отключено]\\x1b[0m\\n');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            };
+            
+            term.onData(data => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'input', data: data }));
+                }
+            });
+        };
+        
+        document.getElementById('stopBtn').onclick = () => {
+            if (ws) ws.close();
+        };
+        
+        document.getElementById('clearBtn').onclick = () => {
+            term.clear();
+        };
+        
+        window.addEventListener('resize', () => fitAddon.fit());
+    </script>
+</body>
+</html>
+    `);
+}
+
+// Update event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('openTerminalModalBtn').addEventListener('click', openTerminalModal);
+    document.getElementById('openTerminalTabBtn').addEventListener('click', openTerminalTab);
+    document.getElementById('closeTerminalModalBtn').addEventListener('click', closeTerminalModal);
+    
+    // Close modal on outside click
+    document.getElementById('terminalModal').addEventListener('click', (e) => {
+        if (e.target.id === 'terminalModal') {
+            closeTerminalModal();
+        }
+    });
+});
+
+// Function to open container logs page
+function openContainerLogs(nodeId, vmId, vmType) {
+    const url = `/logs?node=${encodeURIComponent(nodeId)}&vmid=${encodeURIComponent(vmId)}&type=${encodeURIComponent(vmType)}`;
+    window.location.href = url;
 }
