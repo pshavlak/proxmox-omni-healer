@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxmox Omni-Healer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Proxmox Omni-Healer</h1>
+            <div class="controls">
+                <button id="toggleAutoConfirm" class="btn btn-warning">Автоподтверждение: ВЫКЛ</button>
+                <button id="refreshBtn" class="btn btn-primary">Обновить</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Cluster Overview -->
+            <section class="card">
+                <h2>📊 Обзор кластера</h2>
+                <div id="clusterInfo">Загрузка...</div>
+            </section>
+
+            <!-- VMs and Containers -->
+            <section class="card">
+                <h2>🖥️ Виртуальные машины и контейнеры</h2>
+                <div id="resourcesList">Загрузка...</div>
+            </section>
+
+            <!-- Error Logs -->
+            <section class="card">
+                <h2>⚠️ Ошибки и предупреждения</h2>
+                <div id="errorLogs">Загрузка...</div>
+            </section>
+
+            <!-- AI Proposals -->
+            <section class="card">
+                <h2>🧠 Предложения ИИ</h2>
+                <div id="proposalsList">Нет активных предложений</div>
+            </section>
+        </div>
+
+        <!-- Proposal Modal -->
+        <div id="proposalModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Предложение по исправлению</h3>
+                <div id="proposalDetails"></div>
+                <div class="modal-actions">
+                    <button id="approveBtn" class="btn btn-success">✓ Подтвердить</button>
+                    <button id="rejectBtn" class="btn btn-danger">✗ Отклонить</button>
+                    <button id="executeBtn" class="btn btn-primary">▶ Выполнить</button>
+                    <button id="closeModalBtn" class="btn btn-secondary">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
