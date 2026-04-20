@@ -25,7 +25,18 @@
 
 ## 🚀 Установка
 
-### 1. Клонирование и установка
+### Быстрая установка (рекомендуется)
+
+```bash
+cd /opt
+git clone https://github.com/pshavlak/proxmox-omni-healer.git
+cd proxmox-omni-healer
+./scripts/install.sh
+```
+
+### Ручная установка
+
+#### 1. Клонирование и установка
 
 ```bash
 cd /workspace/proxmox-omni-healer
@@ -52,13 +63,19 @@ AUTO_CONFIRM="false"
 
 ### 3. Запуск
 
+#### Разработка:
 ```bash
 source venv/bin/activate
 cd backend
-python -m app.main
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Откройте браузер: http://localhost:8080
+#### Продакшен (используйте готовый скрипт):
+```bash
+./start.sh
+```
+
+Откройте браузер: http://localhost:8000
 
 ## 🔑 Создание токена Proxmox
 
@@ -89,6 +106,32 @@ proxmox-omni-healer/
 ├── requirements.txt
 ├── config.env
 └── README.md
+```
+
+## 📦 Продакшен развертывание
+
+### Системные требования
+- Python 3.11+
+- 2GB RAM минимум
+- Proxmox VE 7.0+
+- Доступ к Proxmox API
+
+### Установленные компоненты
+- FastAPI 0.136.0 (веб-фреймворк)
+- Proxmoxer 2.3.0 (Proxmox API клиент)
+- Paramiko 4.0.0 (SSH подключения)
+- SQLAlchemy 2.0.49 (база данных)
+- WebSockets 16.0 (реальное время)
+
+### Структура продакшен установки
+```
+/opt/proxmox-omni-healer/
+├── venv/                 # Виртуальное окружение Python
+├── data/                 # Данные приложения
+├── start.sh             # Скрипт запуска
+├── backend/             # Backend код
+├── frontend/            # Frontend файлы
+└── config/              # Конфигурация
 ```
 
 ## 🔒 Безопасность
