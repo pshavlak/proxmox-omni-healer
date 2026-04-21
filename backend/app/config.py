@@ -1,7 +1,14 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
+from .logger import app_logger as logger
 
-load_dotenv("config.env")
+# Load config files in order (later files override earlier ones)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(BASE_DIR / "config.env")
+load_dotenv(BASE_DIR / "config.env.local", override=True)
+
+logger.info(f"Loading config from {BASE_DIR}")
 
 class Config:
     # Proxmox API
@@ -23,3 +30,5 @@ class Config:
     # Server
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "8080"))
+
+logger.info(f"Config loaded: Host={Config.PROXMOX_HOST}, Token configured={bool(Config.PROXMOX_TOKEN_VALUE)}")
