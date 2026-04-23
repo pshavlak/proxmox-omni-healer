@@ -134,3 +134,49 @@ class ProxmoxClient:
         except Exception as e:
             print(f"Error getting cluster info: {e}")
             return None
+    def get_container_services_status(self, ct_id):
+        """Get status of systemd services in an LXC container"""
+        import subprocess
+        try:
+            result = subprocess.run(
+                ['ssh', '-i', '/Users/phavlak/.ssh/proxmox_key',
+                 f'root@{self.host}',
+                 f'pct exec {ct_id} -- systemctl list-units --type=service --all --output=json'],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            if result.returncode == 0 and result.stdout:
+                import json
+                services = json.loads(result.stdout)
+                failed_services = [s for s in services if s.get('state') == 'failed' or s.get('active') == 'failed']
+                return {
+                    'total': len(services),
+                    'failed': len(failed_services),
+                    'failed_services': failed_services
+                }
+            return {'total': 0, 'failed': 0, 'failed_services': []}
+        except Exception as e:
+            print(f"Error getting services status for CT {ct_id}: {e}")
+            return {'total': 0, 'failed': 0, 'failed_services': [], 'error': str(e)}
+    
+    def restart_service_in_ct(self, ct_id, service_name):
+        """Restart a specific service in an LXC container"""
+        import subprocess
+        try:
+            result = subprocess.run(
+                ['ssh', '-i', '/Users/phavlak/.ssh/proxmox_key',
+                 f'root@{self.host}',
+                 f'pct exec {ct_id} -- systemctl restart {service_name}'],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            return {
+                'success': result.returncode == 0,
+                'output': result.stdout,
+                'error': result.stderr if result.returncode != 0 else None
+            }
+        except Exception as e:
+            print(f"Error restarting service {service_name} in CT {ct_id}: {e}")
+            return {'success': False, 'error': str(e)}
