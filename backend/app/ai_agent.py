@@ -80,18 +80,21 @@ class AIAgent:
     
     async def generate_fix_proposal(self, error_context, logs):
         """Generate a fix proposal using AI"""
+        import uuid
         analysis = await self.analyze_logs(logs, error_context)
-        
+
         if "commands" in analysis and analysis["commands"]:
             return {
-                "proposal_id": hash(str(analysis)) % 100000,
+                "proposal_id": str(uuid.uuid4()),
                 "summary": analysis.get("summary", "Unknown issue"),
                 "root_cause": analysis.get("root_cause", "Unable to determine"),
                 "commands": analysis["commands"],
                 "confidence": analysis.get("confidence", "low"),
+                "criticality": analysis.get("criticality", "LOW"),
+                "criticality_details": analysis.get("criticality_details", {}),
                 "requires_confirmation": not self.auto_confirm
             }
-        
+
         return None
     
     async def execute_command(self, command, node_id=None, ct_id=None, ct_type='lxc'):
