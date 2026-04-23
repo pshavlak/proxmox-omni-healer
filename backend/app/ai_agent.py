@@ -13,40 +13,69 @@ class AIAgent:
         """Simple log analysis without external AI"""
         issues = []
         commands = []
+        criticality_map = {}  # Track criticality for each issue
 
         # Analyze common error patterns
-        if "systemd-networkd-wait-online" in logs and "error code (1)" in logs:
-            issues.append("Таймаут ожидания сети при операциях apt")
+        # ⚠️ SYSTEMD-NETWORKD-WAIT-ONLINE: LOW CRITICALITY
+        # This is a known LXC issue where systemd-networkd-wait-online times out
+        # waiting for full network connectivity that may never come in containerized environments.
+        # The service itself is running fine (eth0 has IP 192.168.1.10/24).
+        # Impact: Delays apt operations but doesn't affect application functionality.
+        if "systemd-networkd-wait-online" in logs and "Timeout occurred" in logs:
+            issues.append("Таймаут ожидания сети при операциях apt (LXC)")
+            criticality_map["systemd-networkd-wait-online"] = "LOW"
+            commands.append("# Отключить systemd-networkd-wait-online (не критично для LXC)")
             commands.append("systemctl disable systemd-networkd-wait-online.service")
             commands.append("systemctl mask systemd-networkd-wait-online.service")
+            commands.append("# Проверить сетевое подключение")
+            commands.append("ip addr show eth0")
 
+        # 🔴 OUT OF MEMORY: CRITICAL
         if "out of memory" in logs.lower() or "oom" in logs.lower():
             issues.append("Обнаружена нехватка памяти")
+            criticality_map["oom"] = "CRITICAL"
             commands.append("free -h")
-            commands.append("# Рассмотрите увеличение лимита памяти")
+            commands.append("# КРИТИЧНО: Рассмотрите увеличение лимита памяти контейнера")
 
+        # 🔴 DISK FULL: CRITICAL
         if "disk full" in logs.lower() or "no space left" in logs.lower():
             issues.append("Закончилось место на диске")
+            criticality_map["disk_full"] = "CRITICAL"
             commands.append("df -h")
             commands.append("du -sh /* | sort -h")
+            commands.append("# КРИТИЧНО: Освободите место на диске немедленно")
 
+        # 🟠 CONNECTION REFUSED: MEDIUM
         if "connection refused" in logs.lower():
             issues.append("Обнаружены ошибки отказа в соединении")
+            criticality_map["connection_refused"] = "MEDIUM"
             commands.append("netstat -tlnp")
+            commands.append("# Проверьте, запущены ли необходимые сервисы")
 
+        # 🟠 SERVICE FAILURES: MEDIUM
         if "failed" in logs.lower() and "service" in logs.lower():
             issues.append("Обнаружены сбои служб")
+            criticality_map["service_failed"] = "MEDIUM"
             commands.append("systemctl --failed")
             commands.append("journalctl -xe")
 
         if not issues:
             return {"message": "Критических проблем не обнаружено"}
 
+        # Determine overall criticality
+        max_criticality = "LOW"
+        if any(c == "CRITICAL" for c in criticality_map.values()):
+            max_criticality = "CRITICAL"
+        elif any(c == "MEDIUM" for c in criticality_map.values()):
+            max_criticality = "MEDIUM"
+
         return {
             "summary": "; ".join(issues),
             "root_cause": "Обнаружены системные ошибки в логах",
             "commands": commands,
-            "confidence": "средняя" if len(issues) > 1 else "низкая"
+            "confidence": "средняя" if len(issues) > 1 else "низкая",
+            "criticality": max_criticality,
+            "criticality_details": criticality_map
         }
     
     async def generate_fix_proposal(self, error_context, logs):
