@@ -1,5 +1,41 @@
 # Changelog
 
+## [Unreleased] - 2026-04-23
+
+### Added
+- **AI Analysis Guide** (`docs/AI-ANALYSIS-GUIDE.md`)
+  - Система классификации ошибок по критичности (CRITICAL, MEDIUM, LOW)
+  - Подробное описание каждого типа ошибки
+  - Рекомендации по исправлению с пометками критичности
+  - Пример анализа для audiobookself контейнера
+
+### Fixed
+- **AI Agent Log Analysis** (`backend/app/ai_agent.py`)
+  - Добавлена система классификации критичности ошибок
+  - Исправлена логика анализа `systemd-networkd-wait-online` (теперь помечена как LOW)
+  - Добавлены детальные комментарии для каждого типа ошибки
+  - Добавлено поле `criticality` в результат анализа
+  - Добавлено поле `criticality_details` с картой критичности для каждой ошибки
+
+### Technical Details
+
+#### Система критичности
+- **🔴 CRITICAL**: Требует немедленного действия (OOM, Disk Full)
+- **🟠 MEDIUM**: Требует внимания (Connection Refused, Service Failures)
+- **🟢 LOW**: Информационно (systemd-networkd-wait-online timeout в LXC)
+
+#### Исправленные проблемы анализа
+1. **systemd-networkd-wait-online**: Теперь правильно классифицируется как LOW
+   - Это известная проблема LXC контейнеров
+   - Не влияет на функциональность приложения
+   - Сеть работает нормально (eth0 имеет IP адрес)
+
+2. **Regex pattern matching**: Исправлена проверка с "error code (1)" на "Timeout occurred"
+   - Теперь корректно парсит логи systemd-networkd-wait-online
+
+3. **Error analysis pattern**: Добавлена пометка критичности для каждой ошибки
+   - Позволяет UI показывать визуальные индикаторы (цвета)
+
 ## [Unreleased] - 2026-04-21
 
 ### Added
