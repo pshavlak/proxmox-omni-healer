@@ -53,7 +53,9 @@ class AIAgent:
             commands.append("# Проверьте, запущены ли необходимые сервисы")
 
         # 🟠 SERVICE FAILURES: MEDIUM
-        if "failed" in logs.lower() and "service" in logs.lower():
+        # Only report actual failures, not just mentions of "failed" in logs
+        if ("failed" in logs.lower() and "service" in logs.lower()) or \
+           ("unit" in logs.lower() and "failed" in logs.lower()):
             issues.append("Обнаружены сбои служб")
             criticality_map["service_failed"] = "MEDIUM"
             commands.append("systemctl --failed")

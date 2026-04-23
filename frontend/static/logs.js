@@ -194,7 +194,10 @@ function analyzeLogsForIssues(logs) {
             });
         }
 
-        if (line.includes('service failed') || line.includes('systemd')) {
+        // Only report actual service failures, not just systemd mentions
+        if ((line.includes('service') && line.includes('failed')) ||
+            (line.includes('unit') && line.includes('failed')) ||
+            line.includes('systemd[') && line.includes('failed')) {
             issues.push({
                 severity: 'warning',
                 message: 'Сбой системных служб',
