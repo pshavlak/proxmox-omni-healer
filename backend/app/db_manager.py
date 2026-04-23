@@ -13,17 +13,19 @@ class DatabaseManager:
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS proposals (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    proposal_id INTEGER UNIQUE,
+                    proposal_id TEXT UNIQUE,
                     summary TEXT,
                     root_cause TEXT,
                     commands TEXT,
                     confidence TEXT,
+                    criticality TEXT DEFAULT 'LOW',
+                    criticality_details TEXT,
                     status TEXT DEFAULT 'pending',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     executed_at TIMESTAMP
                 )
             ''')
-            
+
             # Create logs table
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS logs (
@@ -36,12 +38,12 @@ class DatabaseManager:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            
+
             # Create execution history table
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS execution_history (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    proposal_id INTEGER,
+                    proposal_id TEXT,
                     command TEXT,
                     success BOOLEAN,
                     output TEXT,
@@ -49,21 +51,23 @@ class DatabaseManager:
                     executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            
+
             await db.commit()
     
     async def save_proposal(self, proposal):
         """Save a fix proposal to database"""
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute('''
-                INSERT INTO proposals (proposal_id, summary, root_cause, commands, confidence)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO proposals (proposal_id, summary, root_cause, commands, confidence, criticality, criticality_details)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 proposal['proposal_id'],
                 proposal['summary'],
                 proposal['root_cause'],
                 str(proposal['commands']),
-                proposal['confidence']
+                proposal['confidence'],
+                proposal.get('criticality', 'LOW'),
+                str(proposal.get('criticality_details', {}))
             ))
             await db.commit()
             return proposal['proposal_id']
