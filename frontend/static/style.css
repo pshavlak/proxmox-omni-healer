@@ -104,6 +104,34 @@ header h1 {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+.card-compact {
+    grid-column: 1;
+    max-height: 250px;
+}
+
+.card-scrollable {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.card-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.card-scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.card-scrollable::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+}
+
+.card-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
+
 .card h2 {
     color: #333;
     margin-bottom: 20px;
