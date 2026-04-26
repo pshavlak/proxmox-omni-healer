@@ -1,0 +1,38 @@
+# Core FastAPI framework
+fastapi==0.136.0
+uvicorn[standard]==0.44.0
+python-multipart==0.0.26
+
+# Proxmox API client
+proxmoxer==2.3.0
+
+# HTTP clients and utilities
+requests==2.33.1
+httpx==0.28.1
+
+# Data validation and settings
+pydantic==2.13.2
+pydantic-settings==2.13.1
+
+# Database
+sqlalchemy==2.0.49
+aiosqlite==0.22.1
+
+# SSH and security
+paramiko==4.0.0
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+cryptography==46.0.7
+
+# WebSockets and real-time communication
+websockets==16.0
+
+# Template engine
+jinja2==3.1.6
+
+# Environment configuration
+python-dotenv==1.2.2
+
+# Additional utilities installed in production
+invoke==3.0.3
+PyYAML==6.0.3

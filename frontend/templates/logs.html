@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логи контейнера - Proxmox Omni-Healer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .logs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container-header {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .container-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .logs-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .logs-header {
+            background: #f7fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logs-content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            background: #f8f9fa;
+            border-left: 4px solid #e2e8f0;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 6px 6px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .log-entry.error {
+            border-left-color: #f56565;
+            background: #fed7d7;
+        }
+        .log-entry.warning {
+            border-left-color: #ed8936;
+            background: #feebc8;
+        }
+        .log-entry.info {
+            border-left-color: #4299e1;
+            background: #bee3f8;
+        }
+        .log-timestamp {
+            color: #718096;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .filter-btn.active {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #4299e1;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background: #3182ce;
+        }
+        .issues-summary {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .issue-item {
+            background: white;
+            border: 1px solid #feb2b2;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .issue-severity {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .severity-critical { background: #f56565; color: white; }
+        .severity-warning { background: #ed8936; color: white; }
+        .severity-info { background: #4299e1; color: white; }
+    </style>
+</head>
+<body>
+    <div class="logs-container">
+        <a href="/" class="back-btn">
+            ← Вернуться к дашборду
+        </a>
+
+        <div class="container-header">
+            <h1 id="containerTitle">Загрузка информации о контейнере...</h1>
+            <div class="container-info" id="containerInfo">
+                <!-- Container info will be loaded here -->
+            </div>
+        </div>
+
+        <div class="issues-summary" id="issuesSummary" style="display: none;">
+            <h3>🚨 Обнаруженные проблемы</h3>
+            <div id="issuesList">
+                <!-- Issues will be loaded here -->
+            </div>
+        </div>
+
+        <div class="logs-section">
+            <div class="logs-header">
+                <h3>📋 Системные логи</h3>
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                    <button class="filter-btn" data-filter="error">Ошибки</button>
+                    <button class="filter-btn" data-filter="warning">Предупреждения</button>
+                    <button class="filter-btn" data-filter="info">Информация</button>
+                    <button class="btn btn-primary" id="refreshLogs">Обновить</button>
+                </div>
+            </div>
+            <div class="logs-content" id="logsContent">
+                <div class="loading">Загрузка логов...</div>
+            </div>
+        </div>
+
+        <div class="logs-section">
+            <div class="logs-header">
+                <h3>🔧 Рекомендации по исправлению</h3>
+                <button class="btn btn-success" id="analyzeBtn">Анализировать проблемы</button>
+            </div>
+            <div class="logs-content" id="recommendationsContent">
+                <p style="color: #718096; text-align: center;">Нажмите "Анализировать проблемы" для получения рекомендаций ИИ</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/logs.js?v=1776707171"></script>
+</body>
+</html>
