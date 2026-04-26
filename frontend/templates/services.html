@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус служб - Proxmox Omni-Healer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .back-link {
+            margin-bottom: 20px;
+        }
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="services-container">
+        <div class="back-link">
+            <a href="/">← Вернуться на главную</a>
+        </div>
+
+        <header>
+            <h1>🚨 Статус системных служб</h1>
+            <button id="refreshBtn" class="btn btn-primary">Обновить</button>
+        </header>
+
+        <section class="card">
+            <div id="servicesStatus">Загрузка...</div>
+        </section>
+    </div>
+
+    <script>
+        async function loadServicesStatus() {
+            const servicesEl = document.getElementById('servicesStatus');
+            servicesEl.innerHTML = '<div class="loading">Загрузка...</div>';
+
+            try {
+                const response = await fetch('/api/services/status');
+                const data = await response.json();
+
+                if (data.error) {
+                    servicesEl.innerHTML = `<div class="error-message">${data.error}</div>`;
+                    return;
+                }
+
+                const containers = data.containers || [];
+                const failedContainers = containers.filter(c => c.services.failed > 0);
+
+                if (failedContainers.length === 0) {
+                    servicesEl.innerHTML = `
+                        <div style="background: #c6f6d5; padding: 20px; border-radius: 8px; text-align: center;">
+                            <div style="color: #22543d; font-weight: bold; font-size: 18px;">✓ Все службы работают корректно</div>
+                            <div style="color: #22543d; margin-top: 10px;">Всего контейнеров: ${containers.length}</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = failedContainers.map(container => `
+                    <div style="background: #fed7d7; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: bold; color: #742a2a; font-size: 16px;">⚠️ ${container.name} (CT ${container.vmid})</div>
+                                <div style="color: #975555; font-size: 14px; margin-top: 5px;">Неисправных служб: ${container.services.failed}/${container.services.total}</div>
+                                ${container.services.failed_services.length > 0 ? `
+                                    <div style="color: #975555; font-size: 12px; margin-top: 8px; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 4px;">
+                                        <strong>Неисправные службы:</strong><br>
+                                        ${container.services.failed_services.map(s => s.unit).join('<br>')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <button class="btn btn-warning" onclick="restartFailedServices(${container.vmid}, '${container.name}')">
+                                🔄 Перезапустить
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                servicesEl.innerHTML = html;
+            } catch (error) {
+                servicesEl.innerHTML = `<div class="error-message">Ошибка загрузки: ${error.message}</div>`;
+            }
+        }
+
+        async function restartFailedServices(ctId, ctName) {
+            if (!confirm(`Вы уверены, что хотите перезапустить все неисправные службы в контейнере "${ctName}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/services/${ctId}/restart-failed`, {method: 'POST'});
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✓ Службы успешно перезапущены');
+                    loadServicesStatus();
+                } else {
+                    alert(`✗ Ошибка: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`Ошибка: ${error.message}`);
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', loadServicesStatus);
+        loadServicesStatus();
+    </script>
+</body>
+</html>
