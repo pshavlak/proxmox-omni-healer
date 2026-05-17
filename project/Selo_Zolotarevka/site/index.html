@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Село Золотаревка — неофициальный портал села</title>
+  <meta name="description" content="Неофициальный сайт-портал села Золотаревка. Новости, школа, детский сад, совхоз, спорт, жизнь села, медиа.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar__info">
+        <span>🌍 Золотаревка, Россия</span>
+        <span>📅 <span id="currentDate"></span></span>
+      </div>
+      <div class="top-bar__social">
+        <a href="#" title="ВКонтакте">📘</a>
+        <a href="#" title="Telegram">✈️</a>
+        <a href="#" title="Одноклассники">👥</a>
+        <a href="#" title="RSS">📡</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo__icon">🌾</span>
+        <div class="logo__text">
+          Золотаревка
+          <small>Неофициальный портал села</small>
+        </div>
+      </a>
+
+      <button class="mobile-toggle" aria-label="Меню">☰</button>
+
+      <nav class="nav">
+        <!-- Главная -->
+        <div class="nav__item">
+          <a href="index.html" class="nav__link active">Главная</a>
+        </div>
+
+        <!-- Организации (мега-меню) -->
+        <div class="nav__item">
+          <button class="nav__link">
+            Организации <span class="arrow">▼</span>
+          </button>
+          <div class="mega-menu">
+            <div class="mega-menu__grid">
+              <a href="pages/school/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">📚</span>
+                <div>
+                  <div class="mega-menu__title">Школа</div>
+                  <div class="mega-menu__desc">Новости, расписание, достижения</div>
+                </div>
+              </a>
+              <a href="pages/kindergarten/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">🧸</span>
+                <div>
+                  <div class="mega-menu__title">Детский сад</div>
+                  <div class="mega-menu__desc">Жизнь групп, советы, фото</div>
+                </div>
+              </a>
+              <a href="pages/farm/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">🌾</span>
+                <div>
+                  <div class="mega-menu__title">Совхоз</div>
+                  <div class="mega-menu__desc">История, вакансии, продукция</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Спорт -->
+        <div class="nav__item">
+          <button class="nav__link">
+            Спорт <span class="arrow">▼</span>
+          </button>
+          <div class="mega-menu">
+            <div class="mega-menu__grid">
+              <a href="pages/sports/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">⚽</span>
+                <div>
+                  <div class="mega-menu__title">Футбольная команда</div>
+                  <div class="mega-menu__desc">Состав, матчи, турниры</div>
+                </div>
+              </a>
+              <a href="pages/sports/index.html#other" class="mega-menu__item">
+                <span class="mega-menu__icon">🏐</span>
+                <div>
+                  <div class="mega-menu__title">Другие секции</div>
+                  <div class="mega-menu__desc">Волейбол, шахматы и другие</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Жизнь села -->
+        <div class="nav__item">
+          <button class="nav__link">
+            Жизнь села <span class="arrow">▼</span>
+          </button>
+          <div class="mega-menu">
+            <div class="mega-menu__grid">
+              <a href="pages/village-life/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">📜</span>
+                <div>
+                  <div class="mega-menu__title">История и земляки</div>
+                  <div class="mega-menu__desc">Выдающиеся люди села</div>
+                </div>
+              </a>
+              <a href="pages/village-life/index.html#culture" class="mega-menu__item">
+                <span class="mega-menu__icon">🎭</span>
+                <div>
+                  <div class="mega-menu__title">Дом Культуры</div>
+                  <div class="mega-menu__desc">Афиша, кружки, секции</div>
+                </div>
+              </a>
+              <a href="pages/village-life/index.html#bulletin" class="mega-menu__item">
+                <span class="mega-menu__icon">📋</span>
+                <div>
+                  <div class="mega-menu__title">Доска объявлений</div>
+                  <div class="mega-menu__desc">Куплю, продам, услуги</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Медиа -->
+        <div class="nav__item">
+          <a href="pages/media/index.html" class="nav__link">Медиа</a>
+        </div>
+
+        <!-- Новости -->
+        <div class="nav__item">
+          <a href="pages/news/index.html" class="nav__link">Новости</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO BANNER ===== -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__content">
+      <h1 class="hero__title">Добро пожаловать в Золотаревку!</h1>
+      <p class="hero__subtitle">Неофициальный портал нашего села. Новости, события, спорт, история и многое другое.</p>
+      <a href="#bento" class="hero__btn">Исследовать разделы →</a>
+    </div>
+  </section>
+
+  <!-- ===== BENTO GRID (Плитки) ===== -->
+  <section class="bento" id="bento">
+    <div class="container">
+      <h2 class="bento__title">Наши разделы</h2>
+      <p class="bento__subtitle">Быстрый доступ к ключевым разделам портала</p>
+
+      <div class="bento__grid">
+        <!-- Школа -->
+        <a href="pages/school/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #4a90d9, #357abd);">
+            📚
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Школа</h3>
+            <p class="bento__card-text">Новости классов, расписание автобуса, достижения учеников</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+
+        <!-- Детский сад -->
+        <a href="pages/kindergarten/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+            🧸
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Детский сад</h3>
+            <p class="bento__card-text">Жизнь групп, полезные советы, фотоотчеты с утренников</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+
+        <!-- Совхоз -->
+        <a href="pages/farm/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+            🌾
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Совхоз</h3>
+            <p class="bento__card-text">История предприятия, вакансии, производимая продукция</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+
+        <!-- Футбольная команда -->
+        <a href="pages/sports/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+            ⚽
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Футбольная команда</h3>
+            <p class="bento__card-text">Состав, расписание матчей, турнирная таблица, фото с игр</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+
+        <!-- Жизнь села -->
+        <a href="pages/village-life/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">
+            🏘️
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Жизнь села</h3>
+            <p class="bento__card-text">История, Дом Культуры, доска объявлений, выдающиеся земляки</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+
+        <!-- Медиа -->
+        <a href="pages/media/index.html" class="bento__card">
+          <div class="bento__card-img" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
+            📸
+            <div class="overlay"></div>
+          </div>
+          <div class="bento__card-body">
+            <h3 class="bento__card-title">Медиа</h3>
+            <p class="bento__card-text">Фото- и видеогалерея села, яркие моменты из жизни</p>
+            <span class="bento__card-link">Перейти →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MATCH WIDGET ===== -->
+  <section class="match-widget">
+    <div class="container">
+      <div class="match-widget__info">
+        <div class="match-widget__label">⚽ Следующий матч</div>
+        <h2 class="match-widget__title">ФК «Золотаревка» — ФК «Соседи»</h2>
+        <div class="match-widget__details">
+          <span>📅 Суббота, 15:00</span>
+          <span>📍 Стадион «Центральный»</span>
+        </div>
+      </div>
+      <div class="match-widget__countdown">
+        <div class="match-widget__countdown-number">--</div>
+        <div class="match-widget__countdown-label">до начала матча</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS SECTION ===== -->
+  <section class="news-section">
+    <div class="container">
+      <div class="news-section__header">
+        <h2 class="news-section__title">📰 Последние новости</h2>
+        <a href="pages/news/index.html" class="news-section__link">Все новости →</a>
+      </div>
+
+      <div class="news-grid">
+        <article class="news-card">
+          <div class="news-card__img">🏆</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 15 мая 2026</span>
+              <span>📂 Спорт</span>
+            </div>
+            <h3 class="news-card__title">ФК «Золотаревка» одержал победу в районном турнире</h3>
+            <p class="news-card__excerpt">Наша команда заняла первое место в ежегодном районном турнире по футболу. Поздравляем игроков и тренера!</p>
+            <a href="pages/news/index.html" class="bento__card-link">Читать далее →</a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-card__img">🎓</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 12 мая 2026</span>
+              <span>📂 Школа</span>
+            </div>
+            <h3 class="news-card__title">Последний звонок — 2026</h3>
+            <p class="news-card__excerpt">В школе прошла торжественная линейка, посвященная последнему звонку для выпускников 11-го класса.</p>
+            <a href="pages/news/index.html" class="bento__card-link">Читать далее →</a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-card__img">🌾</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 10 мая 2026</span>
+              <span>📂 Совхоз</span>
+            </div>
+            <h3 class="news-card__title">Начало посевной кампании</h3>
+            <p class="news-card__excerpt">Совхоз «Золотаревский» приступил к весенним полевым работам. В этом году планируется засеять более 500 гектаров.</p>
+            <a href="pages/news/index.html" class="bento__card-link">Читать далее →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SUGGEST NEWS ===== -->
+  <section class="suggest-block">
+    <div class="container">
+      <h2 class="suggest-block__title">💡 Хотите предложить новость?</h2>
+      <p class="suggest-block__text">Жители села могут присылать свои фото и истории. Лучшие публикации попадут на главную!</p>
+      <button class="suggest-block__btn" data-modal="suggestModal">Предложить новость</button>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__col">
+          <h4 class="footer__col-title">🌾 Золотаревка</h4>
+          <ul class="footer__links">
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="pages/news/index.html">Новости</a></li>
+            <li><a href="pages/media/index.html">Медиа</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Организации</h4>
+          <ul class="footer__links">
+            <li><a href="pages/school/index.html">Школа</a></li>
+            <li><a href="pages/kindergarten/index.html">Детский сад</a></li>
+            <li><a href="pages/farm/index.html">Совхоз</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Активности</h4>
+          <ul class="footer__links">
+            <li><a href="pages/sports/index.html">Спорт</a></li>
+            <li><a href="pages/village-life/index.html">Жизнь села</a></li>
+            <li><a href="pages/village-life/index.html#bulletin">Доска объявлений</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Контакты</h4>
+          <ul class="footer__links">
+            <li><a href="#" data-modal="suggestModal">Предложить новость</a></li>
+            <li><a href="mailto:info@zolotarevka.ru">info@zolotarevka.ru</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Неофициальный портал села Золотаревка. Сделано с ❤️ для земляков.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== MODAL: Предложить новость ===== -->
+  <div class="modal" id="suggestModal">
+    <div class="modal__content">
+      <button class="modal__close">&times;</button>
+      <h3 class="modal__title">💡 Предложить новость</h3>
+      <form id="suggestForm">
+        <div class="form-group">
+          <label for="suggestName">Ваше имя</label>
+          <input type="text" id="suggestName" placeholder="Иван Иванов" required>
+        </div>
+        <div class="form-group">
+          <label for="suggestEmail">Email для связи</label>
+          <input type="email" id="suggestEmail" placeholder="ivan@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="suggestCategory">Категория</label>
+          <select id="suggestCategory">
+            <option>Новость</option>
+            <option>Событие</option>
+            <option>Фото</option>
+            <option>Другое</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="suggestText">Текст новости</label>
+          <textarea id="suggestText" placeholder="Опишите вашу новость..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Отправить на модерацию</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Current date in top bar
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+  </script>
+</body>
+</html>

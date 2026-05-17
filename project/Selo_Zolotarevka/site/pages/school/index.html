@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Школа — Село Золотаревка</title>
+  <meta name="description" content="Школа села Золотаревка: новости классов, расписание автобуса, достижения учеников.">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar__info">
+        <span>🌍 Золотаревка, Россия</span>
+        <span>📅 <span id="currentDate"></span></span>
+      </div>
+      <div class="top-bar__social">
+        <a href="#" title="ВКонтакте">📘</a>
+        <a href="#" title="Telegram">✈️</a>
+        <a href="#" title="Одноклассники">👥</a>
+        <a href="#" title="RSS">📡</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container">
+      <a href="../../index.html" class="logo">
+        <span class="logo__icon">🌾</span>
+        <div class="logo__text">
+          Золотаревка
+          <small>Неофициальный портал села</small>
+        </div>
+      </a>
+
+      <button class="mobile-toggle" aria-label="Меню">☰</button>
+
+      <nav class="nav">
+        <div class="nav__item">
+          <a href="../../index.html" class="nav__link">Главная</a>
+        </div>
+        <div class="nav__item">
+          <button class="nav__link active">
+            Организации <span class="arrow">▼</span>
+          </button>
+          <div class="mega-menu">
+            <div class="mega-menu__grid">
+              <a href="index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">📚</span>
+                <div>
+                  <div class="mega-menu__title">Школа</div>
+                  <div class="mega-menu__desc">Новости, расписание, достижения</div>
+                </div>
+              </a>
+              <a href="../kindergarten/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">🧸</span>
+                <div>
+                  <div class="mega-menu__title">Детский сад</div>
+                  <div class="mega-menu__desc">Жизнь групп, советы, фото</div>
+                </div>
+              </a>
+              <a href="../farm/index.html" class="mega-menu__item">
+                <span class="mega-menu__icon">🌾</span>
+                <div>
+                  <div class="mega-menu__title">Совхоз</div>
+                  <div class="mega-menu__desc">История, вакансии, продукция</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="nav__item">
+          <a href="../sports/index.html" class="nav__link">Спорт</a>
+        </div>
+        <div class="nav__item">
+          <a href="../village-life/index.html" class="nav__link">Жизнь села</a>
+        </div>
+        <div class="nav__item">
+          <a href="../media/index.html" class="nav__link">Медиа</a>
+        </div>
+        <div class="nav__item">
+          <a href="../news/index.html" class="nav__link">Новости</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-header__title">📚 Школа села Золотаревка</h1>
+      <div class="page-header__breadcrumb">
+        <a href="../../index.html">Главная</a> / <a href="../../index.html#bento">Организации</a> / Школа
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTENT ===== -->
+  <section class="content-section">
+    <div class="container">
+
+      <!-- Новости классов -->
+      <h2>📰 Новости школы</h2>
+      <div class="news-grid">
+        <article class="news-card">
+          <div class="news-card__img">🎓</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 12 мая 2026</span>
+              <span>📂 Школьная жизнь</span>
+            </div>
+            <h3 class="news-card__title">Последний звонок — 2026</h3>
+            <p class="news-card__excerpt">Торжественная линейка, посвященная последнему звонку для выпускников 11-го класса. Поздравляем ребят!</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-card__img">🏅</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 5 мая 2026</span>
+              <span>📂 Достижения</span>
+            </div>
+            <h3 class="news-card__title">Победа на районной олимпиаде по математике</h3>
+            <p class="news-card__excerpt">Ученик 9-го класса занял 1-е место на районной олимпиаде. Гордимся нашими талантами!</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-card__img">🎨</div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span>📅 28 апреля 2026</span>
+              <span>📂 Мероприятия</span>
+            </div>
+            <h3 class="news-card__title">Выставка рисунков «Весна в родном селе»</h3>
+            <p class="news-card__excerpt">Ученики начальных классов представили яркие работы, посвященные красоте Золотаревки.</p>
+          </div>
+        </article>
+      </div>
+
+      <!-- Расписание автобуса -->
+      <h2>🚌 Расписание школьного автобуса</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Маршрут</th>
+              <th>Утренний рейс</th>
+              <th>Обратный рейс</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Золотаревка — Школа (ул. Центральная)</td>
+              <td>07:30</td>
+              <td>13:00</td>
+            </tr>
+            <tr>
+              <td>Золотаревка — Школа (ул. Садовая)</td>
+              <td>07:45</td>
+              <td>13:15</td>
+            </tr>
+            <tr>
+              <td>Золотаревка — Школа (ул. Полевая)</td>
+              <td>07:50</td>
+              <td>13:10</td>
+            </tr>
+            <tr>
+              <td>Золотаревка — Школа (д. Сосновка)</td>
+              <td>07:15</td>
+              <td>13:30</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Достижения учеников -->
+      <h2>🏆 Достижения учеников</h2>
+      <div class="cards-grid">
+        <div class="info-card">
+          <div class="info-card__icon">🥇</div>
+          <h3 class="info-card__title">Районная олимпиада по математике</h3>
+          <p class="info-card__text">Иванов Петр, 9 класс — 1 место. Апрель 2026.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card__icon">🥇</div>
+          <h3 class="info-card__title">Соревнования по легкой атлетике</h3>
+          <p class="info-card__text">Команда школы — 2 место в эстафете. Март 2026.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card__icon">🥇</div>
+          <h3 class="info-card__title">Конкурс чтецов «Родное слово»</h3>
+          <p class="info-card__text">Сидорова Анна, 7 класс — 1 место. Февраль 2026.</p>
+        </div>
+      </div>
+
+      <!-- Комментарии -->
+      <h2>💬 Комментарии</h2>
+      <p style="color: var(--color-text-light); margin-bottom: 16px;">Комментарии проходят премодерацию.</p>
+
+      <div class="comment">
+        <div class="comment__author">Елена Петрова</div>
+        <div class="comment__date">12 мая 2026, 14:30</div>
+        <div class="comment__text">Поздравляю всех выпускников! Удачи на экзаменах! 🎉</div>
+      </div>
+      <div class="comment">
+        <div class="comment__author">Анна Иванова</div>
+        <div class="comment__date">5 мая 2026, 10:15</div>
+        <div class="comment__text">Молодцы, ребята! Так держать! 💪</div>
+      </div>
+
+      <form id="commentForm" style="margin-top: 24px;">
+        <h3 style="margin-bottom: 12px;">Оставить комментарий</h3>
+        <div class="form-group">
+          <label for="commentName">Ваше имя</label>
+          <input type="text" id="commentName" placeholder="Ваше имя" required>
+        </div>
+        <div class="form-group">
+          <label for="commentText">Комментарий</label>
+          <textarea id="commentText" placeholder="Напишите комментарий..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Отправить (на модерации)</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__col">
+          <h4 class="footer__col-title">🌾 Золотаревка</h4>
+          <ul class="footer__links">
+            <li><a href="../../index.html">Главная</a></li>
+            <li><a href="../news/index.html">Новости</a></li>
+            <li><a href="../media/index.html">Медиа</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Организации</h4>
+          <ul class="footer__links">
+            <li><a href="index.html">Школа</a></li>
+            <li><a href="../kindergarten/index.html">Детский сад</a></li>
+            <li><a href="../farm/index.html">Совхоз</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Активности</h4>
+          <ul class="footer__links">
+            <li><a href="../sports/index.html">Спорт</a></li>
+            <li><a href="../village-life/index.html">Жизнь села</a></li>
+            <li><a href="../village-life/index.html#bulletin">Доска объявлений</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Контакты</h4>
+          <ul class="footer__links">
+            <li><a href="#" data-modal="suggestModal">Предложить новость</a></li>
+            <li><a href="mailto:info@zolotarevka.ru">info@zolotarevka.ru</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Неофициальный портал села Золотаревка. Сделано с ❤️ для земляков.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== MODAL ===== -->
+  <div class="modal" id="suggestModal">
+    <div class="modal__content">
+      <button class="modal__close">&times;</button>
+      <h3 class="modal__title">💡 Предложить новость</h3>
+      <form id="suggestForm">
+        <div class="form-group">
+          <label for="suggestName">Ваше имя</label>
+          <input type="text" id="suggestName" placeholder="Иван Иванов" required>
+        </div>
+        <div class="form-group">
+          <label for="suggestEmail">Email для связи</label>
+          <input type="email" id="suggestEmail" placeholder="ivan@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="suggestCategory">Категория</label>
+          <select id="suggestCategory">
+            <option>Новость</option>
+            <option>Событие</option>
+            <option>Фото</option>
+            <option>Другое</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="suggestText">Текст новости</label>
+          <textarea id="suggestText" placeholder="Опишите вашу новость..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Отправить на модерацию</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../../js/main.js"></script>
+  <script>
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+  </script>
+</body>
+</html>
