@@ -1,6 +1,5 @@
 #!/bin/bash
 # Скрипт управления пользователями Hysteria 2
-# Использование: ./hysteria-users.sh {add|delete|list} [username]
 
 USERS_FILE="/etc/hysteria/users.json"
 CONFIG_FILE="/etc/hysteria/config.yaml"
@@ -14,19 +13,19 @@ init_users() {
 add_user() {
     local username=$1
     local password=$(openssl rand -base64 24 | tr -d '/+=' | head -c 20)
-
+    
     if [ -z "$username" ]; then
         echo "Ошибка: введите имя пользователя"
         exit 1
     fi
-
+    
     init_users
-
+    
     if grep -q "\"$username\"" "$USERS_FILE" 2>/dev/null; then
         echo "Ошибка: пользователь $username уже существует"
         exit 1
     fi
-
+    
     # Добавляем пользователя в JSON
     local temp=$(mktemp)
     if [ "$(cat $USERS_FILE)" = "{}" ]; then
@@ -35,7 +34,7 @@ add_user() {
         sed "s/}$/, \"$username\": \"$password\"}/" "$USERS_FILE" > "$temp"
     fi
     mv "$temp" "$USERS_FILE"
-
+    
     echo "✓ Пользователь '$username' добавлен"
     echo "  Пароль: $password"
     echo "  URI: hysteria2://$password@hist.yupiterpro.ru:443?insecure=0&sni=hist.yupiterpro.ru"
@@ -43,19 +42,19 @@ add_user() {
 
 delete_user() {
     local username=$1
-
+    
     if [ -z "$username" ]; then
         echo "Ошибка: введите имя пользователя"
         exit 1
     fi
-
+    
     init_users
-
+    
     if ! grep -q "\"$username\"" "$USERS_FILE" 2>/dev/null; then
         echo "Ошибка: пользователь $username не найден"
         exit 1
     fi
-
+    
     # Удаляем пользователя
     python3 -c "
 import json
