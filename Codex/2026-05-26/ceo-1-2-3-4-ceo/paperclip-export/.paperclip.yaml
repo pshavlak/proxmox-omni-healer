@@ -1,0 +1,22 @@
+schema: "paperclip/v1"
+agents:
+  ceo:
+    role: "ceo"
+    adapter:
+      config:
+        dangerouslyBypassApprovalsAndSandbox: true
+        model: "deepseek-v4-pro"
+        env:
+          OPENAI_API_KEY: "sk-..."
+          OPENAI_BASE_URL: "https://api.deepseek.com/v1"
+      type: "codex_local"
+    runtime:
+      heartbeat:
+        intervalSec: 300
+    permissions:
+      canCreateAgents: true
+company:
+  attachmentMaxBytes: 10485760
+sidebar:
+  agents:
+    - "ceo"

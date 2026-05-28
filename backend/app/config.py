@@ -12,7 +12,7 @@ logger.info(f"Loading config from {BASE_DIR}")
 
 class Config:
     # Proxmox API
-    PROXMOX_HOST = os.getenv("PROXMOX_HOST", "192.168.1.100")
+    PROXMOX_HOST = os.getenv("PROXMOX_HOST", "192.168.1.110")
     PROXMOX_PORT = os.getenv("PROXMOX_PORT", "8006")
     PROXMOX_USER = os.getenv("PROXMOX_USER", "root@pam")
     PROXMOX_TOKEN_NAME = os.getenv("PROXMOX_TOKEN_NAME")
@@ -30,5 +30,10 @@ class Config:
     # Server
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "8080"))
+    
+    # SSH
+    SSH_KEY_PATH = os.path.expanduser(os.getenv("SSH_KEY_PATH", "/Users/phavlak/.ssh/proxmox_key"))
+    SSH_USERNAME = os.getenv("SSH_USERNAME", "root")
+    SSH_TIMEOUT = int(os.getenv("SSH_TIMEOUT", "30"))
 
 logger.info(f"Config loaded: Host={Config.PROXMOX_HOST}, Token configured={bool(Config.PROXMOX_TOKEN_VALUE)}")

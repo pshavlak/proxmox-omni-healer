@@ -19,7 +19,7 @@ try:
         SSH_KEY_PATH, SSH_USERNAME, SSH_TIMEOUT
     )
 except ImportError:
-    PROXMOX_HOST = "localhost"
+    PROXMOX_HOST = "192.168.1.110"
     PROXMOX_PORT = 8006
     PROXMOX_USER = "root@pam"
     PROXMOX_PASSWORD = ""
@@ -41,27 +41,20 @@ class ProxmoxService:
         self.connected = False
     
     async def connect(self):
-        """Connect to Proxmox VE API"""
+        """Connect to Proxmox VE API using SSH only"""
+        from proxmoxer.backends.ssh_paramiko import ParamikoSSHBackend
+        
         try:
-            if PROXMOX_TOKEN_NAME and PROXMOX_TOKEN_VALUE:
-                # Use token authentication (recommended)
-                self.proxmox = ProxmoxAPI(
-                    PROXMOX_HOST,
-                    port=PROXMOX_PORT,
-                    user=PROXMOX_USER,
-                    token_name=PROXMOX_TOKEN_NAME,
-                    token_value=PROXMOX_TOKEN_VALUE,
-                    verify_ssl=PROXMOX_VERIFY_SSL
-                )
-            else:
-                # Use password authentication (less secure)
-                self.proxmox = ProxmoxAPI(
-                    PROXMOX_HOST,
-                    port=PROXMOX_PORT,
-                    user=PROXMOX_USER,
-                    password=PROXMOX_PASSWORD,
-                    verify_ssl=PROXMOX_VERIFY_SSL
-                )
+            self.proxmox = ProxmoxAPI(
+                host=PROXMOX_HOST,
+                port=PROXMOX_PORT,
+                user=PROXMOX_USER,
+                backend=ParamikoSSHBackend,
+                ssh_private_key_file=SSH_KEY_PATH,
+                ssh_user=SSH_USERNAME,
+                timeout=SSH_TIMEOUT,
+                verify_ssl=PROXMOX_VERIFY_SSL
+            )
             
             # Test connection
             self.proxmox.nodes.get()

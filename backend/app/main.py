@@ -69,6 +69,18 @@ async def get_services_page(request: Request):
     """Services status page"""
     return templates.TemplateResponse("services.html", {"request": request})
 
+@app.get("/api/containers/running")
+async def get_running_containers():
+    """Get list of running LXC containers"""
+    if not proxmox_client:
+        return {"error": "Proxmox not configured"}
+    
+    try:
+        containers = proxmox_client.get_running_containers()
+        return {"containers": containers}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/cluster")
 async def get_cluster_info():
     """Get cluster information"""

@@ -1,0 +1,27 @@
+# ============================================================
+# Hysteria 2 Server Configuration - BACKUP (без каскада)
+# Версия без каскада (исходная, до 16.04.2026)
+# ============================================================
+
+listen: :443
+
+tls:
+  cert: /etc/letsencrypt/live/hist.yupiterpro.ru/fullchain.pem
+  key: /etc/letsencrypt/live/hist.yupiterpro.ru/privkey.pem
+
+auth:
+  type: http
+  http:
+    url: http://127.0.0.1:8081/auth
+    insecure: true
+
+resolver:
+  type: udp
+  tcp:
+    addr: 8.8.8.8:53
+    timeout: 4s
+  udp:
+    addr: 8.8.8.8:53
+    timeout: 4s
+
+logLevel: debug
