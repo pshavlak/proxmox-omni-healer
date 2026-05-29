@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Гастроэнтерология онлайн — консультации по ЖКТ | Врач гастроэнтеролог-диетолог</title>
+  <meta name="description" content="Онлайн-консультации гастроэнтеролога: разбор жалоб и анализов, план обследования и лечения дистанционно.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#2a7f62','primary-dark':'#1e5e48',accent:'#c7954e'}}}}</script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <!-- ===== Floating Logo Background ===== -->
+  <div class="logo-watermark" aria-hidden="true">
+    <img src="img/logo.jpeg" alt="">
+  </div>
+  <header class="header">
+    <div class="container mx-auto px-4">
+      <a href="index.html" class="header-logo">
+        <img src="img/logo.jpeg" alt="Логотип">
+        <span>Гастроэнтеролог-диетолог</span>
+      </a>
+      <button class="burger" aria-label="Меню"><i class="fas fa-bars"></i></button>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Главная</a></li>
+          <li><a href="endoskopiya.html">Эндоскопия</a></li>
+          <li><a href="gastroenterologiya.html" class="active">Гастроэнтерология</a></li>
+          <li><a href="dietologiya.html">Диетология</a></li>
+          <li><a href="o-vrache.html">О враче</a></li>
+          <li><a href="otzyvy.html">Отзывы</a></li>
+          <li><a href="kontakty.html">Контакты</a></li>
+          <li><a href="kontakty.html#booking-form" class="btn-primary header-btn scroll-to-form"><i class="fas fa-calendar-check"></i> Записаться</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container mx-auto px-4">
+      <p class="breadcrumbs"><a href="index.html">Главная</a> / <span>Гастроэнтерология онлайн</span></p>
+      <h1>Гастроэнтерология онлайн</h1>
+      <p class="section-subtitle">Консультации по заболеваниям ЖКТ — без визита к врачу</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container mx-auto px-4 max-w-4xl">
+      <p class="text-lg text-gray-600 leading-relaxed mb-6">Онлайн-консультация — это полноценный приём врача-гастроэнтеролога, который проходит дистанционно. Вы получаете профессиональное мнение, план обследования и рекомендации по лечению, не выходя из дома.</p>
+      <div class="bg-primary-light rounded-xl p-6 mb-8">
+        <p class="text-sm text-gray-600"><i class="fas fa-info-circle text-primary mr-2"></i> <strong>Важно:</strong> Врач не назначает лекарственные препараты дистанционно. Результатом консультации является подробный план действий и рекомендации для очного визита к лечащему врачу.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="section-title text-center">Услуги и цены</h2>
+      <p class="section-subtitle text-center">Выберите подходящий формат консультации</p>
+      <div class="overflow-x-auto">
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th>Услуга</th>
+              <th>Описание</th>
+              <th>Цена</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Онлайн-консультация</td>
+              <td>Разбор жалоб, анамнеза, плана обследования и лечения</td>
+              <td class="price">2 000 ₽</td>
+              <td><a href="kontakty.html#booking-form" class="btn-primary btn-order" data-service="Онлайн-консультация гастроэнтеролога">Заказать</a></td>
+            </tr>
+            <tr>
+              <td>Повторная консультация</td>
+              <td>Коррекция плана лечения по результатам обследований</td>
+              <td class="price">1 500 ₽</td>
+              <td><a href="kontakty.html#booking-form" class="btn-primary btn-order" data-service="Повторная консультация гастроэнтеролога">Заказать</a></td>
+            </tr>
+            <tr>
+              <td>Расшифровка лабораторных анализов</td>
+              <td>Подробное объяснение результатов анализов крови, кала и др.</td>
+              <td class="price">1 000 ₽</td>
+              <td><a href="kontakty.html#booking-form" class="btn-primary btn-order" data-service="Расшифровка анализов">Заказать</a></td>
+            </tr>
+            <tr>
+              <td>Онлайн-сопровождение (1 месяц)</td>
+              <td>Курация на весь месяц: ответы на вопросы, коррекция плана</td>
+              <td class="price">5 000 ₽</td>
+              <td><a href="kontakty.html#booking-form" class="btn-primary btn-order" data-service="Онлайн-сопровождение 1 месяц">Заказать</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Как проходит консультация -->
+  <section>
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="section-title text-center">Как проходит консультация</h2>
+      <p class="section-subtitle text-center">Четыре простых шага</p>
+      <div class="steps-grid max-w-3xl mx-auto">
+        <div class="step-card">
+          <span class="step-num">1</span>
+          <h4>Заявка</h4>
+          <p>Оставляете заявку на сайте или пишете в Telegram</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">2</span>
+          <h4>Сбор информации</h4>
+          <p>Направляете жалобы, результаты анализов и обследований</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">3</span>
+          <h4>Консультация</h4>
+          <p>Общение в Telegram/WhatsApp, видео или аудиозвонок по договорённости</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">4</span>
+          <h4>Заключение</h4>
+          <p>Получаете подробный план действий и рекомендации</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container mx-auto px-4">
+      <ul class="footer-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="endoskopiya.html">Эндоскопия</a></li>
+        <li><a href="gastroenterologiya.html">Гастроэнтерология</a></li>
+        <li><a href="dietologiya.html">Диетология</a></li>
+        <li><a href="o-vrache.html">О враче</a></li>
+        <li><a href="otzyvy.html">Отзывы</a></li>
+        <li><a href="kontakty.html">Контакты</a></li>
+        <li><a href="privacy.html">Политика конфиденциальности</a></li>
+        <li><a href="offer.html">Договор оферты</a></li>
+      </ul>
+      <p class="copyright">&copy; 2026 Иван Иванович Иванов. Все права защищены.</p>
+      <p class="legal-note">Информация на сайте носит ознакомительный характер и не является медицинской рекомендацией.</p>
+    </div>
+  </footer>
+  <div class="lightbox" id="lightbox"><img id="lightbox-img" src="" alt="Увеличенное изображение"></div>
+  <script src="js/main.js"></script>
+</body>
+</html>

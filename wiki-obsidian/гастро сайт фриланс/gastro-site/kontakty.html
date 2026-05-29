@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Контакты — запись на приём | Врач гастроэнтеролог-диетолог</title>
+  <meta name="description" content="Контакты врача гастроэнтеролога-диетолога. Запись онлайн, телефон, Telegram, адреса клиник.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#2a7f62','primary-dark':'#1e5e48',accent:'#c7954e'}}}}</script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <!-- ===== Floating Logo Background ===== -->
+  <div class="logo-watermark" aria-hidden="true">
+    <img src="img/logo.jpeg" alt="">
+  </div>
+  <header class="header">
+    <div class="container mx-auto px-4">
+      <a href="index.html" class="header-logo">
+        <img src="img/logo.jpeg" alt="Логотип">
+        <span>Гастроэнтеролог-диетолог</span>
+      </a>
+      <button class="burger" aria-label="Меню"><i class="fas fa-bars"></i></button>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Главная</a></li>
+          <li><a href="endoskopiya.html">Эндоскопия</a></li>
+          <li><a href="gastroenterologiya.html">Гастроэнтерология</a></li>
+          <li><a href="dietologiya.html">Диетология</a></li>
+          <li><a href="o-vrache.html">О враче</a></li>
+          <li><a href="otzyvy.html">Отзывы</a></li>
+          <li><a href="kontakty.html" class="active">Контакты</a></li>
+          <li><a href="#booking-form" class="btn-primary header-btn scroll-to-form"><i class="fas fa-calendar-check"></i> Записаться</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container mx-auto px-4">
+      <p class="breadcrumbs"><a href="index.html">Главная</a> / <span>Контакты</span></p>
+      <h1>Контакты</h1>
+      <p class="section-subtitle">Свяжитесь со мной удобным для вас способом</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+        <!-- Контактная информация -->
+        <div>
+          <h2 class="text-2xl font-bold mb-6">Как меня найти</h2>
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="fas fa-phone-alt"></i>
+              <div>
+                <h4>Телефон клиники (очный приём)</h4>
+                <p><a href="tel:+71234567890">+7 (123) 456-78-90</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fab fa-telegram"></i>
+              <div>
+                <h4>Telegram</h4>
+                <p><a href="https://t.me/" target="_blank" rel="noopener">Написать в Telegram <i class="fas fa-external-link-alt fa-xs"></i></a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fab fa-whatsapp"></i>
+              <div>
+                <h4>WhatsApp</h4>
+                <p><a href="https://wa.me/71234567890" target="_blank" rel="noopener">Написать в WhatsApp <i class="fas fa-external-link-alt fa-xs"></i></a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <h4>Адреса клиник</h4>
+                <p>г. Москва, ул. Примерная, д. 1 — Клиника «Здоровье»</p>
+                <p>г. Москва, ул. Вторая, д. 10 — МЦ «Медицина»</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-clock"></i>
+              <div>
+                <h4>Режим работы</h4>
+                <p>Консультации онлайн: ежедневно по предварительной записи</p>
+                <p>Очный приём: по расписанию клиники</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Форма записи -->
+        <div id="booking-form">
+          <h2 class="text-2xl font-bold mb-6">Записаться на приём</h2>
+          <div class="form-card !p-0 !shadow-none !bg-transparent">
+            <form id="booking-form" method="post" action="send-form.php">
+              <div class="honeypot">
+                <input type="text" name="_honey" tabindex="-1" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="name">Ваше имя</label>
+                <input type="text" id="name" name="name" required placeholder="Например: Анна">
+              </div>
+              <div class="form-group">
+                <label for="contact">Телефон или Telegram</label>
+                <input type="text" id="contact" name="contact" required placeholder="+7 (999) 123-45-67 или @username">
+              </div>
+              <div class="form-group">
+                <label for="service">Услуга</label>
+                <select id="service" name="service">
+                  <option value="">— Выберите услугу —</option>
+                  <optgroup label="Эндоскопия">
+                    <option value="Подготовка к ФГДС">Индивидуальная подготовка к ФГДС</option>
+                    <option value="Подготовка к колоноскопии">Индивидуальная подготовка к колоноскопии</option>
+                    <option value="Расшифровка протокола эндоскопии">Расшифровка протокола эндоскопии</option>
+                    <option value="Расшифровка гистологии">Расшифровка гистологии</option>
+                    <option value="Второе мнение по эндоскопии">Второе мнение по фото и видео</option>
+                  </optgroup>
+                  <optgroup label="Гастроэнтерология">
+                    <option value="Онлайн-консультация гастроэнтеролога">Онлайн-консультация</option>
+                    <option value="Повторная консультация гастроэнтеролога">Повторная консультация</option>
+                    <option value="Расшифровка анализов">Расшифровка лабораторных анализов</option>
+                    <option value="Онлайн-сопровождение 1 месяц">Онлайн-сопровождение (1 месяц)</option>
+                  </optgroup>
+                  <optgroup label="Диетология">
+                    <option value="План питания на 14 дней">План питания на 14 дней</option>
+                    <option value="План питания на 30 дней">План питания на 30 дней</option>
+                    <option value="Протокол при заболеваниях ЖКТ">Протокол при ГЭРБ, СРК, НАЖБП, гастрите</option>
+                    <option value="Протокол при дефицитах">Протокол при дефицитах</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="comment">Комментарий</label>
+                <textarea id="comment" name="comment" placeholder="Опишите ваш вопрос или проблему подробнее..."></textarea>
+              </div>
+              <button type="submit" class="btn-primary w-full justify-center"><i class="fas fa-paper-plane"></i> Отправить заявку</button>
+            </form>
+            <div class="form-success">
+              <i class="fas fa-check-circle"></i>
+              <h3>Заявка отправлена!</h3>
+              <p>Спасибо! Я свяжусь с вами в ближайшее время.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Кнопки мессенджеров -->
+  <section class="bg-white text-center">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title">Быстрая связь</h2>
+      <p class="section-subtitle">Напишите мне напрямую в мессенджер</p>
+      <div class="flex flex-wrap justify-center gap-4 mt-4">
+        <a href="https://t.me/" target="_blank" rel="noopener" class="btn-primary !bg-[#0088cc] hover:!bg-[#006da3]"><i class="fab fa-telegram"></i> Написать в Telegram</a>
+        <a href="https://wa.me/71234567890" target="_blank" rel="noopener" class="btn-primary !bg-[#25D366] hover:!bg-[#1da851]"><i class="fab fa-whatsapp"></i> Написать в WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container mx-auto px-4">
+      <ul class="footer-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="endoskopiya.html">Эндоскопия</a></li>
+        <li><a href="gastroenterologiya.html">Гастроэнтерология</a></li>
+        <li><a href="dietologiya.html">Диетология</a></li>
+        <li><a href="o-vrache.html">О враче</a></li>
+        <li><a href="otzyvy.html">Отзывы</a></li>
+        <li><a href="kontakty.html">Контакты</a></li>
+        <li><a href="privacy.html">Политика конфиденциальности</a></li>
+        <li><a href="offer.html">Договор оферты</a></li>
+      </ul>
+      <p class="copyright">&copy; 2026 Иван Иванович Иванов. Все права защищены.</p>
+      <p class="legal-note">Информация на сайте носит ознакомительный характер и не является медицинской рекомендацией.</p>
+    </div>
+  </footer>
+  <div class="lightbox" id="lightbox"><img id="lightbox-img" src="" alt="Увеличенное изображение"></div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Врач гастроэнтеролог-диетолог | Онлайн-консультации | Коррекция веса</title>
+  <meta name="description" content="Консультации врача гастроэнтеролога-диетолога онлайн. Помощь при заболеваниях ЖКТ, коррекция веса, индивидуальные планы питания.">
+  <meta property="og:title" content="Врач гастроэнтеролог-диетолог">
+  <meta property="og:description" content="Онлайн-консультации, коррекция веса, лечение заболеваний ЖКТ">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2a7f62',
+            'primary-dark': '#1e5e48',
+            accent: '#c7954e',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+  <!-- ===== Floating Logo Background ===== -->
+  <div class="logo-watermark" aria-hidden="true">
+    <img src="img/logo.jpeg" alt="">
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container mx-auto px-4">
+      <a href="index.html" class="header-logo">
+        <img src="img/logo.jpeg" alt="Логотип">
+        <span>Гастроэнтеролог-диетолог</span>
+      </a>
+      <button class="burger" aria-label="Меню"><i class="fas fa-bars"></i></button>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="active">Главная</a></li>
+          <li><a href="endoskopiya.html">Эндоскопия</a></li>
+          <li><a href="gastroenterologiya.html">Гастроэнтерология</a></li>
+          <li><a href="dietologiya.html">Диетология</a></li>
+          <li><a href="o-vrache.html">О враче</a></li>
+          <li><a href="otzyvy.html">Отзывы</a></li>
+          <li><a href="kontakty.html">Контакты</a></li>
+          <li><a href="kontakty.html#booking-form" class="btn-primary header-btn scroll-to-form"><i class="fas fa-calendar-check"></i> Записаться</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col lg:flex-row items-center gap-10">
+        <div class="hero-content flex-1">
+          <h1>Иван Иванович Иванов</h1>
+          <p class="specialty">Врач гастроэнтеролог-диетолог</p>
+          <p class="utp">Помогу разобраться с проблемами ЖКТ, подберу индивидуальный план питания и проконсультирую онлайн — без очередей и выходных.</p>
+          <div class="hero-services">
+            <a href="endoskopiya.html" class="hero-service-card">
+              <i class="fas fa-microscope"></i>
+              <h3>Эндоскопия</h3>
+              <p>Подготовка, расшифровка, второе мнение</p>
+            </a>
+            <a href="gastroenterologiya.html" class="hero-service-card">
+              <i class="fas fa-stethoscope"></i>
+              <h3>Гастроэнтерология</h3>
+              <p>Онлайн-консультации по ЖКТ</p>
+            </a>
+            <a href="dietologiya.html" class="hero-service-card">
+              <i class="fas fa-utensils"></i>
+              <h3>Диетология</h3>
+              <p>Планы питания и лечебные протоколы</p>
+            </a>
+          </div>
+          <a href="kontakty.html#booking-form" class="btn-primary scroll-to-form"><i class="fas fa-calendar-check"></i> Записаться на приём</a>
+        </div>
+        <div class="hero-image flex-1 text-center">
+          <img src="img/doctor.jpg" alt="Фото врача" onerror="this.src='https://placehold.co/380x380/e8f5f0/2a7f62?text=%D0%92%D1%80%D0%B0%D1%87'">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== О ВРАЧЕ (КРАТКО) ===== -->
+  <section class="bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title text-center">О враче</h2>
+      <p class="section-subtitle text-center">Кратко о профессиональном пути и подходе к работе</p>
+      <div class="about-brief max-w-4xl mx-auto">
+        <img src="img/doctor.jpg" alt="Фото врача" onerror="this.src='https://placehold.co/220x220/e8f5f0/2a7f62?text=%D0%92%D1%80%D0%B0%D1%87'">
+        <div>
+          <p>Врач гастроэнтеролог-диетолог с многолетним стажем работы. Специализируюсь на диагностике и лечении заболеваний желудочно-кишечного тракта, коррекции веса и индивидуальном подборе питания.</p>
+          <p>Верю, что здоровье начинается с правильного питания и внимательного отношения к своему организму. Каждому пациенту стараюсь уделить максимум времени и дать понятный план действий.</p>
+          <a href="o-vrache.html" class="btn-outline mt-4 inline-flex">Подробнее <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ТРИ НАПРАВЛЕНИЯ ===== -->
+  <section>
+    <div class="container mx-auto px-4">
+      <h2 class="section-title text-center">Направления работы</h2>
+      <p class="section-subtitle text-center">Выберите интересующее вас направление</p>
+      <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="service-card">
+          <div class="icon"><i class="fas fa-microscope"></i></div>
+          <h3>Эндоскопия</h3>
+          <p>Индивидуальная подготовка к ФГДС и колоноскопии, расшифровка протоколов, гистологии, второе мнение по фото и видео.</p>
+          <a href="endoskopiya.html" class="btn-outline">Подробнее</a>
+        </div>
+        <div class="service-card">
+          <div class="icon"><i class="fas fa-stethoscope"></i></div>
+          <h3>Гастроэнтерология онлайн</h3>
+          <p>Консультации по жалобам, разбор анализов, план обследования и лечения дистанционно — без визита к врачу.</p>
+          <a href="gastroenterologiya.html" class="btn-outline">Подробнее</a>
+        </div>
+        <div class="service-card">
+          <div class="icon"><i class="fas fa-utensils"></i></div>
+          <h3>Питание и диетология</h3>
+          <p>Индивидуальные планы питания, лечебные протоколы при ГЭРБ, СРК, НАЖБП, гастрите и дефицитах.</p>
+          <a href="dietologiya.html" class="btn-outline">Подробнее</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ОТЗЫВЫ ===== -->
+  <section class="bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title text-center">Отзывы пациентов</h2>
+      <p class="section-subtitle text-center">Что говорят те, кто уже обратился за помощью</p>
+      <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="testimonial-card">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="text">Очень внимательный врач. Всё подробно объяснил, расписал план питания буквально по дням. Результат уже через неделю!</p>
+          <p class="author">Анна, Москва</p>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="text">Давно мучилась с желудком. После консультации стало понятно, что делать и какие обследования пройти. Спасибо за чёткий план!</p>
+          <p class="author">Елена, Санкт-Петербург</p>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="text">Очень удобно, что можно получить консультацию онлайн. Не нужно тратить время на дорогу. Врач действительно компетентный.</p>
+          <p class="author">Сергей, Казань</p>
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <a href="otzyvy.html" class="btn-outline">Все отзывы <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ФОРМА ЗАПИСИ ===== -->
+  <section class="form-section" id="booking-form-section">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title text-center">Записаться на приём</h2>
+      <p class="section-subtitle text-center">Оставьте заявку — я свяжусь с вами в ближайшее время</p>
+      <div class="form-card" id="form-card">
+        <form id="booking-form" method="post" action="send-form.php">
+          <div class="honeypot">
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="name">Ваше имя</label>
+            <input type="text" id="name" name="name" required placeholder="Например: Анна">
+          </div>
+          <div class="form-group">
+            <label for="contact">Телефон или Telegram</label>
+            <input type="text" id="contact" name="contact" required placeholder="+7 (999) 123-45-67 или @username">
+          </div>
+          <div class="form-group">
+            <label for="comment">Комментарий</label>
+            <textarea id="comment" name="comment" placeholder="Опишите ваш вопрос или проблему..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary w-full justify-center"><i class="fas fa-paper-plane"></i> Отправить заявку</button>
+        </form>
+        <div class="form-success">
+          <i class="fas fa-check-circle"></i>
+          <h3>Заявка отправлена!</h3>
+          <p>Спасибо! Я свяжусь с вами в ближайшее время.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container mx-auto px-4">
+      <ul class="footer-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="endoskopiya.html">Эндоскопия</a></li>
+        <li><a href="gastroenterologiya.html">Гастроэнтерология</a></li>
+        <li><a href="dietologiya.html">Диетология</a></li>
+        <li><a href="o-vrache.html">О враче</a></li>
+        <li><a href="otzyvy.html">Отзывы</a></li>
+        <li><a href="kontakty.html">Контакты</a></li>
+        <li><a href="privacy.html">Политика конфиденциальности</a></li>
+        <li><a href="offer.html">Договор оферты</a></li>
+      </ul>
+      <p class="copyright">&copy; 2026 Иван Иванович Иванов. Все права защищены.</p>
+      <p class="legal-note">Информация на сайте носит ознакомительный характер и не является медицинской рекомендацией. Не занимайтесь самолечением — обратитесь к специалисту.</p>
+    </div>
+  </footer>
+
+  <!-- Лайтбокс -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightbox-img" src="" alt="Увеличенное изображение">
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

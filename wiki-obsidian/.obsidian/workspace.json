@@ -1,0 +1,236 @@
+{
+  "main": {
+    "id": "014904cb8bbb9d9f",
+    "type": "split",
+    "children": [
+      {
+        "id": "dd8f41946da9da94",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8b2aa66ab88964ee",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Papperclip/wiki/paperclip-deployment-cli.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "paperclip-deployment-cli"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d381e7b6fbacf47a",
+    "type": "split",
+    "children": [
+      {
+        "id": "1946e1381dfcf3a3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3daeeaec35f0061d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "e8301022a853d6fe",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "840f827178b24791",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a7fc663c6e3fdf0a",
+    "type": "split",
+    "children": [
+      {
+        "id": "eb4adb37d2823db0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "58805b9b71d28e44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Selo_Zolotarevka/index.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки для index"
+            }
+          },
+          {
+            "id": "9ce0e2b045755fdf",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Selo_Zolotarevka/index.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки из index"
+            }
+          },
+          {
+            "id": "62abe408e0bc6404",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "7547d91386e72f79",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Все свойства"
+            }
+          },
+          {
+            "id": "93592ed9c32cc23a",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Selo_Zolotarevka/index.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура index"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "bases:Создать новую базу": false
+    }
+  },
+  "active": "8b2aa66ab88964ee",
+  "lastOpenFiles": [
+    "Selo_Zolotarevka/SERVER_INFRASTRUCTURE.md",
+    "гастро сайт фриланс/gastro-site/img/logo3.jpeg",
+    "гастро сайт фриланс/gastro-site/img/logo2.jpeg",
+    "гастро сайт фриланс/gastro-site/img/logo.jpeg",
+    "гастро сайт фриланс/gastro-site/img/f_7036a18833be7286.jpeg",
+    "гастро сайт фриланс/gastro-site/img/f_0506a1883350ba9d.jpeg",
+    "гастро сайт фриланс/gastro-site/img/f_2946a18833514b3c.jpeg",
+    "гастро сайт фриланс/gastro-site/img/logo.svg",
+    "гастро сайт фриланс/gastro-site/img/logo.png",
+    "гастро сайт фриланс/gastro-site/send-form.php",
+    "гастро сайт фриланс/gastro-site/offer.html",
+    "гастро сайт фриланс/gastro-site/privacy.html",
+    "гастро сайт фриланс/gastro-site/kontakty.html",
+    "гастро сайт фриланс/gastro-site/otzyvy.html",
+    "гастро сайт фриланс/gastro-site/o-vrache.html",
+    "гастро сайт фриланс/gastro-site/dietologiya.html",
+    "гастро сайт фриланс/gastro-site/gastroenterologiya.html",
+    "гастро сайт фриланс/gastro-site/endoskopiya.html",
+    "гастро сайт фриланс/gastro-site/index.html",
+    "гастро сайт фриланс/PLAN.md",
+    "гастро сайт фриланс/_assets/logo3.jpeg",
+    "гастро сайт фриланс/_assets/logo2.jpeg",
+    "Selo_Zolotarevka/SEO_TASK.md",
+    "Papperclip/wiki/paperclip-runbook.md",
+    "Papperclip/raw/Papperclip/doc/plugins/PLUGIN_AUTHORING_GUIDE.md",
+    "Papperclip/raw/Papperclip/doc/plugins/PLUGIN_SPEC.md",
+    "Papperclip/raw/Papperclip/doc/execution-semantics.md",
+    "Papperclip/raw/Papperclip/doc/DEPLOYMENT-MODES.md",
+    "Papperclip/raw/Papperclip/doc/DATABASE.md",
+    "Papperclip/raw/Papperclip/doc/CLI.md",
+    "Papperclip/raw/Papperclip/doc/SPEC.md",
+    "Papperclip/raw/Papperclip/doc/SPEC-implementation.md",
+    "Papperclip/raw/Papperclip/ROADMAP.md",
+    "Papperclip/raw/Papperclip/README.md",
+    "Papperclip/raw/Papperclip/AGENTS.md",
+    "Papperclip/wiki/log.md",
+    "Papperclip/wiki/index.md",
+    "Papperclip/wiki/paperclip-issues.md",
+    "Papperclip/wiki/paperclip-governance.md",
+    "Papperclip/wiki/paperclip-database.md",
+    "Papperclip/wiki/paperclip-heartbeat-execution.md",
+    "Papperclip/wiki/paperclip-plugins.md",
+    "Papperclip/wiki/paperclip-deployment-cli.md",
+    "raw/Papperclip/README.md",
+    "raw/Papperclip/ROADMAP.md",
+    "Papperclip/wiki/overview.md",
+    "Без названия.canvas"
+  ]
+}

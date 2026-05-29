@@ -15,7 +15,32 @@
       "Bash(cp /Users/phavlak/Documents/project/Papperclip/README.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
       "Bash(cp /Users/phavlak/Documents/project/Papperclip/AGENTS.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
       "Bash(cp /Users/phavlak/Documents/project/Papperclip/ROADMAP.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
-      "Bash(cp /Users/phavlak/Documents/project/Papperclip/doc/SPEC.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/doc/)"
+      "Bash(cp /Users/phavlak/Documents/project/Papperclip/doc/SPEC.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/doc/)",
+      "Bash(curl -s http://localhost:3100/api/health)",
+      "Bash(curl -s http://localhost:3100/api/companies)",
+      "Bash(curl -s http://localhost:3100/api/goals)",
+      "Bash(curl -s \"http://localhost:3100/api/yupiterpro/agents\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"http://localhost:3100/api/yupiterpro/issues\")",
+      "Bash(curl -s \"http://localhost:3100/api/yupiterpro/workspaces\")",
+      "Bash(curl -s http://localhost:3100/api/board)",
+      "Bash(curl -s http://localhost:3100/api/agents)",
+      "Bash(curl -s http://localhost:3100/api/issues)",
+      "Bash(curl -s \"http://localhost:3100/api/companies/yupiterpro/issues?limit=50\")",
+      "Bash(curl -s \"http://localhost:3100/api/companies/yupiterpro/routines\")",
+      "Bash(pg_isready)",
+      "Bash(psql -U paperclip -d paperclip -h localhost -c \"SELECT count\\(*\\) FROM issues;\")",
+      "Bash(curl -s \"http://localhost:3100/api/companies/yupiterpro/\")",
+      "Bash(curl -s \"http://localhost:3100/api/companies\")",
+      "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(json.dumps\\(data, indent=2\\)\\)\")",
+      "Bash(/Users/phavlak/node_modules/@embedded-postgres/darwin-x64/native/bin/psql -p 54329 -U paperclip -d paperclip -c \"\\\\dt\")",
+      "Bash(dpkg -l)",
+      "Bash(tail -3 /Users/phavlak/.paperclip/instances/default/logs/server.log)",
+      "Read(//Users/phavlak/.paperclip/instances/default/logs/**)",
+      "Bash(node -e ' *)",
+      "Bash(ssh -i /Users/phavlak/.ssh/proxmox_key root@192.168.1.110 \"curl -s -o /dev/null -w '%{http_code}' http://192.168.1.64 && echo ' — WP доступен'\")",
+      "Bash(rm -rf /private/tmp/claude-501/-Users-phavlak-Documents-wiki-obsidian-Papperclip/02c8785c-f5ed-46ae-ab13-a21d354c3ab3/*)",
+      "Bash(ssh -i /Users/phavlak/.ssh/proxmox_key root@192.168.1.110 'curl -s http://192.168.1.64/wp-json/')"
     ]
   }
 }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <rect width="200" height="60" rx="8" fill="#2a7f62"/>
+  <text x="16" y="34" font-family="Arial, sans-serif" font-weight="700" font-size="22" fill="#fff">Гастро</text>
+  <text x="102" y="34" font-family="Arial, sans-serif" font-weight="300" font-size="18" fill="#c7954e">врач</text>
+  <text x="100" y="52" font-family="Arial, sans-serif" font-size="9" fill="rgba(255,255,255,0.6)" text-anchor="middle">эндоскопия · диетология · онлайн</text>
+</svg>

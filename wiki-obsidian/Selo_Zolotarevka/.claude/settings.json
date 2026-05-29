@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -o StrictHostKeyChecking=yes -o ConnectTimeout=5 root@192.168.1.64 \"hostname && uptime\")",
+      "Bash(ssh root@192.168.1.64 \"cd /var/www/html/wordpress && ls -la wp-content/themes/ && echo '---PLUGINS---' && ls -la wp-content/plugins/ && echo '---MU-PLUGINS---' && ls -la wp-content/mu-plugins/ 2>/dev/null || echo 'no mu-plugins dir'\")",
+      "Bash(ssh root@192.168.1.64 ' *)",
+      "Bash(ssh root@192.168.1.64 \"mkdir -p /var/www/html/wordpress/wp-content/mu-plugins\")",
+      "Bash(scp \"/Users/phavlak/Documents/wiki-obsidian/Selo_Zolotarevka/wordpress/mu-plugins/zolotarevka-backend.php\" root@192.168.1.64:/var/www/html/wordpress/wp-content/mu-plugins/)",
+      "Bash(rsync -avz --delete \"/Users/phavlak/Documents/wiki-obsidian/Selo_Zolotarevka/wordpress/themes/zolotarevka-mvp/\" root@192.168.1.64:/var/www/html/wordpress/wp-content/themes/zolotarevka-mvp/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://192.168.1.64/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://192.168.1.64/school/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://192.168.1.64/news/)",
+      "Bash(curl -s http://192.168.1.64/wp-json/zolo/v1/content/school_news)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://192.168.1.64/__TRACKED_VAR__)",
+      "Bash(curl -s -L -o /dev/null -w '%{http_code}' http://192.168.1.64/__TRACKED_VAR__)",
+      "Bash(curl -s http://192.168.1.64/)",
+      "Bash(curl -s http://192.168.1.64/school/)",
+      "Bash(curl -s http://192.168.1.64/news/)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -L -o /dev/null -w 'Form HTTP code: %{http_code}\\\\n' -X POST http://192.168.1.64/wp-admin/admin-post.php -d 'action=zolo_submit_news&news_title=Test+News&news_text=Test+body+content' --data-urlencode _wpnonce=test)",
+      "Bash(curl -s 'http://192.168.1.64/news/?cat=village')",
+      "Bash(curl -s http://192.168.1.64/sports/)",
+      "Bash(curl -s http://192.168.1.64/farm/)",
+      "Bash(curl -s -L -o /dev/null -w \"%{http_code}\\\\n\" http://192.168.1.64/ http://192.168.1.64/school/ http://192.168.1.64/news/)",
+      "Bash(git add *)"
+    ]
+  }
+}
