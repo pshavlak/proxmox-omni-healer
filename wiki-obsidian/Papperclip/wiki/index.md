@@ -24,6 +24,7 @@
 ## Деплой и CLI
 
 - [Деплой и CLI Paperclip](wiki/paperclip-deployment-cli.md) — local_trusted/authenticated, onboard, configure, doctor, команды.
+- [Runbook Paperclip](wiki/paperclip-runbook.md) — инструкции по запуску, конфигурация, обслуживание.
 
 ## Архитектура (детально)
 
@@ -53,13 +54,14 @@
 - [Индекс](wiki/index.md) ← вы здесь
 - [Лог](wiki/log.md)
 
-### Контентные страницы (11)
+### Контентные страницы (12)
 - [Paperclip — Обзор](wiki/paperclip-overview.md)
 - [Концепции Paperclip](wiki/paperclip-concepts.md)
 - [Архитектура Paperclip](wiki/paperclip-architecture.md)
 - [Paperclip vs Альтернативы](wiki/paperclip-vs-alternatives.md)
 - [Roadmap Paperclip](wiki/paperclip-roadmap.md)
 - [Деплой и CLI Paperclip](wiki/paperclip-deployment-cli.md)
+- [Runbook Paperclip](wiki/paperclip-runbook.md)
 - [Плагины Paperclip](wiki/paperclip-plugins.md)
 - [Heartbeat и Исполнение Агентов](wiki/paperclip-heartbeat-execution.md)
 - [Issue / Task система](wiki/paperclip-issues.md)
