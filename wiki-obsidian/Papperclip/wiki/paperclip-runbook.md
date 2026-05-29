@@ -45,7 +45,7 @@ OPENAI_BASE_URL=https://api.deepseek.com/v1
 OPENAI_API_KEY=<ключ>
 ```
 
-Модель на всех агентах: **deepseek-chat** (для codex_local), **openai/deepseek-chat** (для opencode_local).
+Модель на всех агентах: **deepseek-v4-flash** (для codex_local), **openai/deepseek-v4-flash** (для opencode_local).
 
 ## Обслуживание
 
