@@ -1,0 +1,41 @@
+listen: :443
+
+tls:
+  cert: /etc/letsencrypt/live/hist.yupiterpro.ru/fullchain.pem
+  key: /etc/letsencrypt/live/hist.yupiterpro.ru/privkey.pem
+
+auth:
+  type: http
+  http:
+    url: http://127.0.0.1:8081/auth
+    insecure: true
+
+resolver:
+  type: udp
+  tcp:
+    addr: 77.88.8.8:53
+    timeout: 4s
+  udp:
+    addr: 77.88.8.8:53
+    timeout: 4s
+
+sniff:
+  enable: true
+  timeout: 2s
+  rewriteDomain: false
+
+outbounds:
+  - name: exit_socks
+    type: socks5
+    socks5:
+      addr: 193.164.155.153:18443
+      username: cascade
+      password: d17ed2425d8b1c37b5ee00ed4e28cd0b
+  - name: direct
+    type: direct
+
+acl:
+  file: /etc/hysteria/acl.txt
+  geoUpdateInterval: 168h
+
+logLevel: debug

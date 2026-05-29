@@ -1,0 +1,13 @@
+[Unit]
+Description=Hysteria 2 Manager Panel
+After=network.target hysteria-server.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/hysteria-manager/app.py
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/opt/hysteria-manager
+
+[Install]
+WantedBy=multi-user.target
