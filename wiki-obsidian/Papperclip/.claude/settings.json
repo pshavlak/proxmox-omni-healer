@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:gist.githubusercontent.com)",
+      "Bash(curl -sL \"https://gist.githubusercontent.com/karpathy/442a6bf555914893e9891c11519de94f/raw/ac46de1ad27f92b28ac95459c782c07f6b8c964a/llm-wiki.md\")",
+      "Bash(ls -la /Users/phavlak/Documents/wiki-obsidian/)",
+      "Read(//Users/phavlak/Documents/wiki-obsidian/**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//Users/phavlak/Documents/project/Papperclip/**)",
+      "Read(//Users/phavlak/Documents/project/Papperclip/doc/**)",
+      "Read(//Users/phavlak/Documents/project/Papperclip/doc/plugins/**)",
+      "Read(//Users/phavlak/Documents/project/**)",
+      "Bash(mkdir -p /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/doc/plugins)",
+      "Bash(cp /Users/phavlak/Documents/project/Papperclip/README.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
+      "Bash(cp /Users/phavlak/Documents/project/Papperclip/AGENTS.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
+      "Bash(cp /Users/phavlak/Documents/project/Papperclip/ROADMAP.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/)",
+      "Bash(cp /Users/phavlak/Documents/project/Papperclip/doc/SPEC.md /Users/phavlak/Documents/wiki-obsidian/Papperclip/raw/Papperclip/doc/)"
+    ]
+  }
+}
