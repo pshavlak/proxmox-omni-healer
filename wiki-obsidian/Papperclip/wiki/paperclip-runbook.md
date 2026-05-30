@@ -45,9 +45,24 @@ OPENAI_BASE_URL=https://api.deepseek.com/v1
 OPENAI_API_KEY=<ключ>
 ```
 
-Модели агентов:
-- **CEO** (opencode_local): `openrouter/deepseek/deepseek-v4-flash`
-- **Остальные** (codex_local): `deepseek-v4-flash`
+## Модели агентов
+
+| Агент | Адаптер | Модель |
+|---|---|---|
+| CEO | `opencode_local` | `openrouter/deepseek/deepseek-v4-flash` |
+| 7 агентов (Бэкендер, Системный администратор, Безопасность, Ресерчер, Контентмейкер, Фронтендер, Сценарист) | `codex_local` | `deepseek-chat` |
+
+**Важно:** Codex CLI использует профиль `deepseek-v4-pro` (настроен в `~/.codex/config.toml`). Модель `deepseek-v4-flash` НЕ работает с codex_local — Codex CLI не знает эту модель и пытается запустить её через локальный OSS-провайдер. Для codex_local нужно использовать `deepseek-chat`. CEO использует OpenRouter через opencode_local, поэтому у него модель `openrouter/deepseek/deepseek-v4-flash`.
+
+## Конфигурация DeepSeek API
+
+Настроено в `.env` проекта:
+```
+OPENAI_BASE_URL=https://api.deepseek.com/v1
+OPENAI_API_KEY=sk-...
+```
+
+Дополнительно Codex CLI имеет свою конфигурацию в `~/.codex/config.toml`:
 
 ## Обслуживание
 

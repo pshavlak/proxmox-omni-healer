@@ -73,5 +73,16 @@
 - Возобновлён агент "Системный администратор" (был paused)
 - Создана страница [runbook](wiki/paperclip-runbook.md) с инструкциями по запуску
 
+## [2026-05-30] fix | Codex CLI + DeepSeek совместимость, перезапуск, новый CEO
+
+Диагностика и исправление интеграции Codex CLI с DeepSeek API:
+- **Проблема:** Codex CLI не принимал модель `deepseek-v4-flash` — пытался запустить её через локальный OSS-провайдер (ollama/lmstudio), падал с "No default OSS provider configured"
+- **Решение:** Агенты codex_local переключены на `deepseek-chat` (Codex CLI знает эту модель через профиль `deepseek-v4-pro` в `~/.codex/config.toml`, который направляет запросы в DeepSeek API)
+- **CEO** (opencode_local): модель `openrouter/deepseek/deepseek-v4-flash` — работает через OpenRouter
+- Сервер перезапущен после остановки
+- CEO терминален (terminated), создан новый CEO 2 с правильной конфигурацией
+- Старый CEO удалён
+- Создана задача YUP-19 для CEO 2: подключение к серверу WordPress
+
 ---
 *Лог только для добавления. Каждая запись начинается с `## [YYYY-MM-DD]` для парсинга grep.*
