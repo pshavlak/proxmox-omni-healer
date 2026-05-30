@@ -90,7 +90,7 @@
       <h2 style="margin-top:40px;">📅 Календарь турнира: <?php echo esc_html($season_title); ?></h2>
 
       <?php foreach ($calendar as $circle => $rounds):
-          $circle_label = ($circle === '1') ? '1 круг' : '2 круг';
+          $circle_label = ((string) $circle === '1') ? '1 круг' : '2 круг';
       ?>
       <h3 style="margin-top:24px;">🔄 <?php echo $circle_label; ?></h3>
         <?php foreach ($rounds as $round):
@@ -219,7 +219,7 @@
           // Collect played matches from all circles
           $played_matches = [];
           foreach ($calendar as $circle => $rounds) {
-              $circle_label = ($circle === '1') ? '1 круг' : '2 круг';
+              $circle_label = ((string) $circle === '1') ? '1 круг' : '2 круг';
               foreach ($rounds as $round) {
                   $matches = $round['matches'] ?? [];
                   foreach ($matches as $m) {
