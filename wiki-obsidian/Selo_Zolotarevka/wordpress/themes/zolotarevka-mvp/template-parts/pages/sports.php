@@ -235,18 +235,18 @@
           if (!empty($played_matches)) :
       ?>
       <h2 style="margin-top:40px;">📊 Результаты прошедших матчей</h2>
-      <div class="cards-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
         <?php foreach ($played_matches as $m): ?>
-        <div class="info-card" style="border-left:4px solid #2d6a4f; padding:12px 16px;">
-          <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">
+        <div class="info-card" style="border-left:4px solid #2d6a4f; padding:12px 16px; overflow:hidden;">
+          <div style="font-size:0.85rem; color:#666; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             Тур <?php echo (int) ($m['_round'] ?? 0); ?> • <?php echo esc_html($m['_circle']); ?> — <?php echo esc_html($m['_date']); ?>
           </div>
-          <div style="display:flex; align-items:center; justify-content:center; gap:16px; font-size:1.1rem;">
-            <span style="flex:1; text-align:right; padding-right:4px;"><strong><?php echo esc_html($m['home'] ?? ''); ?></strong></span>
-            <span style="background:#2d6a4f; color:#fff; padding:6px 18px; border-radius:8px; font-weight:700; white-space:nowrap;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:1.1rem; width:100%;">
+            <span style="flex:1; text-align:right; padding-right:4px; overflow:hidden; text-overflow:ellipsis;"><strong><?php echo esc_html($m['home'] ?? ''); ?></strong></span>
+            <span style="background:#2d6a4f; color:#fff; padding:6px 16px; border-radius:8px; font-weight:700; white-space:nowrap; flex-shrink:0;">
               <?php echo (int) ($m['score_h'] ?? 0); ?> : <?php echo (int) ($m['score_a'] ?? 0); ?>
             </span>
-            <span style="flex:1; text-align:left; padding-left:4px;"><strong><?php echo esc_html($m['away'] ?? ''); ?></strong></span>
+            <span style="flex:1; text-align:left; padding-left:4px; overflow:hidden; text-overflow:ellipsis;"><strong><?php echo esc_html($m['away'] ?? ''); ?></strong></span>
           </div>
         </div>
         <?php endforeach; ?>
