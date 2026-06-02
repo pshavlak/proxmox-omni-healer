@@ -1274,8 +1274,19 @@ final class Zolotarevka_MVP_Settings {
         ];
 
         foreach ($pages as $slug => $title) {
-            $method = 'render_' . str_replace(['zolotarevka-', 'zolotarevka'], ['page_', 'dashboard'], $slug);
-            $method = str_replace('-', '_', $method);
+            $method_map = [
+                'zolotarevka'              => 'render_dashboard',
+                'zolotarevka-settings'     => 'render_page_settings',
+                'zolotarevka-page-home'    => 'render_home',
+                'zolotarevka-page-school'  => 'render_page_school',
+                'zolotarevka-page-kindergarten' => 'render_page_kindergarten',
+                'zolotarevka-page-farm'    => 'render_page_farm',
+                'zolotarevka-page-sports'  => 'render_page_sports',
+                'zolotarevka-page-village-life' => 'render_page_village_life',
+                'zolotarevka-page-media'   => 'render_page_media',
+                'zolotarevka-page-news'    => 'render_page_news',
+            ];
+            $method = $method_map[$slug] ?? 'render_dashboard';
             $page_slug = ($slug === 'zolotarevka') ? 'zolotarevka' : $slug;
 
             add_submenu_page(
