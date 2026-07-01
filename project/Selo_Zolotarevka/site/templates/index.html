@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {# Render blocks defined for the home page if they exist #}
+    {% if blocks is defined and blocks %}
+        {% for block in blocks %}
+            {% include 'blocks/' + block.type + '.html' ignore missing %}
+        {% endfor %}
+    {% else %}
+        {# Default hero #}
+        <section class="hero" style="background: linear-gradient(135deg, #1b4332, #2d6a4f);">
+            <div class="hero__overlay"></div>
+            <div class="container hero__content">
+                <h1 class="hero__title">{{ settings.hero_title|default('Добро пожаловать в Золотаревку!') }}</h1>
+                {% if settings.hero_subtitle %}
+                    <p class="hero__subtitle">{{ settings.hero_subtitle }}</p>
+                {% endif %}
+                <a href="#sections" class="hero__btn btn btn--accent">
+                    {{ settings.hero_btn_text|default('Исследовать разделы →') }}
+                </a>
+            </div>
+        </section>
+
+        {# Bento grid of sections #}
+        <section id="sections" class="bento-section container">
+            <h2 class="section__title">Разделы сайта</h2>
+            <div class="bento-grid">
+                {% for section in sections|default([]) %}
+                    <a href="/{{ section.id }}" class="bento__card">
+                        {% if section.icon %}
+                            <div class="bento__card-icon">{{ section.icon }}</div>
+                        {% endif %}
+                        <div class="bento__card-body">
+                            <h3 class="bento__card-title">{{ section.name }}</h3>
+                            <p class="bento__card-text">{{ section.description|default('Информация о разделе') }}</p>
+                            <span class="bento__card-link">Перейти →</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# News widget #}
+        <section class="news-section container">
+            <h2 class="section__title">Последние новости</h2>
+            <div class="news-grid">
+                {% for item in recent_news %}
+                    <article class="news-card">
+                        <div class="news-card__icon">{{ item.icon|default('📰') }}</div>
+                        <h3 class="news-card__title">{{ item.name }}</h3>
+                        <p class="news-card__excerpt">{{ item.description|default('Новости и события из жизни села Золотаревка') }}</p>
+                        <a href="/{{ item.id }}" class="news-card__link">Читать →</a>
+                    </article>
+                {% else %}
+                    <p class="news-empty">Новости скоро появятся</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# CTA block #}
+        <section class="cta-section container">
+            <div class="cta-block">
+                <h2 class="cta-block__title">{{ settings.suggest_title|default('Предложить новость') }}</h2>
+                <p class="cta-block__text">{{ settings.suggest_text|default('Хотите поделиться новостью или событием? Отправьте нам сообщение!') }}</p>
+                <button class="cta-block__btn btn btn--primary" id="openSuggestModal">
+                    Предложить новость
+                </button>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

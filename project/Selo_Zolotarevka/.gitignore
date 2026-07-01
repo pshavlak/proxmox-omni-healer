@@ -1,3 +1,10 @@
 .DS_Store
 *.log
 node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+.env
+site/.git/
+site/zolotarevka.db-wal
+site/zolotarevka.db-shm

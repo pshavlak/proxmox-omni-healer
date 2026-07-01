@@ -1,0 +1,118 @@
+/* Calendar editor for sports_season */
+.zolo-calendar-wrap { margin-top: 12px; }
+
+.zolo-circle-tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid #c3c4c7; }
+.zolo-circle-tab {
+  padding: 8px 20px;
+  cursor: pointer;
+  background: #f0f0f1;
+  border: 1px solid #c3c4c7;
+  border-bottom: none;
+  margin-bottom: -2px;
+  font-weight: 500;
+  border-radius: 4px 4px 0 0;
+  margin-right: 4px;
+}
+.zolo-circle-tab.active { background: #fff; border-bottom-color: #fff; }
+.zolo-circle-panel { display: none; }
+.zolo-circle-panel.active { display: block; }
+
+.zolo-round-block {
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.zolo-round-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dcdcde;
+  flex-wrap: wrap;
+}
+.zolo-round-header input[type="text"] { width: 120px; }
+.zolo-round-header input[type="number"] { width: 60px; }
+
+.zolo-round-header .zolo-round-title {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 80px;
+}
+.zolo-round-header .zolo-date-label { color: #646970; font-size: 12px; }
+
+.zolo-matches-table { width: 100%; border-collapse: collapse; }
+.zolo-matches-table th {
+  text-align: left;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #646970;
+  font-weight: 500;
+  border-bottom: 1px solid #dcdcde;
+}
+.zolo-matches-table td { padding: 4px 8px; vertical-align: middle; }
+.zolo-matches-table .zolo-col-num { width: 30px; text-align: center; color: #646970; }
+.zolo-matches-table .zolo-col-team { min-width: 140px; }
+.zolo-matches-table .zolo-col-team input { width: 100%; }
+.zolo-matches-table .zolo-col-vs { width: 20px; text-align: center; color: #787c82; font-weight: 600; }
+.zolo-matches-table .zolo-col-score { width: 50px; }
+.zolo-matches-table .zolo-col-score input { width: 40px; text-align: center; }
+.zolo-matches-table .zolo-col-status { width: 130px; }
+.zolo-matches-table .zolo-col-status select { width: 100%; }
+.zolo-matches-table .zolo-col-action { width: 30px; }
+.zolo-matches-table .zolo-remove-match {
+  background: #dc3545; color: #fff;
+  border: none; cursor: pointer;
+  border-radius: 3px; padding: 2px 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.zolo-round-actions { margin-top: 8px; display: flex; gap: 8px; align-items: center; }
+.zolo-add-match-btn { }
+.zolo-remove-round-btn {
+  background: #dc3545; color: #fff;
+  border: none; cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.zolo-calendar-actions {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #dcdcde;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.zolo-calc-result {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #edfaef;
+  border-left: 4px solid #00a32a;
+  display: none;
+}
+.zolo-calc-result.error {
+  background: #fcf0f1;
+  border-left-color: #d63638;
+}
+
+/* Standings extension */
+.zolo-standings-gd {
+  font-weight: 600;
+  text-align: center;
+}
+.zolo-standings-gd.positive { color: #00a32a; }
+.zolo-standings-gd.negative { color: #d63638; }
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+  .zolo-matches-table .zolo-col-team { min-width: 100px; }
+  .zolo-round-header { flex-direction: column; align-items: flex-start; }
+}

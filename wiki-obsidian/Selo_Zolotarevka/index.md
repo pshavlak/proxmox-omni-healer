@@ -33,9 +33,15 @@
 ## Код
 - `site/` — HTML/CSS/JS прототип фронтенда. Страницы: главная, школа, детсад, спорт, совхоз, жизнь села, медиа, новости.
 - `wordpress/` — WordPress mu-plugins (`zolotarevka-backend.php`) и тема `zolotarevka-mvp` (шаблоны разделов).
+- **Админ-панель контента** — `Zolotarevka_MVP_Settings` в mu-plugin (1942 строки). Топ-меню "Золотаревка ⚙️", редакторы 8 страниц, настройки сайта, навигация через WP Menus. Публикация через двухключевой паттерн (draft/live) с предпросмотром.
+- Календарь и результаты — postmeta `calendar_data` в CPT `sports_season`. Админ: `css/admin-calendar.css`, `js/admin-calendar.js`.
+- Турнирная таблица — postmeta `standings_data` (ЗМ/ПМ/±, очки 3-1-0). Авторасчёт из результатов.
 
 ## Инфраструктура
-- [[SERVER_INFRASTRUCTURE|Серверная инфраструктура]] — развёрнутый стек (Apache + PHP 8.4 + MariaDB), LXC-контейнер на Proxmox, IP 192.168.1.64, известные проблемы.
+- [[SERVER_INFRASTRUCTURE|Серверная инфраструктура]] — текущая архитектура: новый сервер (31.56.208.248), LXC-контейнер на Proxmox, FastAPI + SQLite, reverse SSH tunnel, Cloudflare DNS, ожидание SSL.
+
+## Paperclip (LLM-агенты)
+- [[PAPPERCLIP_API_KEYS|API ключи Paperclip/Codex]] — где и как менять API ключ DeepSeek в Paperclip, `.env`, `auth.json`, `config.toml`, `adapterConfig` агентов.
 
 ## Вводные
 - [[Добро_пожаловать|Добро пожаловать]] — точка входа в wiki

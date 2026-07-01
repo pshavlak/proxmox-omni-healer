@@ -1,4 +1,4 @@
-listen: :443
+listen: :8443
 
 tls:
   cert: /etc/letsencrypt/live/hist.yupiterpro.ru/fullchain.pem
@@ -38,4 +38,4 @@ acl:
   file: /etc/hysteria/acl.txt
   geoUpdateInterval: 168h
 
-logLevel: debug
+logLevel: info

@@ -1,0 +1,61 @@
+<footer class="footer" style="background: {{ settings.footer_bg_color|default('#1b4332') }};">
+    <div class="container">
+        <div class="footer__grid">
+            <div class="footer__col">
+                <h4 class="footer__title">{{ settings.logo_icon|default('🌾') }} {{ settings.logo_text|default('Золотаревка') }}</h4>
+                <p class="footer__desc">{{ settings.site_description|default('Официальный сайт села Золотаревка') }}</p>
+                <ul class="footer__links">
+                    <li><a href="/" class="footer__link">Главная</a></li>
+                    <li><a href="/news" class="footer__link">Новости</a></li>
+                    <li><a href="/media" class="footer__link">Медиа</a></li>
+                </ul>
+            </div>
+
+            <div class="footer__col">
+                <h4 class="footer__title">Организации</h4>
+                <ul class="footer__links">
+                    <li><a href="/school" class="footer__link">Школа</a></li>
+                    <li><a href="/kindergarten" class="footer__link">Детский сад</a></li>
+                    <li><a href="/farm" class="footer__link">Совхоз</a></li>
+                </ul>
+            </div>
+
+            <div class="footer__col">
+                <h4 class="footer__title">Активности</h4>
+                <ul class="footer__links">
+                    <li><a href="/sports" class="footer__link">Спорт</a></li>
+                    <li><a href="/village-life" class="footer__link">Жизнь села</a></li>
+                    <li><a href="/bulletin" class="footer__link">Доска объявлений</a></li>
+                </ul>
+            </div>
+
+            <div class="footer__col">
+                <h4 class="footer__title">Контакты</h4>
+                <ul class="footer__links footer__contacts">
+                    {% if settings.contact_email %}
+                        <li>
+                            <a href="mailto:{{ settings.contact_email }}" class="footer__link">
+                                ✉️ {{ settings.contact_email }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if settings.social_vk %}
+                        <li><a href="{{ settings.social_vk }}" class="footer__link" target="_blank" rel="noopener">ВКонтакте</a></li>
+                    {% endif %}
+                    {% if settings.social_telegram %}
+                        <li><a href="{{ settings.social_telegram }}" class="footer__link" target="_blank" rel="noopener">Telegram</a></li>
+                    {% endif %}
+                    {% if settings.social_ok %}
+                        <li><a href="{{ settings.social_ok }}" class="footer__link" target="_blank" rel="noopener">Одноклассники</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer__bottom">
+            <p class="footer__copyright">
+                {{ settings.footer_copyright|default('© ' + now().strftime('%Y') if now is defined else '©') + ' Село Золотаревка. Все права защищены.' }}
+            </p>
+        </div>
+    </div>
+</footer>

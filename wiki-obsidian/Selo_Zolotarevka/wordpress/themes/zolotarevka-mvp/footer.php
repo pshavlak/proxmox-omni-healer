@@ -2,44 +2,34 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+$settings = zolo_get_site_settings();
 ?>
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
-      <div class="footer__col">
-        <h4 class="footer__col-title">🌾 Золотаревка</h4>
-        <ul class="footer__links">
-          <li><a href="<?php echo esc_url(zolo_url('')); ?>">Главная</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('news')); ?>">Новости</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('media')); ?>">Медиа</a></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <h4 class="footer__col-title">Организации</h4>
-        <ul class="footer__links">
-          <li><a href="<?php echo esc_url(zolo_url('school')); ?>">Школа</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('kindergarten')); ?>">Детский сад</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('farm')); ?>">Совхоз</a></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <h4 class="footer__col-title">Активности</h4>
-        <ul class="footer__links">
-          <li><a href="<?php echo esc_url(zolo_url('sports')); ?>">Спорт</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('village-life')); ?>">Жизнь села</a></li>
-          <li><a href="<?php echo esc_url(zolo_url('village-life')); ?>#bulletin">Доска объявлений</a></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <h4 class="footer__col-title">Контакты</h4>
-        <ul class="footer__links">
-          <li><a href="#" data-modal="suggestModal">Предложить новость</a></li>
-          <li><a href="mailto:info@zolotarevka.ru">info@zolotarevka.ru</a></li>
-        </ul>
-      </div>
+      <?php foreach ($settings['footer_columns'] as $col): ?>
+        <div class="footer__col">
+          <h4 class="footer__col-title"><?php echo esc_html($col['title']); ?></h4>
+          <ul class="footer__links">
+            <?php foreach ($col['links'] as $link): ?>
+              <li>
+                <?php if (!empty($link['modal'])): ?>
+                  <a href="#" data-modal="<?php echo esc_attr($link['modal']); ?>"><?php echo esc_html($link['label']); ?></a>
+                <?php elseif (str_starts_with($link['url'] ?? '', 'mailto:')): ?>
+                  <a href="<?php echo esc_url($link['url']); ?>"><?php echo esc_html($link['label']); ?></a>
+                <?php elseif (str_starts_with($link['url'] ?? '', 'http')): ?>
+                  <a href="<?php echo esc_url($link['url']); ?>"><?php echo esc_html($link['label']); ?></a>
+                <?php else: ?>
+                  <a href="<?php echo esc_url(zolo_url($link['url'] ?? '')); ?>"><?php echo esc_html($link['label']); ?></a>
+                <?php endif; ?>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endforeach; ?>
     </div>
     <div class="footer__bottom">
-      <p>© 2026 Неофициальный портал села Золотаревка. Сделано с ❤️ для земляков.</p>
+      <p><?php echo wp_kses_post($settings['footer_copyright']); ?></p>
     </div>
   </div>
 </footer>

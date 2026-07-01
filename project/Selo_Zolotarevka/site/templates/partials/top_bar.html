@@ -1,0 +1,27 @@
+<div class="top-bar">
+    <div class="container top-bar__inner">
+        <div class="top-bar__location">
+            🌍 Золотаревка, Россия
+        </div>
+        <div class="top-bar__date">
+            {{ now().strftime('%d %B %Y') if now is defined else '' }}
+        </div>
+        <div class="top-bar__social">
+            {% if settings.social_vk %}
+                <a href="{{ settings.social_vk }}" class="top-bar__social-link" target="_blank" rel="noopener" aria-label="ВКонтакте">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10zM12 6.5c-3.038 0-5.5 2.462-5.5 5.5s2.462 5.5 5.5 5.5 5.5-2.462 5.5-5.5-2.462-5.5-5.5-5.5zm3.5 5.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5z"/></svg>
+                </a>
+            {% endif %}
+            {% if settings.social_telegram %}
+                <a href="{{ settings.social_telegram }}" class="top-bar__social-link" target="_blank" rel="noopener" aria-label="Telegram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10zM12 6.5c-3.038 0-5.5 2.462-5.5 5.5s2.462 5.5 5.5 5.5 5.5-2.462 5.5-5.5-2.462-5.5-5.5-5.5zm3.5 5.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5z"/></svg>
+                </a>
+            {% endif %}
+            {% if settings.social_ok %}
+                <a href="{{ settings.social_ok }}" class="top-bar__social-link" target="_blank" rel="noopener" aria-label="Одноклассники">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10z"/></svg>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>

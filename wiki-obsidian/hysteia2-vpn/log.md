@@ -27,3 +27,17 @@
 3. Установлен `iptables-persistent` для сохранения правила после перезагрузки
 
 **Проверка:** Подключение работает на обоих портах (443 и 8443), трафик через каскад в Финляндию.
+
+## 2026-06-08 — Слияние вики: структурированные страницы
+
+- Добавлена подпапка `entities/` с детальными страницами для каждого компонента
+- Добавлена подпапка `concepts/` со структурированными статьями по темам
+- Добавлена `SCHEMA.md` — таксономия тегов и конвенции оформления
+- Обновлён `index.md` — включены все страницы из обеих вики
+- Добавлены `[[вики-ссылки]]` между старыми (плоскими) и новыми (структурированными) страницами
+- Новые страницы:
+  - entities/hysteria-2-server, entities/cascade-server, entities/hist-yupiterpro-ru
+  - entities/wireproxy, entities/xray-server
+  - concepts/hysteria-2-protocol, concepts/infrastructure-architecture
+  - concepts/acl-routing, concepts/socks5-cascade
+  - concepts/user-management, concepts/wireproxy-memory-leak

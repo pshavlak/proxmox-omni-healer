@@ -1,0 +1,44 @@
+{% set headers = block.config.headers|default([]) %}
+{% set rows = block.config.rows|default(3) %}
+{% set cols = block.config.cols|default(2) %}
+{% set data = block.config.data|default([]) %}
+<div class="content-section container">
+    <div class="table-block">
+        {% if block.config.title %}
+            <h3 class="table-block__title">{{ block.config.title }}</h3>
+        {% endif %}
+        <div class="table-block__wrapper">
+            <table class="table-block__table">
+                {% if headers %}
+                <thead>
+                    <tr>
+                        {% for h in headers %}
+                            <th>{{ h }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                {% endif %}
+                <tbody>
+                    {% if data %}
+                        {% for row in data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        {# Fallback: generate placeholder table #}
+                        {% for i in range(rows) %}
+                            <tr>
+                                {% for j in range(cols) %}
+                                    <td>{{ i * cols + j + 1 }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

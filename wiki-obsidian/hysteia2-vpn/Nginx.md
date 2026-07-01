@@ -37,7 +37,7 @@ Nginx переписывает:
 /etc/letsencrypt/live/hist.yupiterpro.ru-0001/privkey.pem
 ```
 
-См. [[Восстановление]] — certbot для выпуска.
+См. [[Восстановление]] — certbot для выпуска, а также структурированную версию: [[entities/hist-yupiterpro-ru]].
 
 ## Источники
 - `sources/Hysteria2/nginx/hist.yupiterpro.ru`

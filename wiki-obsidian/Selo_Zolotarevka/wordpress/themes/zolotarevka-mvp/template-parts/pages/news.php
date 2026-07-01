@@ -1,14 +1,25 @@
-  <section class="page-header">
-    <div class="container">
-      <h1 class="page-header__title">📰 Новости села</h1>
-      <div class="page-header__breadcrumb">
-        <a href="<?php echo esc_url(zolo_url('')); ?>">Главная</a> / Новости
-      </div>
-    </div>
-  </section>
+<?php
+$slug = 'news';
+$is_preview = isset($_GET['zolo_preview']) && $_GET['zolo_preview'] === $slug && current_user_can('zolo_edit_site_content');
+$c = $is_preview ? zolo_get_page_content_draft($slug) : zolo_get_page_content($slug);
+?>
+<?php if ($is_preview): ?>
+<div style="position:sticky;top:0;z-index:99999;background:#ffc107;color:#000;text-align:center;padding:8px;font-weight:bold;">
+  👁 РЕЖИМ ПРЕДПРОСМОТРА — показан черновик
+</div>
+<?php endif; ?>
 
-  <section class="content-section">
-    <div class="container">
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-header__title"><?php echo esc_html($c['page_title']); ?></h1>
+    <div class="page-header__breadcrumb">
+      <a href="<?php echo esc_url(zolo_url('')); ?>">Главная</a> / Новости
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="container">
 
 <?php
 // Category filter mapping
@@ -47,7 +58,7 @@ $post_types = !empty($selected_types) ? $selected_types : $all_types;
 $paged = max(1, get_query_var('paged', 1));
 $news_q = new WP_Query([
   'post_type'      => $post_types,
-  'posts_per_page' => 9,
+  'posts_per_page' => (int) ($c['news_per_page'] ?? 9),
   'paged'          => $paged,
   'post_status'    => 'publish',
 ]);
@@ -117,8 +128,8 @@ $news_q = new WP_Query([
   <!-- ===== SUGGEST NEWS ===== -->
   <section class="suggest-block">
     <div class="container">
-      <h2 class="suggest-block__title">💡 Хотите предложить новость?</h2>
-      <p class="suggest-block__text">Жители села могут присылать свои фото и истории. Лучшие публикации попадут на главную!</p>
-      <button class="suggest-block__btn" data-modal="suggestModal">Предложить новость</button>
+      <h2 class="suggest-block__title"><?php echo esc_html($c['suggest_title']); ?></h2>
+      <p class="suggest-block__text"><?php echo esc_html($c['suggest_text']); ?></p>
+      <button class="suggest-block__btn" data-modal="suggestModal"><?php echo esc_html($c['suggest_btn_text']); ?></button>
     </div>
   </section>

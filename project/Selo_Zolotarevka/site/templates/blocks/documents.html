@@ -1,0 +1,31 @@
+{% set docs = block.config.docs|default(block.config.documents|default([])) %}
+<div class="content-section container">
+    <div class="documents-block">
+        {% if block.config.title %}
+            <h3 class="documents-block__title">{{ block.config.title }}</h3>
+        {% endif %}
+        <ul class="documents-block__list">
+            {% for doc in docs %}
+                <li class="documents-block__item">
+                    <a href="{{ doc.url }}" class="documents-block__link" target="_blank" rel="noopener">
+                        <span class="documents-block__icon">
+                            {% set ext = doc.url.split('.')[-1]|lower if '.' in doc.url else '' %}
+                            {% if ext in ['pdf'] %}📄
+                            {% elif ext in ['doc', 'docx'] %}📝
+                            {% elif ext in ['xls', 'xlsx'] %}📊
+                            {% elif ext in ['jpg', 'jpeg', 'png', 'gif'] %}🖼️
+                            {% else %}📎
+                            {% endif %}
+                        </span>
+                        <span class="documents-block__name">{{ doc.name|default(doc.url.split('/')[-1]) }}</span>
+                        {% if doc.size %}
+                            <span class="documents-block__size">({{ doc.size }})</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% else %}
+                <li class="documents-block__empty">Нет документов для отображения</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

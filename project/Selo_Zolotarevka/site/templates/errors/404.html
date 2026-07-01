@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Страница не найдена' %}
+
+{% block content %}
+    <section class="error-page">
+        <div class="container error-page__inner">
+            <div class="error-page__code">404</div>
+            <h1 class="error-page__title">Страница не найдена</h1>
+            <p class="error-page__text">
+                Извините, запрашиваемая страница не существует или была перемещена.<br>
+                Возможно, вы перешли по устаревшей ссылке или допустили опечатку в адресе.
+            </p>
+            <a href="/" class="error-page__btn btn btn--primary">Вернуться на главную</a>
+
+            <div class="error-page__links">
+                <h3 class="error-page__links-title">Основные разделы:</h3>
+                <ul class="error-page__links-list">
+                    {% for p in pages|default([]) %}
+                        {% if p.parent is none and p.id != 'home' %}
+                            <li><a href="/{{ p.id }}" class="error-page__link">{% if p.icon %}{{ p.icon }} {% endif %}{{ p.name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+{% endblock %}

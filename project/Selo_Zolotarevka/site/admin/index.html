@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Золотаревка ⚙️ — Админ-панель</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🗂️ Золотаревка ⚙️ — Админ-панель</h1>
+    <p>Слева — структура сайта (дерево страниц). Справа — редактор выбранной страницы</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-header-settings" onclick="switchToSettings()">⚙️ Настройки</button>
+    <button class="btn-header-media" onclick="switchToMedia()">🖼️ Медиа</button>
+  </div>
+</div>
+
+<div class="app-layout">
+
+  <!-- ====== LEFT: СТРУКТУРА САЙТА ====== -->
+  <div class="left-panel">
+    <div class="left-panel__header" id="panel-header-pages" style="cursor:pointer;" onclick="switchToPages()">
+      🗺️ Страницы сайта
+      <span class="badge" id="page-count-badge">0 стр.</span>
+    </div>
+    <div class="left-panel__actions" id="panel-actions-pages">
+      <button class="btn-add-section" onclick="showNewSectionModal()">➕ Раздел</button>
+      <button class="btn-add-sub" onclick="showNewSubSectionModal()">➕ Подраздел</button>
+    </div>
+    <div class="page-tree" id="page-tree">
+      <!-- JS renders tree here -->
+    </div>
+
+    <!-- 👥 Пользователи: переключатель внизу -->
+    <div style="border-top:2px solid #e9ecef; padding:10px;">
+      <button onclick="switchToUsers()" style="width:100%; padding:10px; background:#d0bfff; color:#1a1a2e; border:none; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:6px;">
+        👥 Пользователи и роли
+      </button>
+    </div>
+  </div>
+
+  <!-- ====== RIGHT: РЕДАКТОР СТРАНИЦЫ ====== -->
+  <div class="right-panel">
+
+    <!-- Страницы -->
+    <div id="editor-pages">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          <span id="current-page-icon">🏠</span>
+          <span id="current-page-name">Главная</span>
+          <span class="status status-published" id="current-page-status">✅ Опубликовано</span>
+        </div>
+        <div class="actions">
+          <button class="btn-preview" onclick="previewPage()">👁️ Предпросмотр</button>
+          <button class="btn-save" onclick="savePage()">💾 Сохранить</button>
+          <button class="btn-publish" onclick="publishPage()">📢 Опубликовать</button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="right-panel__empty" id="empty-state">
+        <div class="big-icon">👈</div>
+        <p>Выберите страницу из дерева слева, чтобы начать редактирование</p>
+      </div>
+
+      <!-- Editor -->
+      <div id="page-editor" style="display:none;">
+        <div class="blocks-area">
+          <div class="blocks-list" id="blocks-list">
+            <!-- JS renders blocks here -->
+          </div>
+
+          <div class="add-block-bar">
+            <select id="new-block-type">
+              <option value="">— Добавить блок —</option>
+              <option value="hero">🧱 Hero / Баннер</option>
+              <option value="text">📝 Текст</option>
+              <option value="image">🖼️ Изображение</option>
+              <option value="gallery">📸 Галерея</option>
+              <option value="video">🎬 Видео (Rutube/VK)</option>
+              <option value="table">📊 Таблица</option>
+              <option value="cards">🏗️ Карточки / Плитки</option>
+              <option value="documents">📄 Документы</option>
+              <option value="form">📋 Форма</option>
+              <option value="divider">➖ Разделитель</option>
+            </select>
+            <button onclick="addBlock()">➕ Добавить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 👥 Пользователи и роли -->
+    <div id="editor-users" style="display:none;">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          👥 Пользователи и роли
+          <span class="status status-published" id="users-count-label">0 пользователей</span>
+        </div>
+        <div class="actions">
+          <button class="btn-save" onclick="showAddRoleModal()">🎭 Добавить роль</button>
+        </div>
+      </div>
+
+      <div style="padding:16px;">
+        <!-- Stats -->
+        <div class="users-stats" id="users-stats">
+          <div class="stat-card stat-admin">
+            <div class="stat-number" id="stat-admin-count">0</div>
+            <div class="stat-label">Администраторы</div>
+          </div>
+          <div class="stat-card stat-editor">
+            <div class="stat-number" id="stat-editor-count">0</div>
+            <div class="stat-label">Редакторы разделов</div>
+          </div>
+          <div class="stat-card stat-moderator">
+            <div class="stat-number" id="stat-mod-count">0</div>
+            <div class="stat-label">Модераторы</div>
+          </div>
+          <div class="stat-card stat-author">
+            <div class="stat-number" id="stat-author-count">0</div>
+            <div class="stat-label">Авторы</div>
+          </div>
+        </div>
+
+        <!-- Roles table -->
+        <div class="users-table-wrapper">
+          <div class="table-header">
+            🎭 Роли
+            <button onclick="showAddRoleModal()" style="margin-left:auto; padding:6px 14px; background:#2d6a4f; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer;">➕ Добавить роль</button>
+          </div>
+          <table class="admin-table" id="roles-table">
+            <thead>
+              <tr>
+                <th>Роль</th>
+                <th>Пользователей</th>
+                <th>Доступ к разделам</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="roles-tbody">
+              <!-- JS renders roles here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Users table -->
+        <div class="users-table-wrapper" style="margin-top:16px;">
+          <div class="table-header">
+            👤 Пользователи
+            <button onclick="showAddUserForm()" style="margin-left:10px; padding:6px 14px; background:#2d6a4f; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer;">➕ Добавить</button>
+          </div>
+          <table class="admin-table" id="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Логин</th>
+                <th>Роль</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Add user form (hidden) -->
+        <div id="add-user-form" style="display:none; margin-top:12px; background:#f8f9fa; border-radius:8px; padding:16px; border:2px solid #dee2e6;">
+          <h3 style="margin:0 0 12px 0; font-size:15px;">➕ Новый пользователь</h3>
+          <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#495057; display:block; margin-bottom:4px;">Логин</label>
+              <input type="text" id="new-user-username" placeholder="admin" style="padding:8px 12px; border:2px solid #dee2e6; border-radius:6px; font-size:13px; width:160px;">
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#495057; display:block; margin-bottom:4px;">Пароль</label>
+              <input type="password" id="new-user-password" placeholder="••••" style="padding:8px 12px; border:2px solid #dee2e6; border-radius:6px; font-size:13px; width:160px;">
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button onclick="confirmAddUser()" style="padding:8px 16px; background:#2d6a4f; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer;">✅ Создать</button>
+              <button onclick="hideAddUserForm()" style="padding:8px 12px; background:#e9ecef; color:#495057; border:none; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer;">✕</button>
+            </div>
+          </div>
+          <div id="add-user-error" style="color:#e53e3e; font-size:12px; margin-top:6px;"></div>
+        </div>
+
+        <!-- Change password form -->
+        <div class="users-table-wrapper" style="margin-top:16px;">
+          <div class="table-header">🔑 Сменить пароль</div>
+          <div style="padding:16px;">
+            <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#495057; display:block; margin-bottom:4px;">Текущий пароль</label>
+                <input type="password" id="pw-old" placeholder="••••" style="padding:8px 12px; border:2px solid #dee2e6; border-radius:6px; font-size:13px; width:160px;">
+              </div>
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#495057; display:block; margin-bottom:4px;">Новый пароль</label>
+                <input type="password" id="pw-new" placeholder="••••" style="padding:8px 12px; border:2px solid #dee2e6; border-radius:6px; font-size:13px; width:160px;">
+              </div>
+              <button onclick="changePassword()" style="padding:8px 16px; background:#2d6a4f; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer;">💾 Сменить</button>
+            </div>
+            <div id="pw-message" style="margin-top:8px; font-size:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⚙️ Настройки -->
+    <div id="editor-settings" style="display:none;">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          ⚙️ Настройки сайта
+        </div>
+        <div class="actions">
+          <button class="btn-save" onclick="saveSettings()">💾 Сохранить настройки</button>
+        </div>
+      </div>
+      <div class="settings-grid" id="settings-fields">
+        <!-- JS renders settings fields here -->
+      </div>
+    </div>
+
+    <!-- 🖼️ Медиа -->
+    <div id="editor-media" style="display:none;">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          🖼️ Медиатека
+        </div>
+        <div class="actions">
+          <button class="btn-save" onclick="switchToPages()">← К страницам</button>
+        </div>
+      </div>
+      <div class="media-upload-area">
+        <input type="file" id="media-file-input">
+        <button id="media-upload-btn" onclick="uploadMedia()">📤 Загрузить</button>
+      </div>
+      <div class="media-grid" id="media-grid">
+        <!-- JS renders media here -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== MODAL: НАСТРОЙКА БЛОКА ====== -->
+<div class="modal-overlay" id="block-modal">
+  <div class="modal">
+    <h2><span id="modal-icon">🧱</span> <span id="modal-title">Настройка блока</span></h2>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModal()">Отмена</button>
+      <button class="btn-save" onclick="saveBlockConfig()">💾 Сохранить блок</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: НОВАЯ СТРАНИЦА ====== -->
+<div class="modal-overlay" id="new-page-modal">
+  <div class="modal">
+    <h2><span id="new-page-modal-icon">📄</span> <span id="new-page-modal-title">Новая страница</span></h2>
+    <div class="field">
+      <label>Название страницы</label>
+      <input type="text" id="new-page-name" placeholder="Например: История села" onkeyup="generatePageSlug()">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="new-page-icon">
+        <option value="📄">📄 Документ</option>
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Фото</option>
+        <option value="🎬">🎬 Видео</option>
+        <option value="📰">📰 Новости</option>
+        <option value="📋">📋 Объявления</option>
+        <option value="🏫">🏫 Здание</option>
+        <option value="🎭">🎭 Культура</option>
+        <option value="📜">📜 История</option>
+        <option value="💼">💼 Работа</option>
+        <option value="🏆">🏆 Достижения</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Расположение в структуре</label>
+      <select id="new-page-parent">
+        <option value="">— Корень сайта (главное меню) —</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>URL-адрес (slug)</label>
+        <input type="text" id="new-page-slug" placeholder="istoriya-sela">
+      </div>
+      <div class="field">
+        <label>Порядок</label>
+        <input type="number" id="new-page-order" value="99" min="0" max="999">
+      </div>
+    </div>
+    <div style="background:#e8f5e9;padding:12px;border-radius:8px;font-size:12px;color:#2d6a4f;margin-bottom:10px;">
+      💡 Подраздел появится в меню сайта как вложенный пункт.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeNewPageModal()">Отмена</button>
+      <button class="btn-save" onclick="confirmNewPage()">✅ Создать страницу</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: РЕДАКТИРОВАНИЕ СТРАНИЦЫ ====== -->
+<div class="modal-overlay" id="edit-page-modal">
+  <div class="modal">
+    <h2>✏️ <span id="edit-page-modal-title">Редактирование страницы</span></h2>
+    <div class="field">
+      <label>Название страницы</label>
+      <input type="text" id="edit-page-name">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="edit-page-icon">
+        <option value="📄">📄 Документ</option>
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Фото</option>
+        <option value="🎬">🎬 Видео</option>
+        <option value="📰">📰 Новости</option>
+        <option value="📋">📋 Объявления</option>
+        <option value="🏫">🏫 Здание</option>
+        <option value="🎭">🎭 Культура</option>
+        <option value="📜">📜 История</option>
+        <option value="💼">💼 Работа</option>
+        <option value="🏆">🏆 Достижения</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Расположение</label>
+      <select id="edit-page-parent"></select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>URL-адрес (slug)</label>
+        <input type="text" id="edit-page-slug">
+      </div>
+      <div class="field">
+        <label>Порядок</label>
+        <input type="number" id="edit-page-order" min="0" max="999">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeEditPageModal()">Отмена</button>
+      <button class="btn-save" onclick="confirmEditPage()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: НОВАЯ РОЛЬ ====== -->
+<div class="modal-overlay" id="new-role-modal">
+  <div class="modal">
+    <h2>🎭 <span id="new-role-modal-title">Новая роль</span></h2>
+    <div class="field">
+      <label>Название роли</label>
+      <input type="text" id="new-role-name" placeholder="Например: Редактор школы">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="new-role-icon">
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Медиа</option>
+        <option value="📰">📰 Новости</option>
+        <option value="🛡️">🛡️ Модерация</option>
+        <option value="✍️">✍️ Редактор</option>
+        <option value="👑">👑 Администратор</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Доступ к разделам</label>
+      <div id="new-role-sections" style="border:2px solid #dee2e6; border-radius:8px; padding:12px; max-height:240px; overflow-y:auto;">
+        <!-- JS generates checkboxes from pages tree -->
+      </div>
+    </div>
+    <div class="field">
+      <label>Дополнительные права</label>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-moderation"> 🛡️ Модерация комментариев
+        </label>
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-upload"> 📤 Загрузка файлов
+        </label>
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-publish"> 📢 Публикация без модерации
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModalById('new-role-modal')">Отмена</button>
+      <button class="btn-save" onclick="confirmAddRole()">✅ Сохранить роль</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

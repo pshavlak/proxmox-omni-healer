@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Структура админ-панели — Золотаревка ⚙️</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    padding: 30px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .header h1 {
+    font-size: 28px;
+    color: #1b4332;
+  }
+  .header p {
+    color: #666;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  
+  .admin-menu {
+    display: flex;
+    gap: 4px;
+    background: #1b4332;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .admin-menu .menu-item {
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+  }
+  .admin-menu .menu-item:hover,
+  .admin-menu .menu-item.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+  .admin-menu .menu-item.active {
+    background: #2d6a4f;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b4332;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .badge {
+    font-size: 12px;
+    background: #e9ecef;
+    color: #666;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .page-card {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .page-card:hover {
+    border-color: #2d6a4f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .page-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .page-card .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .page-card .desc { font-size: 12px; color: #888; }
+  .page-card .status {
+    margin-top: 10px;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .status-draft { background: #fff3bf; color: #856404; }
+  .status-live { background: #d3f9d8; color: #2d6a4f; }
+  .status-empty { background: #e9ecef; color: #868e96; }
+
+  .subsection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 32px;
+    padding: 16px;
+    background: #e8f5e9;
+    border-radius: 12px;
+    border: 1px dashed #2d6a4f;
+  }
+  .subsection-grid .label {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: #2d6a4f;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .sub-card {
+    background: #fff;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .sub-card .icon { font-size: 20px; }
+  .sub-card .name { font-size: 13px; font-weight: 600; margin: 4px 0; }
+  .sub-card .desc { font-size: 11px; color: #888; }
+  .sub-card .type-tag {
+    font-size: 10px;
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+
+  .design-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .design-block {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .design-block:hover {
+    border-color: #4a9eed;
+    box-shadow: 0 4px 12px rgba(74,158,237,0.15);
+  }
+  .design-block .icon { font-size: 24px; margin-bottom: 6px; }
+  .design-block .name { font-weight: 600; font-size: 14px; }
+  .design-block .desc { font-size: 12px; color: #888; margin-top: 4px; }
+  .design-block .tags {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .design-block .tag {
+    font-size: 10px;
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .role-card {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .role-card .icon { font-size: 22px; }
+  .role-card .name { font-weight: 600; font-size: 13px; margin: 4px 0; }
+  .role-card .caps { font-size: 11px; color: #888; }
+
+  .footer-note {
+    margin-top: 40px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🗂️ Золотаревка ⚙️ — Единый каталог управления</h1>
+  <p>Кликай по блокам — это прототип структуры. Что меняем?</p>
+</div>
+
+<div class="admin-menu">
+  <button class="menu-item active" data-tab="dashboard">📊 Панель управления</button>
+  <button class="menu-item" data-tab="content">📝 Контент сайта</button>
+  <button class="menu-item" data-tab="media">🖼️ Медиа-центр</button>
+  <button class="menu-item" data-tab="users">👥 Пользователи</button>
+  <button class="menu-item" data-tab="settings">⚙️ Настройки</button>
+  <button class="menu-item" data-tab="design">🎨 Дизайн</button>
+</div>
+
+<!-- ====== DASHBOARD ====== -->
+<div class="tab-content" id="tab-dashboard">
+  <div class="section-title">
+    📊 Панель управления
+    <span class="badge">статусы страниц</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card">
+      <div class="icon">🏠</div>
+      <div class="name">Главная</div>
+      <div class="desc">Последняя публикация: 09.06</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">📚</div>
+      <div class="name">Школа</div>
+      <div class="desc">Есть черновик</div>
+      <div class="status status-draft">✏️ Черновик</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">🧸</div>
+      <div class="name">Детский сад</div>
+      <div class="desc">Синхронизировано</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">🌾</div>
+      <div class="name">Совхоз</div>
+      <div class="desc">Синхронизировано</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">⚽</div>
+      <div class="name">Спорт</div>
+      <div class="desc">Нет контента</div>
+      <div class="status status-empty">⬜ Пусто</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">🏘️</div>
+      <div class="name">Жизнь села</div>
+      <div class="desc">Синхронизировано</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">📸</div>
+      <div class="name">Медиа</div>
+      <div class="desc">Синхронизировано</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+    <div class="page-card">
+      <div class="icon">📰</div>
+      <div class="name">Новости</div>
+      <div class="desc">Синхронизировано</div>
+      <div class="status status-live">✅ Опубликовано</div>
+    </div>
+  </div>
+  
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <button style="padding:12px 24px; background:#2d6a4f; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">📢 Опубликовать всё</button>
+    <button style="padding:12px 24px; background:#e9ecef; border:none; border-radius:8px; font-weight:600; cursor:pointer;">📊 Статистика</button>
+  </div>
+</div>
+
+<!-- ====== CONTENT ====== -->
+<div class="tab-content" id="tab-content" style="display:none;">
+  <div class="section-title">
+    📝 Контент сайта — 8 разделов
+    <span class="badge">выбери раздел</span>
+  </div>
+  
+  <div class="pages-grid">
+    <div class="page-card" onclick="showSubs('school')">
+      <div class="icon">📚</div>
+      <div class="name">Школа</div>
+      <div class="desc">Новости, документы, расписание</div>
+    </div>
+    <div class="page-card" onclick="showSubs('kindergarten')">
+      <div class="icon">🧸</div>
+      <div class="name">Детский сад</div>
+      <div class="desc">Новости групп, советы, фото</div>
+    </div>
+    <div class="page-card" onclick="showSubs('farm')">
+      <div class="icon">🌾</div>
+      <div class="name">Совхоз</div>
+      <div class="desc">Продукция, вакансии, история</div>
+    </div>
+    <div class="page-card" onclick="showSubs('sports')">
+      <div class="icon">⚽</div>
+      <div class="name">Спорт</div>
+      <div class="desc">Команда, матчи, таблица</div>
+    </div>
+    <div class="page-card" onclick="showSubs('village')">
+      <div class="icon">🏘️</div>
+      <div class="name">Жизнь села</div>
+      <div class="desc">История, ДК, объявления</div>
+    </div>
+    <div class="page-card" onclick="showSubs('media')">
+      <div class="icon">📸</div>
+      <div class="name">Медиа</div>
+      <div class="desc">Фото, видео, альбомы</div>
+    </div>
+    <div class="page-card" onclick="showSubs('news')">
+      <div class="icon">📰</div>
+      <div class="name">Новости</div>
+      <div class="desc">Лента новостей, фильтры</div>
+    </div>
+  </div>
+
+  <!-- Подразделы (на примере Школы) -->
+  <div class="subsection-grid" id="subs-example">
+    <div class="label">📋 Подразделы раздела «Школа»</div>
+    <div class="sub-card">
+      <div class="icon">📋</div>
+      <div class="name">Информация о школе</div>
+      <div class="desc">Тексты, изображения</div>
+      <div class="type-tag">кастомные поля</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">📰</div>
+      <div class="name">Новости школы</div>
+      <div class="desc">CPT school_news</div>
+      <div class="type-tag">кастомный тип</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">📄</div>
+      <div class="name">Документы</div>
+      <div class="desc">PDF, DOC, XLS</div>
+      <div class="type-tag">repeater</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">💬</div>
+      <div class="name">Комментарии</div>
+      <div class="desc">Модерация</div>
+      <div class="type-tag">WP core</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MEDIA ====== -->
+<div class="tab-content" id="tab-media" style="display:none;">
+  <div class="section-title">
+    🖼️ Медиа-центр
+    <span class="badge">все медиа в одном месте</span>
+  </div>
+  <div class="subsection-grid">
+    <div class="label">📸 Медиа-центр</div>
+    <div class="sub-card">
+      <div class="icon">📸</div>
+      <div class="name">Фотогалерея</div>
+      <div class="desc">CPT gallery — альбомы</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">🎬</div>
+      <div class="name">Видеогалерея</div>
+      <div class="desc">CPT zolo_video — Rutube/VK</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">🖼️</div>
+      <div class="name">Медиатека WP</div>
+      <div class="desc">Загрузка и управление файлами</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== USERS ====== -->
+<div class="tab-content" id="tab-users" style="display:none;">
+  <div class="section-title">
+    👥 Пользователи и роли
+    <span class="badge">5 ролей</span>
+  </div>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="icon">👑</div>
+      <div class="name">Администратор</div>
+      <div class="caps">Полный доступ</div>
+    </div>
+    <div class="role-card">
+      <div class="icon">📚</div>
+      <div class="name">Редактор школы</div>
+      <div class="caps">school_editor</div>
+    </div>
+    <div class="role-card">
+      <div class="icon">⚽</div>
+      <div class="name">Редактор спорта</div>
+      <div class="caps">sports_editor</div>
+    </div>
+    <div class="role-card">
+      <div class="icon">🌾</div>
+      <div class="name">Редактор совхоза</div>
+      <div class="caps">farm_editor</div>
+    </div>
+    <div class="role-card">
+      <div class="icon">🛡️</div>
+      <div class="name">Модератор</div>
+      <div class="caps">content_moderator</div>
+    </div>
+    <div class="role-card">
+      <div class="icon">✍️</div>
+      <div class="name">Автор</div>
+      <div class="caps">community_author</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SETTINGS ====== -->
+<div class="tab-content" id="tab-settings" style="display:none;">
+  <div class="section-title">
+    ⚙️ Настройки сайта
+    <span class="badge">глобальные</span>
+  </div>
+  <div class="subsection-grid">
+    <div class="label">⚙️ Настройки</div>
+    <div class="sub-card">
+      <div class="icon">🔗</div>
+      <div class="name">Социальные сети</div>
+      <div class="desc">VK, Telegram, OK, RSS</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">📞</div>
+      <div class="name">Контакты</div>
+      <div class="desc">Email, телефон, адрес</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">🏷️</div>
+      <div class="name">Теглайн и копирайт</div>
+      <div class="desc">Подпись сайта, футер</div>
+    </div>
+    <div class="sub-card">
+      <div class="icon">🌐</div>
+      <div class="name">SEO</div>
+      <div class="desc">Meta, карта сайта</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DESIGN ====== -->
+<div class="tab-content" id="tab-design" style="display:none;">
+  <div class="section-title">
+    🎨 Дизайн сайта
+    <span class="badge">блоки для кастомизации</span>
+  </div>
+  <div class="design-blocks">
+    <div class="design-block">
+      <div class="icon">🎨</div>
+      <div class="name">Цветовая схема</div>
+      <div class="desc">Основной зелёный, акцентный, фоны</div>
+      <div class="tags"><span class="tag">CSS variables</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">🔤</div>
+      <div class="name">Типографика</div>
+      <div class="desc">Шрифты, размеры, межстрочные</div>
+      <div class="tags"><span class="tag">Google Fonts</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">🧱</div>
+      <div class="name">Hero-секция</div>
+      <div class="desc">Баннер, фон из админки, CTA</div>
+      <div class="tags"><span class="tag">hero_image</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">🏗️</div>
+      <div class="name">Бенто-сетка</div>
+      <div class="desc">6 плиток разделов</div>
+      <div class="tags"><span class="tag">layout</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">⚽</div>
+      <div class="name">Виджет матча</div>
+      <div class="desc">Счёт, таймер, статус</div>
+      <div class="tags"><span class="tag">dynamic</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">📰</div>
+      <div class="name">Лента новостей</div>
+      <div class="desc">Карточки, фильтры, пагинация</div>
+      <div class="tags"><span class="tag">CPT query</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">🔝</div>
+      <div class="name">Навигация</div>
+      <div class="desc">Меню, хлебные крошки</div>
+      <div class="tags"><span class="tag">header</span></div>
+    </div>
+    <div class="design-block">
+      <div class="icon">📱</div>
+      <div class="name">Адаптив</div>
+      <div class="desc">Мобильная версия, планшеты</div>
+      <div class="tags"><span class="tag">responsive</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  💡 Это интерактивный прототип. Кликай по вкладкам и карточкам — говори что менять, я сразу правим!
+</div>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.menu-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+    });
+  });
+  
+  function showSubs(section) {
+    const names = {
+      school: 'Школа',
+      kindergarten: 'Детский сад',
+      farm: 'Совхоз',
+      sports: 'Спорт',
+      village: 'Жизнь села',
+      media: 'Медиа',
+      news: 'Новости'
+    };
+    const subsEl = document.getElementById('subs-example');
+    subsEl.querySelector('.label').textContent = '📋 Подразделы раздела «' + names[section] + '»';
+    subsEl.style.display = 'grid';
+    // Scroll to it
+    subsEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+</body>
+</html>

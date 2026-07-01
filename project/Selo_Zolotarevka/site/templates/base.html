@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ settings.site_description|default('Официальный сайт села Золотаревка') }}">
+    <title>{{ settings.site_name }} — {{ page_title|default(settings.site_name) }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    {% include 'partials/top_bar.html' %}
+    {% include 'partials/header.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'partials/footer.html' %}
+    {% include 'partials/suggest_modal.html' %}
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

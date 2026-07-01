@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Золотаревка ⚙️ — Конструктор сайта v2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    padding: 30px;
+  }
+  .header { text-align: center; margin-bottom: 24px; }
+  .header h1 { font-size: 24px; color: #1b4332; }
+  .header p { color: #666; margin-top: 4px; font-size: 14px; }
+
+  /* ====== MAIN LAYOUT: две колонки ====== */
+  .app-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ====== LEFT PANEL: структура сайта ====== */
+  .left-panel {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .left-panel__header {
+    background: #1b4332;
+    color: #fff;
+    padding: 14px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .left-panel__header .badge {
+    font-weight: 400;
+    font-size: 11px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+  .left-panel__actions {
+    padding: 10px;
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  .left-panel__actions button {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+  }
+  .btn-add-section { background: #2d6a4f; color: #fff; }
+  .btn-add-section:hover { background: #1b4332; }
+  .btn-add-sub { background: #1565c0; color: #fff; }
+  .btn-add-sub:hover { background: #0d47a1; }
+
+  /* ====== TREE ====== */
+  .page-tree {
+    padding: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  .tree-node {
+    margin-bottom: 2px;
+  }
+  .tree-node__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+    font-size: 13px;
+    position: relative;
+  }
+  .tree-node__item:hover { background: #e8f5e9; }
+  .tree-node__item.active { background: #2d6a4f; color: #fff; }
+  .tree-node__item.active .page-count { color: rgba(255,255,255,0.6); }
+
+  .tree-node__item .icon { font-size: 16px; width: 24px; text-align: center; }
+  .tree-node__item .name { flex: 1; font-weight: 500; }
+  .tree-node__item .page-count { font-size: 10px; color: #999; background: #e9ecef; padding: 1px 6px; border-radius: 6px; }
+  .tree-node__item.active .page-count { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); }
+  .tree-node__item .actions { display: flex; gap: 2px; opacity: 0; transition: 0.15s; }
+  .tree-node__item:hover .actions { opacity: 1; }
+  .tree-node__item .actions button {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; padding: 2px 4px; border-radius: 4px;
+    transition: 0.15s;
+  }
+  .tree-node__item .actions button:hover { background: rgba(0,0,0,0.1); }
+  .tree-node__item.active .actions button { color: rgba(255,255,255,0.8); }
+  .tree-node__item.active .actions button:hover { background: rgba(255,255,255,0.15); }
+
+  .tree-node__children {
+    margin-left: 24px;
+    border-left: 2px solid #c8e6c9;
+    padding-left: 8px;
+  }
+
+  /* ====== RIGHT PANEL: редактор ====== */
+  .right-panel {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+    min-height: 400px;
+  }
+  .right-panel__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e9ecef;
+    flex-wrap: wrap;
+  }
+  .right-panel__header .page-indicator {
+    font-size: 16px;
+    font-weight: 700;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .right-panel__header .page-indicator .status {
+    font-size: 11px;
+    font-weight: 400;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .status-draft { background: #fff3bf; color: #856404; }
+  .status-published { background: #d3f9d8; color: #2d6a4f; }
+  .status-new { background: #e3f2fd; color: #1565c0; }
+
+  .right-panel__header .actions { display: flex; gap: 6px; }
+  .right-panel__header .actions button {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+  }
+  .btn-save { background: #2d6a4f; color: #fff; }
+  .btn-save:hover { background: #1b4332; }
+  .btn-publish { background: #1b4332; color: #fff; }
+  .btn-publish:hover { background: #0d2818; }
+  .btn-preview { background: #e9ecef; color: #333; }
+  .btn-preview:hover { background: #dee2e6; }
+
+  .right-panel__empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: #aaa;
+  }
+  .right-panel__empty .big-icon { font-size: 48px; margin-bottom: 12px; }
+  .right-panel__empty p { font-size: 14px; }
+
+  /* ====== BLOCKS ====== */
+  .blocks-area {
+    padding: 16px;
+  }
+  .blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .block-item {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .block-item:hover { border-color: #2d6a4f; }
+  .block-item .block-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block-item .block-header .drag-handle {
+    cursor: grab; color: #ccc; font-size: 16px;
+    padding: 2px; user-select: none;
+  }
+  .block-item .block-header .icon { font-size: 18px; width: 28px; text-align: center; }
+  .block-item .block-header .name { font-weight: 600; font-size: 13px; flex: 1; }
+  .block-item .block-header .type-label {
+    font-size: 10px; color: #888;
+    background: #e9ecef; padding: 2px 8px; border-radius: 4px;
+  }
+  .block-item .block-preview {
+    font-size: 11px; color: #888;
+    margin-top: 4px; padding: 6px 8px;
+    background: #f8f9fa; border-radius: 6px;
+    min-height: 20px;
+  }
+  .block-item .block-actions {
+    display: flex; gap: 4px; margin-top: 6px;
+  }
+  .block-item .block-actions button {
+    padding: 3px 8px; font-size: 11px;
+    border: 1px solid #dee2e6; border-radius: 4px;
+    background: #fff; cursor: pointer;
+    transition: 0.15s;
+  }
+  .block-item .block-actions button:hover { background: #e9ecef; }
+  .block-item .block-actions .btn-config { color: #2d6a4f; }
+  .block-item .block-actions .btn-del { color: #c62828; }
+  .block-item .block-actions button:disabled { opacity: 0.3; cursor: default; }
+
+  /* ====== ADD BLOCK ====== */
+  .add-block-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    align-items: center;
+  }
+  .add-block-bar select {
+    padding: 8px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .add-block-bar button {
+    padding: 8px 16px;
+    background: #2d6a4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .add-block-bar button:hover { background: #1b4332; }
+
+  /* ====== MODAL ====== */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .modal .field { margin-bottom: 14px; }
+  .modal .field label {
+    display: block; font-weight: 600; font-size: 13px;
+    margin-bottom: 4px; color: #555;
+  }
+  .modal .field input,
+  .modal .field textarea,
+  .modal .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .modal .field textarea { min-height: 80px; resize: vertical; }
+  .modal .field input:focus, .modal .field textarea:focus { border-color: #2d6a4f; outline: none; }
+  .modal .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .modal .modal-actions {
+    display: flex; gap: 8px;
+    justify-content: flex-end; margin-top: 20px;
+  }
+  .modal .modal-actions button {
+    padding: 10px 24px; border-radius: 8px;
+    font-weight: 600; font-size: 13px; cursor: pointer; border: none;
+  }
+  .modal .modal-actions .btn-save { background: #2d6a4f; color: #fff; }
+  .modal .modal-actions .btn-save:hover { background: #1b4332; }
+  .modal .modal-actions .btn-close { background: #e9ecef; color: #333; }
+  .modal .modal-actions .btn-close:hover { background: #dee2e6; }
+
+  /* ====== NOTIFICATION ====== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #1b4332;
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+    z-index: 2000;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🗂️ Золотаревка ⚙️ — Конструктор сайта v2</h1>
+  <p>Слева — структура сайта (дерево страниц). Справа — редактор выбранной страницы</p>
+</div>
+
+<div class="app-layout">
+
+  <!-- ====== LEFT: СТРУКТУРА САЙТА ====== -->
+  <div class="left-panel">
+    <div class="left-panel__header" id="panel-header-pages" style="cursor:pointer;" onclick="switchToPages()">
+      🗺️ Страницы сайта
+      <span class="badge" id="page-count-badge">9 страниц</span>
+    </div>
+    <div class="left-panel__actions" id="panel-actions-pages">
+      <button class="btn-add-section" onclick="showNewSectionModal()">➕ Раздел</button>
+      <button class="btn-add-sub" onclick="showNewSubSectionModal()">➕ Подраздел</button>
+    </div>
+    <div class="page-tree" id="page-tree">
+      <!-- JS renders tree here -->
+    </div>
+
+    <!-- 👥 Пользователи: переключатель внизу -->
+    <div style="border-top:2px solid #e9ecef; padding:10px;">
+      <button onclick="switchToUsers()" style="width:100%; padding:10px; background:#d0bfff; color:#1a1a2e; border:none; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:6px;">
+        👥 Пользователи и роли
+      </button>
+    </div>
+  </div>
+
+  <!-- ====== RIGHT: РЕДАКТОР СТРАНИЦЫ ====== -->
+  <div class="right-panel">
+    <!-- Страницы -->
+    <div id="editor-pages">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          <span id="current-page-icon">🏠</span>
+          <span id="current-page-name">Главная</span>
+          <span class="status status-published" id="current-page-status">✅ Опубликовано</span>
+        </div>
+        <div class="actions">
+          <button class="btn-preview" onclick="previewPage()">👁️ Предпросмотр</button>
+          <button class="btn-save" onclick="savePage()">💾 Сохранить</button>
+          <button class="btn-publish" onclick="publishPage()">📢 Опубликовать</button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="right-panel__empty" id="empty-state">
+        <div class="big-icon">👈</div>
+        <p>Выберите страницу из дерева слева, чтобы начать редактирование</p>
+      </div>
+
+      <!-- Editor -->
+      <div id="page-editor" style="display:none;">
+        <div class="blocks-area">
+          <div class="blocks-list" id="blocks-list">
+            <!-- JS renders blocks here -->
+          </div>
+
+          <div class="add-block-bar">
+            <select id="new-block-type">
+              <option value="">— Добавить блок —</option>
+              <option value="hero">🧱 Hero / Баннер</option>
+              <option value="text">📝 Текст</option>
+              <option value="image">🖼️ Изображение</option>
+              <option value="gallery">📸 Галерея</option>
+              <option value="video">🎬 Видео (Rutube/VK)</option>
+              <option value="table">📊 Таблица</option>
+              <option value="cards">🏗️ Карточки / Плитки</option>
+              <option value="documents">📄 Документы</option>
+              <option value="form">📋 Форма</option>
+              <option value="divider">➖ Разделитель</option>
+            </select>
+            <button onclick="addBlock()">➕ Добавить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 👥 Пользователи -->
+    <div id="editor-users" style="display:none;">
+      <div class="right-panel__header">
+        <div class="page-indicator">
+          👥 Пользователи и роли
+          <span class="status status-published">6 ролей · 12 пользователей</span>
+        </div>
+        <div class="actions">
+          <button class="btn-save" onclick="toast('👤 Форма добавления пользователя')">➕ Добавить</button>
+        </div>
+      </div>
+
+      <div style="padding:16px;">
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin-bottom:20px;">
+          <div style="background:#d3f9d8; border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:24px; font-weight:700; color:#1b4332;">3</div>
+            <div style="font-size:12px; color:#555;">Администраторы</div>
+          </div>
+          <div style="background:#e3f2fd; border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:24px; font-weight:700; color:#1565c0;">4</div>
+            <div style="font-size:12px; color:#555;">Редакторы разделов</div>
+          </div>
+          <div style="background:#fff3bf; border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:24px; font-weight:700; color:#856404;">2</div>
+            <div style="font-size:12px; color:#555;">Модераторы</div>
+          </div>
+          <div style="background:#f3e5f5; border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:24px; font-weight:700; color:#7b1fa2;">3</div>
+            <div style="font-size:12px; color:#555;">Авторы</div>
+          </div>
+        </div>
+
+        <!-- Roles table -->
+        <div style="background:#fff; border-radius:12px; border:1px solid #e9ecef; overflow:hidden; margin-bottom:20px;">
+          <div style="padding:12px 16px; background:#f8f9fa; font-weight:600; font-size:13px; border-bottom:1px solid #e9ecef; display:flex; align-items:center; gap:8px;">
+            🎭 Роли
+            <button onclick="showAddRoleModal()" style="margin-left:auto; padding:6px 14px; background:#2d6a4f; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer;">➕ Добавить роль</button>
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:13px;" id="roles-table">
+            <thead>
+              <tr style="background:#f0f2f5; text-align:left;">
+                <th style="padding:10px 14px;">Роль</th>
+                <th style="padding:10px 14px;">Пользователей</th>
+                <th style="padding:10px 14px;">Доступ к разделам</th>
+                <th style="padding:10px 14px;"></th>
+              </tr>
+            </thead>
+            <tbody id="roles-tbody">
+              <!-- JS renders roles here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Users list -->
+        <div style="background:#fff; border-radius:12px; border:1px solid #e9ecef; overflow:hidden;">
+          <div style="padding:12px 16px; background:#f8f9fa; font-weight:600; font-size:13px; border-bottom:1px solid #e9ecef; display:flex; align-items:center; gap:8px;">
+            👤 Пользователи
+            <input type="text" placeholder="Поиск..." style="margin-left:auto; padding:6px 12px; border:2px solid #dee2e6; border-radius:6px; font-size:12px; width:200px;">
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead>
+              <tr style="background:#f0f2f5; text-align:left;">
+                <th style="padding:10px 14px;">Имя</th>
+                <th style="padding:10px 14px;">Email</th>
+                <th style="padding:10px 14px;">Роль</th>
+                <th style="padding:10px 14px;">Статус</th>
+                <th style="padding:10px 14px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid #e9ecef;">
+                <td style="padding:10px 14px; font-weight:600;">pshavlak</td>
+                <td style="padding:10px 14px; color:#888;">pshavlak@example.com</td>
+                <td style="padding:10px 14px;">👑 Администратор</td>
+                <td style="padding:10px 14px;"><span style="background:#d3f9d8; color:#2d6a4f; padding:2px 8px; border-radius:4px; font-size:11px;">Активен</span></td>
+                <td style="padding:10px 14px;"><button style="padding:4px 10px; font-size:11px; border:1px solid #dee2e6; border-radius:4px; background:#fff; cursor:pointer;">✏️</button></td>
+              </tr>
+              <tr style="border-top:1px solid #e9ecef;">
+                <td style="padding:10px 14px; font-weight:600;">ivanov_teacher</td>
+                <td style="padding:10px 14px; color:#888;">ivanov@school.ru</td>
+                <td style="padding:10px 14px;">📚 Редактор школы</td>
+                <td style="padding:10px 14px;"><span style="background:#d3f9d8; color:#2d6a4f; padding:2px 8px; border-radius:4px; font-size:11px;">Активен</span></td>
+                <td style="padding:10px 14px;"><button style="padding:4px 10px; font-size:11px; border:1px solid #dee2e6; border-radius:4px; background:#fff; cursor:pointer;">✏️</button></td>
+              </tr>
+              <tr style="border-top:1px solid #e9ecef;">
+                <td style="padding:10px 14px; font-weight:600;">petrov_coach</td>
+                <td style="padding:10px 14px; color:#888;">petrov@sport.ru</td>
+                <td style="padding:10px 14px;">⚽ Редактор спорта</td>
+                <td style="padding:10px 14px;"><span style="background:#fff3bf; color:#856404; padding:2px 8px; border-radius:4px; font-size:11px;">Ожидает</span></td>
+                <td style="padding:10px 14px;"><button style="padding:4px 10px; font-size:11px; border:1px solid #dee2e6; border-radius:4px; background:#fff; cursor:pointer;">✏️</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: НАСТРОЙКА БЛОКА ====== -->
+<div class="modal-overlay" id="block-modal">
+  <div class="modal">
+    <h2><span id="modal-icon">🧱</span> <span id="modal-title">Настройка блока</span></h2>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModal()">Отмена</button>
+      <button class="btn-save" onclick="saveBlockConfig()">💾 Сохранить блок</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: НОВАЯ СТРАНИЦА ====== -->
+<div class="modal-overlay" id="new-page-modal">
+  <div class="modal">
+    <h2><span id="new-page-modal-icon">📄</span> <span id="new-page-modal-title">Новая страница</span></h2>
+    <div class="field">
+      <label>Название страницы</label>
+      <input type="text" id="new-page-name" placeholder="Например: История села" onkeyup="generatePageSlug()">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="new-page-icon">
+        <option value="📄">📄 Документ</option>
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Фото</option>
+        <option value="🎬">🎬 Видео</option>
+        <option value="📰">📰 Новости</option>
+        <option value="📋">📋 Объявления</option>
+        <option value="🏫">🏫 Здание</option>
+        <option value="🎭">🎭 Культура</option>
+        <option value="📜">📜 История</option>
+        <option value="💼">💼 Работа</option>
+        <option value="🏆">🏆 Достижения</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Расположение в структуре</label>
+      <select id="new-page-parent">
+        <option value="">— Корень сайта (главное меню) —</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>URL-адрес (slug)</label>
+        <input type="text" id="new-page-slug" placeholder="istoriya-sela">
+      </div>
+      <div class="field">
+        <label>Порядок</label>
+        <input type="number" id="new-page-order" value="99" min="0" max="999">
+      </div>
+    </div>
+    <div style="background:#e8f5e9;padding:12px;border-radius:8px;font-size:12px;color:#2d6a4f;margin-bottom:10px;">
+      💡 Подраздел появится в меню сайта как вложенный пункт.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeNewPageModal()">Отмена</button>
+      <button class="btn-save" onclick="confirmNewPage()">✅ Создать страницу</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: РЕДАКТИРОВАНИЕ СТРАНИЦЫ ====== -->
+<div class="modal-overlay" id="edit-page-modal">
+  <div class="modal">
+    <h2>✏️ <span id="edit-page-modal-title">Редактирование страницы</span></h2>
+    <div class="field">
+      <label>Название страницы</label>
+      <input type="text" id="edit-page-name">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="edit-page-icon">
+        <option value="📄">📄 Документ</option>
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Фото</option>
+        <option value="🎬">🎬 Видео</option>
+        <option value="📰">📰 Новости</option>
+        <option value="📋">📋 Объявления</option>
+        <option value="🏫">🏫 Здание</option>
+        <option value="🎭">🎭 Культура</option>
+        <option value="📜">📜 История</option>
+        <option value="💼">💼 Работа</option>
+        <option value="🏆">🏆 Достижения</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Расположение</label>
+      <select id="edit-page-parent"></select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>URL-адрес (slug)</label>
+        <input type="text" id="edit-page-slug">
+      </div>
+      <div class="field">
+        <label>Порядок</label>
+        <input type="number" id="edit-page-order" min="0" max="999">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeEditPageModal()">Отмена</button>
+      <button class="btn-save" onclick="confirmEditPage()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: НОВАЯ РОЛЬ ====== -->
+<div class="modal-overlay" id="new-role-modal">
+  <div class="modal">
+    <h2>🎭 <span id="new-role-modal-title">Новая роль</span></h2>
+    <div class="field">
+      <label>Название роли</label>
+      <input type="text" id="new-role-name" placeholder="Например: Редактор школы">
+    </div>
+    <div class="field">
+      <label>Иконка</label>
+      <select id="new-role-icon">
+        <option value="📚">📚 Школа</option>
+        <option value="🧸">🧸 Детский сад</option>
+        <option value="🌾">🌾 Совхоз</option>
+        <option value="⚽">⚽ Спорт</option>
+        <option value="🏘️">🏘️ Жизнь села</option>
+        <option value="📸">📸 Медиа</option>
+        <option value="📰">📰 Новости</option>
+        <option value="🛡️">🛡️ Модерация</option>
+        <option value="✍️">✍️ Редактор</option>
+        <option value="👑">👑 Администратор</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Доступ к разделам</label>
+      <div id="new-role-sections" style="border:2px solid #dee2e6; border-radius:8px; padding:12px; max-height:240px; overflow-y:auto;">
+        <!-- JS generates checkboxes from pages tree -->
+      </div>
+    </div>
+    <div class="field">
+      <label>Дополнительные права</label>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-moderation"> 🛡️ Модерация комментариев
+        </label>
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-upload"> 📤 Загрузка файлов
+        </label>
+        <label style="font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="role-cap-publish"> 📢 Публикация без модерации
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModalById('new-role-modal')">Отмена</button>
+      <button class="btn-save" onclick="confirmAddRole()">✅ Создать роль</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== DATA MODEL ======
+let nextId = 1000;
+
+const pages = [
+  { id: 'home', name: 'Главная', icon: '🏠', parent: null, order: 0, status: 'published' },
+  { id: 'school', name: 'Школа', icon: '📚', parent: null, order: 1, status: 'draft' },
+  { id: 'school-news', name: 'Новости школы', icon: '📰', parent: 'school', order: 0, status: 'published' },
+  { id: 'school-docs', name: 'Документы', icon: '📄', parent: 'school', order: 1, status: 'published' },
+  { id: 'kindergarten', name: 'Детский сад', icon: '🧸', parent: null, order: 2, status: 'published' },
+  { id: 'farm', name: 'Совхоз', icon: '🌾', parent: null, order: 3, status: 'published' },
+  { id: 'farm-products', name: 'Продукция', icon: '📦', parent: 'farm', order: 0, status: 'draft' },
+  { id: 'farm-vacancies', name: 'Вакансии', icon: '💼', parent: 'farm', order: 1, status: 'published' },
+  { id: 'sports', name: 'Спорт', icon: '⚽', parent: null, order: 4, status: 'published' },
+  { id: 'sports-team', name: 'Команда', icon: '👥', parent: 'sports', order: 0, status: 'published' },
+  { id: 'sports-matches', name: 'Матчи', icon: '🏆', parent: 'sports', order: 1, status: 'draft' },
+  { id: 'village-life', name: 'Жизнь села', icon: '🏘️', parent: null, order: 5, status: 'published' },
+  { id: 'village-history', name: 'История', icon: '📜', parent: 'village-life', order: 0, status: 'published' },
+  { id: 'village-culture', name: 'Дом Культуры', icon: '🎭', parent: 'village-life', order: 1, status: 'draft' },
+  { id: 'bulletin', name: 'Объявления', icon: '📋', parent: 'village-life', order: 2, status: 'published' },
+  { id: 'media', name: 'Медиа', icon: '📸', parent: null, order: 5, status: 'published' },
+  { id: 'news', name: 'Новости', icon: '📰', parent: null, order: 6, status: 'published' },
+];
+
+// Page blocks
+const pageBlocks = {
+  home: [
+    { id: 'b1', type: 'hero', name: 'Hero-баннер', config: { title: 'Добро пожаловать в Золотаревку!', subtitle: 'Неофициальный портал нашего села', btn_text: 'Исследовать разделы →', btn_url: '#bento', bg_color: '#1b4332', bg_image: '' } },
+    { id: 'b2', type: 'cards', name: 'Бенто-сетка разделов', config: { auto_from_tree: true, columns: 3, all_link_text: 'Все разделы →', card_overrides: {
+      school: { image: '', text: 'Новости, расписание, достижения учеников' },
+      kindergarten: { image: '', text: 'Жизнь групп, советы, фотоотчеты' },
+      farm: { image: '', text: 'Продукция, вакансии, история' },
+      sports: { image: '', text: 'Команда, матчи, турнирная таблица' },
+      'village-life': { image: '', text: 'События, объявления, история села' },
+      media: { image: '', text: 'Фото и видео из жизни села' },
+      news: { image: '', text: 'Все новости одним потоком' },
+    } } },
+    { id: 'b3', type: 'text', name: 'Приветственный текст', config: { content: '<p>Добро пожаловать на наш портал! Здесь вы найдёте всё самое важное о жизни села Золотаревка.</p>' } },
+  ],
+  school: [
+    { id: 'b10', type: 'hero', name: 'Школа — заголовок', config: { title: '📚 Школа села Золотаревка', subtitle: 'Новости учебной жизни, достижения учеников', btn_text: '', bg_color: '#4a90d9' } },
+    { id: 'b11', type: 'text', name: 'О школе', config: { content: '<p>Наша школа — центр образования и воспитания подрастающего поколения.</p>' } },
+    { id: 'b12', type: 'documents', name: 'Документы', config: { docs: [{ title: 'Устав школы', url: '#', description: 'Основной документ' }, { title: 'Расписание звонков', url: '#', description: '' }] } },
+  ],
+  'school-news': [
+    { id: 'b20', type: 'hero', name: 'Новости школы', config: { title: '📰 Новости школы', subtitle: 'Будьте в курсе событий', btn_text: '', bg_color: '#357abd' } },
+    { id: 'b21', type: 'cards', name: 'Лента новостей', config: { items: [{ title: 'Последний звонок', text: 'Торжественная линейка для выпускников', link: '#' }, { title: 'Олимпиада по математике', text: 'Наши ученики заняли призовые места', link: '#' }], columns: 2 } },
+  ],
+  sports: [
+    { id: 'b30', type: 'hero', name: 'Спорт — заголовок', config: { title: '⚽ Спорт в Золотаревке', subtitle: 'Футбольная команда, матчи, результаты', btn_text: '', bg_color: '#e63946' } },
+    { id: 'b31', type: 'table', name: 'Турнирная таблица', config: { headers: ['Команда', 'Игры', 'Очки'], rows: 4, cols: 3 } },
+  ],
+  'village-history': [
+    { id: 'b40', type: 'hero', name: 'История села', config: { title: '📜 История села Золотаревка', subtitle: 'Как зарождалось наше село', btn_text: '', bg_color: '#8b5cf6' } },
+    { id: 'b41', type: 'text', name: 'Основание', config: { content: '<p>Село Золотаревка было основано в XIX веке...</p>' } },
+    { id: 'b42', type: 'image', name: 'Старое фото', config: { src: '#', alt: 'Старая фотография села', caption: 'Золотаревка, начало XX века' } },
+    { id: 'b43', type: 'gallery', name: 'Исторические фото', config: { images: ['photo1.jpg', 'photo2.jpg'], columns: 2 } },
+  ],
+};
+
+let currentPageId = null;
+let editingBlockId = null;
+
+// ====== UTILITY ======
+function escapeHtml(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function generatePageSlug() {
+  const name = document.getElementById('new-page-name').value.trim();
+  const slug = name.toLowerCase()
+    .replace(/[^а-яa-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  document.getElementById('new-page-slug').value = slug;
+}
+
+// ====== TREE RENDER ======
+function renderTree() {
+  const roots = pages.filter(p => !p.parent).sort((a,b) => a.order - b.order);
+  const el = document.getElementById('page-tree');
+  el.innerHTML = '';
+  roots.forEach(p => {
+    el.appendChild(renderTreeNode(p, 0));
+  });
+  document.getElementById('page-count-badge').textContent = pages.length + ' стр.';
+  updateParentSelects();
+}
+
+function renderTreeNode(page, depth) {
+  const node = document.createElement('div');
+  node.className = 'tree-node';
+  
+  const children = pages.filter(c => c.parent === page.id).sort((a,b) => a.order - b.order);
+  const blockCount = (pageBlocks[page.id] || []).length;
+  
+  const item = document.createElement('div');
+  item.className = 'tree-node__item' + (currentPageId === page.id ? ' active' : '');
+  item.dataset.pageId = page.id;
+  
+  item.innerHTML = `
+    <span class="icon">${page.icon}</span>
+    <span class="name">${page.name}</span>
+    <span class="page-count">${blockCount} бл.</span>
+    <span class="actions">
+      <button title="Редактировать страницу" onclick="event.stopPropagation(); openEditPageModal('${page.id}')">✏️</button>
+      ${page.id !== 'home' ? `<button title="Удалить" onclick="event.stopPropagation(); deletePage('${page.id}')">🗑️</button>` : ''}
+    </span>
+  `;
+  
+  item.addEventListener('click', () => selectPage(page.id));
+  node.appendChild(item);
+  
+  if (children.length > 0) {
+    const childrenEl = document.createElement('div');
+    childrenEl.className = 'tree-node__children';
+    children.forEach(c => childrenEl.appendChild(renderTreeNode(c, depth + 1)));
+    node.appendChild(childrenEl);
+  }
+  
+  return node;
+}
+
+function updateParentSelects() {
+  const roots = pages.filter(p => !p.parent).sort((a,b) => a.order - b.order);
+  
+  // New page modal
+  const sel1 = document.getElementById('new-page-parent');
+  sel1.innerHTML = '<option value="">— Корень сайта (главное меню) —</option>';
+  roots.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.icon + ' ' + p.name;
+    sel1.appendChild(opt);
+  });
+  
+  // Edit page modal
+  const sel2 = document.getElementById('edit-page-parent');
+  sel2.innerHTML = '<option value="">— Корень сайта (главное меню) —</option>';
+  roots.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.icon + ' ' + p.name;
+    sel2.appendChild(opt);
+  });
+}
+
+// ====== PAGE SELECTION ======
+function selectPage(pageId) {
+  currentPageId = pageId;
+  const page = pages.find(p => p.id === pageId);
+  if (!page) return;
+  
+  // Update tree highlight
+  document.querySelectorAll('.tree-node__item').forEach(el => el.classList.remove('active'));
+  const activeItem = document.querySelector(`.tree-node__item[data-page-id="${pageId}"]`);
+  if (activeItem) activeItem.classList.add('active');
+  
+  // Update header
+  document.getElementById('current-page-icon').textContent = page.icon;
+  document.getElementById('current-page-name').textContent = page.name;
+  const statusEl = document.getElementById('current-page-status');
+  const statuses = { draft: '✏️ Черновик', published: '✅ Опубликовано', new: '🆕 Новая' };
+  const classes = { draft: 'status-draft', published: 'status-published', new: 'status-new' };
+  statusEl.textContent = statuses[page.status] || '🆕 Новая';
+  statusEl.className = 'status ' + (classes[page.status] || 'status-new');
+  
+  // Show editor
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('page-editor').style.display = 'block';
+  
+  renderBlocks();
+}
+
+// ====== BLOCKS RENDER ======
+function renderBlocks() {
+  const blocks = pageBlocks[currentPageId] || [];
+  const list = document.getElementById('blocks-list');
+  list.innerHTML = '';
+  
+  if (blocks.length === 0) {
+    list.innerHTML = '<div style="padding:16px;text-align:center;color:#999;background:#f8f9fa;border-radius:8px;font-size:13px;">Страница пуста. Добавьте первый блок 👇</div>';
+    return;
+  }
+  
+  blocks.forEach((b, idx) => {
+    const div = document.createElement('div');
+    div.className = 'block-item';
+    div.innerHTML = `
+      <div class="block-header">
+        <span class="drag-handle">⠿</span>
+        <span class="icon">${getBlockIcon(b.type)}</span>
+        <span class="name">${b.name}</span>
+        <span class="type-label">${getBlockTypeLabel(b.type)}</span>
+      </div>
+      <div class="block-preview">${getBlockPreview(b)}</div>
+      <div class="block-actions">
+        <button class="btn-config" onclick="openBlockConfig('${b.id}')">⚙️ Настроить</button>
+        <button onclick="moveBlock(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>⬆</button>
+        <button onclick="moveBlock(${idx}, 1)" ${idx === blocks.length - 1 ? 'disabled' : ''}>⬇</button>
+        <button class="btn-del" onclick="deleteBlock('${b.id}')">🗑️</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function getBlockIcon(type) {
+  const icons = { hero:'🧱', text:'📝', image:'🖼️', gallery:'📸', video:'🎬', table:'📊', cards:'🏗️', documents:'📄', form:'📋', divider:'➖' };
+  return icons[type] || '📦';
+}
+
+function getBlockTypeLabel(type) {
+  const labels = { hero:'Баннер', text:'Текст', image:'Изображение', gallery:'Галерея', video:'Видео', table:'Таблица', cards:'Плитки', documents:'Документы', form:'Форма', divider:'Разделитель' };
+  return labels[type] || type;
+}
+
+function getBlockPreview(block) {
+  switch(block.type) {
+    case 'hero':
+      return `🏞️ "${block.config.title || ''}" | Фон: ${block.config.bg_color || '#1b4332'}${block.config.bg_image ? ' + изображение' : ''}`;
+    case 'text':
+      return `📝 ${(block.config.content || '').replace(/<[^>]*>/g, '').slice(0, 100)}`;
+    case 'image':
+      return block.config.src ? `🖼️ ${block.config.src.slice(0, 60)}` : '🖼️ Изображение не выбрано';
+    case 'gallery':
+      return `📸 ${(block.config.images || []).length} фото · ${block.config.columns || 3} кол.`;
+    case 'video':
+      return `🎬 ${block.config.url || 'Ссылка не указана'}`;
+    case 'table':
+      return `📊 ${block.config.rows || 0} строк · заголовки: ${(block.config.headers || []).join(', ')}`;
+    case 'cards': {
+      const autoFrom = block.config.auto_from_tree;
+      if (autoFrom) {
+        const roots = pages.filter(p => !p.parent && p.id !== 'home');
+        return `🏗️ ${roots.length} карточек · авто из меню сайта${block.config.columns ? ' · ' + block.config.columns + ' кол.' : ''}`;
+      }
+      return `🏗️ ${(block.config.items || []).length} карточек · ${block.config.columns || 3} кол.`;
+    }
+    case 'documents':
+      return `📄 ${(block.config.docs || []).length} документов`;
+    case 'form':
+      return `📋 ${block.config.form_type === 'suggest' ? 'Предложить новость' : 'Обратная связь'}`;
+    case 'divider':
+      return `➖ Разделитель (${block.config.style || 'solid'})`;
+    default:
+      return '';
+  }
+}
+
+// ====== BLOCK CRUD ======
+function addBlock() {
+  const type = document.getElementById('new-block-type').value;
+  if (!type) { toast('⚠️ Выберите тип блока'); return; }
+  
+  const blocks = pageBlocks[currentPageId] || [];
+  const id = 'b' + (nextId++);
+  
+  const defaultConfigs = {
+    hero: { title: 'Заголовок', subtitle: 'Подзаголовок', btn_text: '', btn_url: '', bg_color: '#1b4332', bg_image: '' },
+    text: { content: '<p>Введите текст</p>' },
+    image: { src: '', alt: '', caption: '' },
+    gallery: { images: [], columns: 3 },
+    video: { url: '', title: '', description: '' },
+    table: { headers: ['Колонка 1', 'Колонка 2'], rows: 3, cols: 2 },
+    cards: { items: [{ title: 'Название', text: 'Описание', link: '#' }], columns: 3 },
+    documents: { docs: [{ title: 'Название', url: '#', description: '' }] },
+    form: { form_type: 'suggest', title: 'Форма' },
+    divider: { style: 'solid' },
+  };
+  
+  const names = { hero:'Баннер', text:'Текстовый блок', image:'Изображение', gallery:'Галерея', video:'Видео', table:'Таблица', cards:'Плитки', documents:'Документы', form:'Форма', divider:'Разделитель' };
+  
+  blocks.push({ id, type, name: names[type], config: defaultConfigs[type] });
+  pageBlocks[currentPageId] = blocks;
+  renderBlocks();
+  document.getElementById('new-block-type').value = '';
+  toast(`✅ Блок «${names[type]}» добавлен`);
+  renderTree(); // update block count
+}
+
+function moveBlock(idx, dir) {
+  const blocks = pageBlocks[currentPageId] || [];
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= blocks.length) return;
+  [blocks[idx], blocks[newIdx]] = [blocks[newIdx], blocks[idx]];
+  renderBlocks();
+}
+
+function deleteBlock(id) {
+  if (!confirm('Удалить этот блок?')) return;
+  const blocks = pageBlocks[currentPageId] || [];
+  pageBlocks[currentPageId] = blocks.filter(b => b.id !== id);
+  renderBlocks();
+  renderTree();
+  toast('🗑️ Блок удалён');
+}
+
+// ====== BLOCK CONFIG MODAL ======
+function openBlockConfig(id) {
+  const blocks = pageBlocks[currentPageId] || [];
+  const block = blocks.find(b => b.id === id);
+  if (!block) return;
+  editingBlockId = id;
+  currentPageId = currentPageId;
+  
+  document.getElementById('modal-icon').textContent = getBlockIcon(block.type);
+  document.getElementById('modal-title').textContent = 'Настройка: ' + block.name;
+  
+  const fields = document.getElementById('modal-fields');
+  fields.innerHTML = '';
+  
+  addModalField('text', 'Название блока', 'block-name', block.name);
+  
+  switch(block.type) {
+    case 'hero':
+      addModalField('text', 'Заголовок', 'hero-title', block.config.title);
+      addModalField('textarea', 'Подзаголовок', 'hero-subtitle', block.config.subtitle);
+      addModalField('text', 'Текст кнопки', 'hero-btn', block.config.btn_text);
+      addModalField('text', 'Ссылка кнопки', 'hero-url', block.config.btn_url);
+      addModalField('color', 'Цвет фона', 'hero-bg', block.config.bg_color);
+      addModalField('text', 'Фоновое изображение (URL)', 'hero-image', block.config.bg_image);
+      break;
+    case 'text':
+      addModalField('textarea', 'Текст (HTML)', 'text-content', block.config.content);
+      break;
+    case 'image':
+      addModalField('text', 'URL изображения', 'image-src', block.config.src);
+      addModalField('text', 'Alt-текст', 'image-alt', block.config.alt);
+      addModalField('text', 'Подпись', 'image-caption', block.config.caption);
+      break;
+    case 'gallery':
+      addModalField('number', 'Колонок в сетке', 'gallery-cols', block.config.columns || 3);
+      addModalField('textarea', 'URL фото (каждый с новой строки)', 'gallery-images', (block.config.images || []).join('\n'));
+      break;
+    case 'video':
+      addModalField('text', 'Ссылка (Rutube / VK Video)', 'video-url', block.config.url);
+      addModalField('text', 'Название', 'video-title', block.config.title);
+      addModalField('textarea', 'Описание', 'video-desc', block.config.description);
+      break;
+    case 'table':
+      addModalField('text', 'Заголовки колонок (через |)', 'table-headers', (block.config.headers || []).join(' | '));
+      addModalField('number', 'Количество строк', 'table-rows', block.config.rows || 3);
+      break;
+    case 'cards':
+      addModalField('number', 'Колонок', 'cards-cols', block.config.columns || 3);
+      addModalField('select', 'Режим', 'cards-mode', block.config.auto_from_tree ? 'auto' : 'manual', [
+        { value: 'auto', label: '🌳 Автоматически из разделов сайта' },
+        { value: 'manual', label: '✏️ Ручной ввод' },
+      ]);
+      addModalField('text', 'Подпись «Смотреть все»', 'cards-all-link', block.config.all_link_text || 'Все разделы →');
+      
+      // Auto mode: show section card editor
+      if (block.config.auto_from_tree) {
+        addModalField('textarea', 'Карточки разделов (редактирование описаний):', 'cards-auto-items', 
+          pages.filter(p => !p.parent && p.id !== 'home').sort((a,b) => a.order - b.order).map(p => {
+            const cardConfig = (block.config.card_overrides && block.config.card_overrides[p.id]) || {};
+            return `${p.id} | ${cardConfig.image || ''} | ${cardConfig.text || ''}`;
+          }).join('\n')
+        );
+        // Help text
+        const helpDiv = document.createElement('div');
+        helpDiv.style.cssText = 'font-size:11px;color:#888;margin-top:-8px;margin-bottom:12px;';
+        helpDiv.innerHTML = 'Формат: <strong>id_раздела | URL_картинки | описание</strong><br>Оставь картинку пустой — будет иконка раздела. Разделы автоматически из меню.';
+        document.getElementById('modal-fields').appendChild(helpDiv);
+      }
+      
+      if (!block.config.auto_from_tree) {
+        addModalField('textarea', 'Карточки (каждая с новой строки: Название | Описание | Ссылка | Иконка/URL)', 'cards-items', (block.config.items || []).map(i => `${i.title} | ${i.text} | ${i.link} | ${i.image || i.icon || ''}`).join('\n'));
+      }
+      break;
+    case 'documents':
+      addModalField('textarea', 'Документы (каждый с новой строки: Название | URL | Описание)', 'docs-items', (block.config.docs || []).map(d => `${d.title} | ${d.url} | ${d.description || ''}`).join('\n'));
+      break;
+    case 'form':
+      addModalField('select', 'Тип формы', 'form-type', block.config.form_type, [
+        { value: 'suggest', label: '📋 Предложить новость' },
+        { value: 'feedback', label: '💬 Обратная связь' },
+      ]);
+      addModalField('text', 'Заголовок формы', 'form-title', block.config.title);
+      break;
+    case 'divider':
+      addModalField('select', 'Стиль', 'divider-style', block.config.style, [
+        { value: 'solid', label: 'Сплошная' },
+        { value: 'dashed', label: 'Пунктирная' },
+        { value: 'dotted', label: 'Точечная' },
+      ]);
+      break;
+  }
+  
+  document.getElementById('block-modal').classList.add('open');
+}
+
+function addModalField(type, label, name, value, options) {
+  const fields = document.getElementById('modal-fields');
+  const div = document.createElement('div');
+  div.className = 'field';
+  
+  let input = '';
+  if (type === 'textarea') {
+    input = `<textarea id="field-${name}" rows="4">${escapeHtml(value || '')}</textarea>`;
+  } else if (type === 'select' && options) {
+    input = `<select id="field-${name}">${options.map(o => `<option value="${o.value}" ${(value||'') === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}</select>`;
+  } else if (type === 'color') {
+    input = `<input type="color" id="field-${name}" value="${value || '#1b4332'}">`;
+  } else if (type === 'number') {
+    input = `<input type="number" id="field-${name}" value="${value || 0}" min="1" max="20">`;
+  } else {
+    input = `<input type="text" id="field-${name}" value="${escapeHtml(value || '')}">`;
+  }
+  
+  div.innerHTML = `<label>${label}</label>${input}`;
+  fields.appendChild(div);
+}
+
+function saveBlockConfig() {
+  const blocks = pageBlocks[currentPageId] || [];
+  const block = blocks.find(b => b.id === editingBlockId);
+  if (!block) return;
+  
+  block.name = document.getElementById('field-block-name')?.value || block.name;
+  
+  switch(block.type) {
+    case 'hero':
+      block.config.title = getFieldVal('hero-title');
+      block.config.subtitle = getFieldVal('hero-subtitle');
+      block.config.btn_text = getFieldVal('hero-btn');
+      block.config.btn_url = getFieldVal('hero-url');
+      block.config.bg_color = getFieldVal('hero-bg');
+      block.config.bg_image = getFieldVal('hero-image');
+      break;
+    case 'text':
+      block.config.content = getFieldVal('text-content');
+      break;
+    case 'image':
+      block.config.src = getFieldVal('image-src');
+      block.config.alt = getFieldVal('image-alt');
+      block.config.caption = getFieldVal('image-caption');
+      break;
+    case 'gallery':
+      block.config.columns = parseInt(getFieldVal('gallery-cols')) || 3;
+      block.config.images = getFieldVal('gallery-images').split('\n').map(s => s.trim()).filter(Boolean);
+      break;
+    case 'video':
+      block.config.url = getFieldVal('video-url');
+      block.config.title = getFieldVal('video-title');
+      block.config.description = getFieldVal('video-desc');
+      break;
+    case 'table':
+      block.config.headers = getFieldVal('table-headers').split('|').map(s => s.trim()).filter(Boolean);
+      block.config.rows = parseInt(getFieldVal('table-rows')) || 3;
+      block.config.cols = block.config.headers.length;
+      break;
+    case 'cards':
+      block.config.columns = parseInt(getFieldVal('cards-cols')) || 3;
+      block.config.all_link_text = getFieldVal('cards-all-link') || 'Все разделы →';
+      
+      const mode = getFieldVal('cards-mode');
+      if (mode === 'auto') {
+        block.config.auto_from_tree = true;
+        block.config.card_overrides = {};
+        const autoLines = getFieldVal('cards-auto-items').split('\n').filter(Boolean);
+        autoLines.forEach(line => {
+          const parts = line.split('|').map(s => s.trim());
+          if (parts[0]) {
+            block.config.card_overrides[parts[0]] = {
+              image: parts[1] || '',
+              text: parts[2] || '',
+            };
+          }
+        });
+        block.config.items = [];
+      } else {
+        block.config.auto_from_tree = false;
+        block.config.card_overrides = {};
+        block.config.items = getFieldVal('cards-items').split('\n').filter(Boolean).map(line => {
+          const parts = line.split('|').map(s => s.trim());
+          return { title: parts[0] || '', text: parts[1] || '', link: parts[2] || '#', icon: parts[3] || '', image: parts[3] || '' };
+        });
+      }
+      break;
+    case 'documents':
+      block.config.docs = getFieldVal('docs-items').split('\n').filter(Boolean).map(line => {
+        const parts = line.split('|').map(s => s.trim());
+        return { title: parts[0] || '', url: parts[1] || '#', description: parts[2] || '' };
+      });
+      break;
+    case 'form':
+      block.config.form_type = getFieldVal('form-type');
+      block.config.title = getFieldVal('form-title');
+      break;
+    case 'divider':
+      block.config.style = getFieldVal('divider-style');
+      break;
+  }
+  
+  closeModal();
+  renderBlocks();
+  toast('💾 Блок сохранён');
+}
+
+function getFieldVal(name) {
+  const el = document.getElementById('field-' + name);
+  return el ? el.value : '';
+}
+
+function closeModal() {
+  document.getElementById('block-modal').classList.remove('open');
+  editingBlockId = null;
+}
+
+// ====== PAGE CRUD ======
+function showNewSectionModal() {
+  document.getElementById('new-page-modal-icon').textContent = '📄';
+  document.getElementById('new-page-modal-title').textContent = 'Новый раздел (главное меню)';
+  document.getElementById('new-page-name').value = '';
+  document.getElementById('new-page-icon').value = '📄';
+  document.getElementById('new-page-parent').value = '';
+  document.getElementById('new-page-parent').disabled = true;
+  document.getElementById('new-page-slug').value = '';
+  document.getElementById('new-page-order').value = '99';
+  document.getElementById('new-page-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-page-name').focus(), 100);
+}
+
+function showNewSubSectionModal() {
+  document.getElementById('new-page-modal-icon').textContent = '📑';
+  document.getElementById('new-page-modal-title').textContent = 'Новый подраздел';
+  document.getElementById('new-page-name').value = '';
+  document.getElementById('new-page-icon').value = '📄';
+  document.getElementById('new-page-parent').disabled = false;
+  document.getElementById('new-page-parent').value = '';
+  document.getElementById('new-page-slug').value = '';
+  document.getElementById('new-page-order').value = '99';
+  document.getElementById('new-page-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-page-name').focus(), 100);
+}
+
+function confirmNewPage() {
+  const name = document.getElementById('new-page-name').value.trim();
+  const icon = document.getElementById('new-page-icon').value;
+  const parent = document.getElementById('new-page-parent').value || null;
+  const slug = document.getElementById('new-page-slug').value.trim() || name.toLowerCase().replace(/\s+/g, '-');
+  const order = parseInt(document.getElementById('new-page-order').value) || 99;
+  
+  if (!name) { toast('⚠️ Введите название страницы'); return; }
+  
+  // Check slug uniqueness
+  const slugBase = slug.replace(/[^a-zа-я0-9-]/g, '');
+  let finalSlug = slugBase;
+  let counter = 1;
+  while (pages.find(p => p.id === finalSlug)) {
+    finalSlug = slugBase + '-' + counter++;
+  }
+  
+  pages.push({ id: finalSlug, name, icon, parent, order, status: 'new' });
+  pageBlocks[finalSlug] = [];
+  
+  document.getElementById('new-page-modal').classList.remove('open');
+  renderTree();
+  selectPage(finalSlug);
+  toast(`✅ Страница «${name}» создана!`);
+}
+
+function closeNewPageModal() {
+  document.getElementById('new-page-modal').classList.remove('open');
+}
+
+function openEditPageModal(id) {
+  const page = pages.find(p => p.id === id);
+  if (!page) return;
+  
+  document.getElementById('edit-page-modal-title').textContent = page.name;
+  document.getElementById('edit-page-name').value = page.name;
+  document.getElementById('edit-page-icon').value = page.icon;
+  document.getElementById('edit-page-parent').value = page.parent || '';
+  document.getElementById('edit-page-slug').value = page.id;
+  document.getElementById('edit-page-order').value = page.order;
+  
+  // Can't reparent 'home'
+  document.getElementById('edit-page-parent').disabled = (id === 'home');
+  
+  document.getElementById('edit-page-modal').dataset.pageId = id;
+  document.getElementById('edit-page-modal').classList.add('open');
+}
+
+function confirmEditPage() {
+  const id = document.getElementById('edit-page-modal').dataset.pageId;
+  const page = pages.find(p => p.id === id);
+  if (!page) return;
+  
+  page.name = document.getElementById('edit-page-name').value.trim() || page.name;
+  page.icon = document.getElementById('edit-page-icon').value;
+  page.parent = document.getElementById('edit-page-parent').value || null;
+  page.order = parseInt(document.getElementById('edit-page-order').value) || 99;
+  
+  document.getElementById('edit-page-modal').classList.remove('open');
+  const oldSlug = document.getElementById('edit-page-slug').value.trim();
+  if (oldSlug && oldSlug !== id) {
+    page.id = oldSlug;
+    // Move blocks to new id
+    pageBlocks[oldSlug] = pageBlocks[id];
+    delete pageBlocks[id];
+  }
+  
+  renderTree();
+  selectPage(page.id);
+  toast(`💾 Страница «${page.name}» обновлена`);
+}
+
+function closeEditPageModal() {
+  document.getElementById('edit-page-modal').classList.remove('open');
+}
+
+function deletePage(id) {
+  if (id === 'home') { toast('⚠️ Главную страницу нельзя удалить'); return; }
+  const page = pages.find(p => p.id === id);
+  if (!page) return;
+  
+  // Check for children
+  const children = pages.filter(c => c.parent === id);
+  if (children.length > 0) {
+    if (!confirm(`Удалить «${page.name}» и все её подразделы (${children.length})?`)) return;
+    children.forEach(c => {
+      pages.splice(pages.findIndex(p => p.id === c.id), 1);
+      delete pageBlocks[c.id];
+    });
+  } else {
+    if (!confirm(`Удалить страницу «${page.name}»?`)) return;
+  }
+  
+  pages.splice(pages.findIndex(p => p.id === id), 1);
+  delete pageBlocks[id];
+  
+  if (currentPageId === id) {
+    currentPageId = null;
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('page-editor').style.display = 'none';
+  }
+  renderTree();
+  toast(`🗑️ «${page.name}» удалена`);
+}
+
+// ====== SAVE / PUBLISH / PREVIEW ======
+function savePage() {
+  if (!currentPageId) return;
+  const page = pages.find(p => p.id === currentPageId);
+  if (!page) return;
+  page.status = 'draft';
+  toast(`💾 Черновик «${page.name}» сохранён`);
+  renderTree();
+  selectPage(page.id);
+}
+
+function publishPage() {
+  if (!currentPageId) return;
+  const page = pages.find(p => p.id === currentPageId);
+  if (!page) return;
+  page.status = 'published';
+  toast(`📢 «${page.name}» опубликована!`);
+  renderTree();
+  selectPage(page.id);
+}
+
+function previewPage() {
+  if (!currentPageId) return;
+  const page = pages.find(p => p.id === currentPageId);
+  if (!page) return;
+  toast(`👁️ Предпросмотр «${page.name}» (откроется в новом окне)`);
+  // В реальном WP — открывает страницу с ?preview=...
+}
+
+// ====== ROLES DATA & RENDER ======
+let roles = [
+  { id: 'admin', name: 'Администратор', icon: '👑', sections: '__all__', caps: { moderation: true, upload: true, publish: true }, users: 3 },
+  { id: 'school_editor', name: 'Редактор школы', icon: '📚', sections: ['school', 'school-news', 'school-docs', 'kindergarten'], caps: { moderation: true, upload: true, publish: true }, users: 1 },
+  { id: 'sports_editor', name: 'Редактор спорта', icon: '⚽', sections: ['sports', 'sports-team', 'sports-matches'], caps: { moderation: false, upload: true, publish: true }, users: 1 },
+  { id: 'farm_editor', name: 'Редактор совхоза', icon: '🌾', sections: ['farm', 'farm-products', 'farm-vacancies'], caps: { moderation: false, upload: true, publish: true }, users: 1 },
+  { id: 'moderator', name: 'Модератор', icon: '🛡️', sections: [], caps: { moderation: true, upload: false, publish: false }, users: 2 },
+  { id: 'author', name: 'Автор', icon: '✍️', sections: [], caps: { moderation: false, upload: false, publish: false }, users: 3 },
+];
+
+function renderRoles() {
+  const tbody = document.getElementById('roles-tbody');
+  tbody.innerHTML = '';
+  
+  roles.forEach(role => {
+    const tr = document.createElement('tr');
+    tr.style.borderTop = '1px solid #e9ecef';
+    
+    let sectionsLabel = '';
+    if (role.sections === '__all__') {
+      sectionsLabel = '🔓 Все разделы';
+    } else if (role.sections.length === 0) {
+      sectionsLabel = '—';
+    } else {
+      sectionsLabel = role.sections.map(sid => {
+        const p = pages.find(p => p.id === sid);
+        return p ? p.icon + ' ' + p.name : sid;
+      }).join(', ');
+    }
+    
+    tr.innerHTML = `
+      <td style="padding:10px 14px; font-weight:600;">${role.icon} ${role.name}</td>
+      <td style="padding:10px 14px;">${role.users}</td>
+      <td style="padding:10px 14px; font-size:11px; color:#555;">${sectionsLabel}</td>
+      <td style="padding:10px 14px;">
+        <button onclick="editRole('${role.id}')" style="padding:4px 8px; font-size:11px; border:1px solid #dee2e6; border-radius:4px; background:#fff; cursor:pointer;">✏️</button>
+        ${role.id !== 'admin' ? `<button onclick="deleteRole('${role.id}')" style="padding:4px 8px; font-size:11px; border:1px solid #c62828; border-radius:4px; background:#fff; color:#c62828; cursor:pointer; margin-left:4px;">🗑️</button>` : ''}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function showAddRoleModal() {
+  document.getElementById('new-role-modal-title').textContent = 'Новая роль';
+  document.getElementById('new-role-name').value = '';
+  document.getElementById('new-role-icon').value = '📚';
+  document.getElementById('role-cap-moderation').checked = false;
+  document.getElementById('role-cap-upload').checked = true;
+  document.getElementById('role-cap-publish').checked = true;
+  
+  // Build sections checklist from pages tree
+  const sectionsDiv = document.getElementById('new-role-sections');
+  sectionsDiv.innerHTML = '';
+  
+  const roots = pages.filter(p => !p.parent).sort((a,b) => a.order - b.order);
+  
+  // "Все разделы" option
+  const allLabel = document.createElement('label');
+  allLabel.style.cssText = 'font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #dee2e6;';
+  allLabel.innerHTML = '<input type="checkbox" class="role-section-cb" data-section="__all__" onchange="toggleAllSections(this)"> 🔓 Все разделы (полный доступ)';
+  sectionsDiv.appendChild(allLabel);
+  
+  roots.forEach(p => {
+    addSectionCheckbox(sectionsDiv, p, 0);
+  });
+  
+  document.getElementById('new-role-modal').dataset.mode = 'create';
+  document.getElementById('new-role-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-role-name').focus(), 100);
+}
+
+function addSectionCheckbox(container, page, depth) {
+  const label = document.createElement('label');
+  label.style.cssText = `font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;padding-left:${depth * 20 + 4}px;margin-bottom:2px;`;
+  label.innerHTML = `<input type="checkbox" class="role-section-cb" data-section="${page.id}" value="${page.id}"> ${page.icon} ${page.name}`;
+  container.appendChild(label);
+  
+  const children = pages.filter(c => c.parent === page.id).sort((a,b) => a.order - b.order);
+  children.forEach(c => addSectionCheckbox(container, c, depth + 1));
+}
+
+function toggleAllSections(el) {
+  const cbs = document.querySelectorAll('.role-section-cb');
+  cbs.forEach(cb => { if (cb.dataset.section !== '__all__') cb.checked = el.checked; });
+}
+
+function confirmAddRole() {
+  const name = document.getElementById('new-role-name').value.trim();
+  const icon = document.getElementById('new-role-icon').value;
+  
+  if (!name) { toast('⚠️ Введите название роли'); return; }
+  
+  const selectedSections = [];
+  document.querySelectorAll('.role-section-cb:checked').forEach(cb => {
+    if (cb.dataset.section === '__all__') {
+      selectedSections.length = 0;
+      selectedSections.push('__all__');
+    } else if (!selectedSections.includes('__all__')) {
+      selectedSections.push(cb.dataset.section);
+    }
+  });
+  
+  const id = 'role_' + name.toLowerCase().replace(/[^a-zа-я0-9]/g, '_');
+  
+  roles.push({
+    id: id + '_' + Date.now(),
+    name,
+    icon,
+    sections: selectedSections.length > 0 ? selectedSections : [],
+    caps: {
+      moderation: document.getElementById('role-cap-moderation').checked,
+      upload: document.getElementById('role-cap-upload').checked,
+      publish: document.getElementById('role-cap-publish').checked,
+    },
+    users: 0,
+  });
+  
+  closeModalById('new-role-modal');
+  renderRoles();
+  renderUserStats();
+  toast(`✅ Роль «${name}» создана`);
+}
+
+function editRole(id) {
+  const role = roles.find(r => r.id === id);
+  if (!role) return;
+  
+  document.getElementById('new-role-modal-title').textContent = 'Редактирование: ' + role.name;
+  document.getElementById('new-role-name').value = role.name;
+  document.getElementById('new-role-icon').value = role.icon;
+  document.getElementById('role-cap-moderation').checked = role.caps.moderation;
+  document.getElementById('role-cap-upload').checked = role.caps.upload;
+  document.getElementById('role-cap-publish').checked = role.caps.publish;
+  
+  // Build sections and check
+  const sectionsDiv = document.getElementById('new-role-sections');
+  sectionsDiv.innerHTML = '';
+  
+  const allLabel = document.createElement('label');
+  allLabel.style.cssText = 'font-weight:400;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #dee2e6;';
+  allLabel.innerHTML = '<input type="checkbox" class="role-section-cb" data-section="__all__" onchange="toggleAllSections(this)"> 🔓 Все разделы (полный доступ)';
+  sectionsDiv.appendChild(allLabel);
+  
+  const roots = pages.filter(p => !p.parent).sort((a,b) => a.order - b.order);
+  roots.forEach(p => addSectionCheckbox(sectionsDiv, p, 0));
+  
+  // Check the saved sections
+  if (role.sections === '__all__') {
+    document.querySelectorAll('.role-section-cb').forEach(cb => cb.checked = true);
+  } else {
+    role.sections.forEach(sid => {
+      const cb = document.querySelector(`.role-section-cb[data-section="${sid}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+  
+  document.getElementById('new-role-modal').dataset.mode = 'edit';
+  document.getElementById('new-role-modal').dataset.editId = id;
+  document.getElementById('new-role-modal').classList.add('open');
+}
+
+function deleteRole(id) {
+  const role = roles.find(r => r.id === id);
+  if (!role) return;
+  if (role.users > 0) {
+    if (!confirm(`В роли «${role.name}» есть ${role.users} пользователей. Переместить их в другую роль?`)) return;
+  } else {
+    if (!confirm(`Удалить роль «${role.name}»?`)) return;
+  }
+  roles = roles.filter(r => r.id !== id);
+  renderRoles();
+  renderUserStats();
+  toast(`🗑️ Роль «${role.name}» удалена`);
+}
+
+function renderUserStats() {
+  const adminCount = roles.find(r => r.id === 'admin')?.users || 0;
+  const editorCount = roles.filter(r => r.id.includes('editor')).reduce((s, r) => s + r.users, 0);
+  const modCount = roles.find(r => r.id === 'moderator')?.users || 0;
+  const authorCount = roles.find(r => r.id === 'author')?.users || 0;
+  const total = roles.reduce((s, r) => s + r.users, 0);
+  
+  // Update stats cards
+  document.querySelector('#editor-users .status-published').textContent = `${roles.length} ролей · ${total} пользователей`;
+  
+  // Update numbers
+  const stats = document.querySelectorAll('#editor-users [style*="background"] [style*="font-size:24px"]');
+  // We'll just update on next render
+}
+
+function closeModalById(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ====== USER / PAGE SWITCHING ======
+let currentMode = 'pages';
+
+function switchToUsers() {
+  currentMode = 'users';
+  document.getElementById('editor-pages').style.display = 'none';
+  document.getElementById('editor-users').style.display = 'block';
+  document.querySelector('.left-panel__header').style.opacity = '0.5';
+  document.querySelector('.left-panel__actions').style.opacity = '0.3';
+  renderRoles();
+}
+
+function switchToPages() {
+  currentMode = 'pages';
+  document.getElementById('editor-pages').style.display = 'block';
+  document.getElementById('editor-users').style.display = 'none';
+  document.querySelector('.left-panel__header').style.opacity = '1';
+  document.querySelector('.left-panel__actions').style.opacity = '1';
+}
+
+// ====== INIT ======
+renderTree();
+// Select home by default
+selectPage('home');
+</script>
+</body>
+</html>

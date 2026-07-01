@@ -42,7 +42,7 @@ Restart=on-failure
 RestartSec=5s
 ```
 
-См. [[Systemd-сервисы]].
+См. [[Systemd-сервисы]], а также структурированную версию: [[entities/hist-yupiterpro-ru]].
 
 ## Источники
 - `sources/Hysteria2/manager/app.py`

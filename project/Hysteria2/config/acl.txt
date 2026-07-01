@@ -43,3 +43,6 @@
  direct(suffix:tele2.ru)
  direct(suffix:rutube.ru)
  direct(suffix:mos.ru)
+
+# Block dead/unreachable hosts that spam the logs
+reject(suffix:meta.fmgid.com)

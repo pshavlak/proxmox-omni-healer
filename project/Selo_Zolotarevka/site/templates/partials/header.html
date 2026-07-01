@@ -1,0 +1,76 @@
+<header class="header" style="background: {{ settings.header_bg_color|default('var(--color-primary-dark)') }};">
+    <div class="container">
+        <a href="/" class="logo">
+            <span class="logo__icon">{{ settings.logo_icon|default('🌾') }}</span>
+            <span class="logo__text">{{ settings.logo_text|default('Золотаревка') }}<small>Неофициальный портал</small></span>
+        </a>
+
+        <nav class="nav" id="mainNav">
+            {% set menu_groups = settings.menu_groups_config|default('[]')|from_json %}
+
+            {% if menu_groups %}
+                {% for group in menu_groups %}
+                    {% set group_pages = namespace(items=[]) %}
+                    {% for page in pages %}
+                        {% if page.id in (group.pages|default([])) or page.name in (group.pages|default([])) %}
+                            {% set group_pages.items = group_pages.items + [page] %}
+                        {% endif %}
+                    {% endfor %}
+                    {% set children = group_pages.items %}
+
+                    <div class="nav__item">
+                        <a href="/{{ group.id|default('') }}" class="nav__link">
+                            {% if group.icon %}{{ group.icon }} {% endif %}
+                            {{ group.name }}
+                            {% if children %}<span class="arrow">▾</span>{% endif %}
+                        </a>
+                        {% if children %}
+                            <div class="mega-menu">
+                                <div class="mega-menu__grid">
+                                    {% for child in children %}
+                                        <a href="/{{ child.id }}" class="mega-menu__item">
+                                            <span class="mega-menu__icon">{{ child.icon|default('📄') }}</span>
+                                            <div>
+                                                <div class="mega-menu__title">{{ child.name }}</div>
+                                                <div class="mega-menu__desc">{{ child.description|default('') }}</div>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {# Fallback: build menu from pages tree #}
+                {% for page in pages if page.parent is none and page.id != 'home' %}
+                    {% set children = pages|selectattr('parent', 'equalto', page.id)|list %}
+                    <div class="nav__item">
+                        <a href="/{{ page.id }}" class="nav__link">
+                            {% if page.icon %}{{ page.icon }} {% endif %}
+                            {{ page.name }}
+                            {% if children %}<span class="arrow">▾</span>{% endif %}
+                        </a>
+                        {% if children %}
+                            <div class="mega-menu">
+                                <div class="mega-menu__grid">
+                                    {% for child in children %}
+                                        <a href="/{{ child.id }}" class="mega-menu__item">
+                                            <span class="mega-menu__icon">{{ child.icon|default('📄') }}</span>
+                                            <div>
+                                                <div class="mega-menu__title">{{ child.name }}</div>
+                                                <div class="mega-menu__desc">{{ child.description|default('') }}</div>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </nav>
+
+        <button class="mobile-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+    </div>
+</header>

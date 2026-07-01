@@ -1,0 +1,18 @@
+{% set columns = block.config.columns|default(3) %}
+{% set images = block.config.images|default([]) %}
+<div class="content-section container">
+    <div class="gallery" style="display: grid; grid-template-columns: repeat({{ columns }}, 1fr); gap: 1rem;">
+        {% for image in images %}
+            <div class="gallery__item">
+                <a href="{{ image.src }}" class="gallery__link" data-lightbox="gallery-{{ block.id }}" title="{{ image.alt|default('') }}">
+                    <img src="{{ image.src }}" alt="{{ image.alt|default('') }}" class="gallery__img" loading="lazy">
+                </a>
+                {% if image.caption %}
+                    <p class="gallery__caption">{{ image.caption }}</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="gallery__empty">Нет изображений для отображения</p>
+        {% endfor %}
+    </div>
+</div>

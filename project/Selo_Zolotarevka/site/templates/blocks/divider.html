@@ -1,0 +1,6 @@
+{% set style = block.config.style|default('solid') %}
+{% set color = block.config.color|default('#e0e0e0') %}
+{% set margin = block.config.margin|default('2rem 0') %}
+<div class="content-section container">
+    <hr class="divider-block" style="border: none; border-top: 2px {{ style }} {{ color }}; margin: {{ margin }};">
+</div>

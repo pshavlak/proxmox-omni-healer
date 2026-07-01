@@ -1,0 +1,37 @@
+{% set columns = block.config.columns|default(3) %}
+{% set auto_from_tree = block.config.auto_from_tree|default(false) %}
+
+{% if auto_from_tree %}
+    {# Build cards from global pages tree — pages already has only root sections #}
+    {% set card_items = pages|list %}
+{% else %}
+    {% set card_items = block.config.items|default([]) %}
+{% endif %}
+
+<div class="content-section container">
+    <div class="cards" style="display: grid; grid-template-columns: repeat({{ columns }}, 1fr); gap: 1.5rem;">
+        {% for item in card_items %}
+            <div class="card">
+                {% if item.icon %}
+                    <div class="card__icon">{{ item.icon }}</div>
+                {% endif %}
+                {% if item.image %}
+                    <div class="card__image">
+                        <img src="{{ item.image }}" alt="{{ item.title|default(item.name) }}" loading="lazy">
+                    </div>
+                {% endif %}
+                <div class="card__body">
+                    <h3 class="card__title">{{ item.title|default(item.name) }}</h3>
+                    {% if item.description %}
+                        <p class="card__text">{{ item.description }}</p>
+                    {% endif %}
+                    {% if item.link or item.id %}
+                        <a href="{{ item.link|default('/' + item.id) }}" class="card__btn btn btn--outline">Подробнее →</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p class="cards__empty">Нет элементов для отображения</p>
+        {% endfor %}
+    </div>
+</div>

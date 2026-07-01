@@ -1,0 +1,15 @@
+[Unit]
+Description=Zolotarevka FastAPI site
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/zolotarevka/site
+Environment=HOST=127.0.0.1
+Environment=PORT=8000
+ExecStart=/opt/zolotarevka/site/start.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

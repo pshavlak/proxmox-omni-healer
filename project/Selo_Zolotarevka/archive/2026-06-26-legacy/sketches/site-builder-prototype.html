@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Золотаревка ⚙️ — Конструктор сайта</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    padding: 30px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 26px; color: #1b4332; }
+  .header p { color: #666; margin-top: 6px; font-size: 14px; }
+
+  /* ====== ADMIn MENU ====== */
+  .admin-menu {
+    display: flex;
+    gap: 4px;
+    background: #1b4332;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+  .admin-menu button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+  }
+  .admin-menu button:hover,
+  .admin-menu button.active { background: rgba(255,255,255,0.15); color: #fff; }
+  .admin-menu button.active { background: #2d6a4f; }
+
+  /* ====== TAB CONTENT ====== */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b4332;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .badge {
+    font-size: 12px;
+    background: #e9ecef;
+    color: #666;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+
+  /* ====== SITE MAP (иерархия разделов) ====== */
+  .site-map {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .site-map__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1b4332;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tree {
+    list-style: none;
+  }
+  .tree li {
+    position: relative;
+    padding: 6px 0 6px 24px;
+    border-left: 2px solid #c8e6c9;
+    margin-left: 12px;
+  }
+  .tree li:last-child { border-left: 2px solid transparent; }
+  .tree li::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 14px;
+    width: 12px;
+    height: 2px;
+    background: #c8e6c9;
+  }
+  .tree li:last-child::before { background: #c8e6c9; }
+  .tree .tree-root {
+    border-left: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .tree .tree-root::before { display: none; }
+  .tree .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .tree .tree-item:hover { background: #e8f5e9; }
+  .tree .tree-item .icon { font-size: 18px; }
+  .tree .tree-item .name { font-weight: 600; font-size: 13px; flex: 1; }
+  .tree .tree-item .type {
+    font-size: 10px;
+    color: #888;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tree .tree-item .actions { display: flex; gap: 4px; }
+  .tree .tree-item .actions button {
+    padding: 4px 8px;
+    font-size: 11px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .tree .tree-item .actions button:hover { background: #e9ecef; }
+  .tree .tree-item .actions .btn-edit { color: #2d6a4f; border-color: #2d6a4f; }
+  .tree .tree-item .actions .btn-add { color: #1565c0; border-color: #1565c0; }
+  .tree .tree-item .actions .btn-del { color: #c62828; border-color: #c62828; }
+
+  /* ====== BLOCKS ====== */
+  .block-editor {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .block-editor__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .block-editor__title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block-editor__title .page-indicator {
+    font-size: 12px;
+    color: #fff;
+    background: #2d6a4f;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 400;
+  }
+
+  /* ====== BLOCK LIST ====== */
+  .blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .block-item {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 14px;
+    transition: 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .block-item:hover { border-color: #2d6a4f; }
+  .block-item .block-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .block-item .block-header .icon { font-size: 22px; }
+  .block-item .block-header .name { font-weight: 600; font-size: 14px; flex: 1; }
+  .block-item .block-header .drag-handle {
+    cursor: grab;
+    color: #ccc;
+    font-size: 18px;
+  }
+  .block-item .block-preview {
+    font-size: 12px;
+    color: #888;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-top: 4px;
+    min-height: 30px;
+  }
+  .block-item .block-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .block-item .block-actions button {
+    padding: 4px 10px;
+    font-size: 11px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .block-item .block-actions button:hover { background: #e9ecef; }
+  .block-item .block-actions .btn-config { color: #2d6a4f; }
+  .block-item .block-actions .btn-del { color: #c62828; }
+
+  .add-block-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    align-items: center;
+  }
+  .add-block-bar select {
+    padding: 8px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 180px;
+  }
+  .add-block-bar button {
+    padding: 8px 20px;
+    background: #2d6a4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .add-block-bar button:hover { background: #1b4332; }
+
+  /* ====== BLOCK CONFIG MODAL ====== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .modal .field { margin-bottom: 16px; }
+  .modal .field label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #555;
+  }
+  .modal .field input,
+  .modal .field textarea,
+  .modal .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .modal .field textarea { min-height: 80px; resize: vertical; }
+  .modal .field input:focus,
+  .modal .field textarea:focus { border-color: #2d6a4f; outline: none; }
+  .modal .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .modal .modal-actions button {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+  }
+  .modal .modal-actions .btn-save { background: #2d6a4f; color: #fff; }
+  .modal .modal-actions .btn-save:hover { background: #1b4332; }
+  .modal .modal-actions .btn-close { background: #e9ecef; color: #333; }
+  .modal .modal-actions .btn-close:hover { background: #dee2e6; }
+
+  .block-preview-media {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .block-preview-media .thumb {
+    width: 60px;
+    height: 40px;
+    background: #e9ecef;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #999;
+  }
+
+  .btn-icon {
+    font-size: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: 0.2s;
+  }
+  .btn-icon:hover { transform: scale(1.2); }
+
+  .footer-note {
+    margin-top: 40px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🗂️ Золотаревка ⚙️ — Конструктор сайта</h1>
+  <p>Добавляй разделы, редактируй блоки, строй иерархию меню</p>
+</div>
+
+<div class="admin-menu">
+  <button class="active" data-tab="structure">🗺️ Структура сайта</button>
+  <button data-tab="editor">📝 Редактор страницы</button>
+  <button data-tab="settings">⚙️ Настройки</button>
+</div>
+
+<!-- ====== TAB: СТРУКТУРА САЙТА ====== -->
+<div class="tab-content active" id="tab-structure">
+  <div class="section-title">
+    🗺️ Структура сайта
+    <span class="badge">иерархия разделов и меню</span>
+  </div>
+
+  <div class="site-map">
+    <div class="site-map__title">
+      📋 Меню сайта
+      <span style="font-weight:400;font-size:12px;color:#888;">(перетаскивай, добавляй подразделы)</span>
+    </div>
+    <ul class="tree" id="site-tree">
+      <!-- Генерируется JS -->
+    </ul>
+    <div style="margin-top:16px;">
+      <button onclick="addSection()" style="padding:10px 20px;background:#2d6a4f;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;">
+        ➕ Добавить раздел
+      </button>
+      <button onclick="addSubSection()" style="padding:10px 20px;background:#1565c0;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;margin-left:8px;">
+        ➕ Добавить подраздел
+      </button>
+    </div>
+  </div>
+
+  <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:24px;">
+    <div style="font-size:14px;font-weight:600;color:#1b4332;margin-bottom:8px;">📌 Как это работает</div>
+    <div style="font-size:13px;color:#555;line-height:1.6;">
+      <strong>1.</strong> Раздел = пункт меню верхнего уровня (например «Школа»)<br>
+      <strong>2.</strong> Подраздел = вложенное подменю (например «Новости школы», «Документы»)<br>
+      <strong>3.</strong> Каждый раздел/подраздел = самостоятельная страница с блоками<br>
+      <strong>4.</strong> Иерархия автоматически строит меню сайта
+    </div>
+  </div>
+
+  <!-- Настройки добавления раздела -->
+  <div class="add-block-bar" id="add-section-form" style="display:none;">
+    <input type="text" id="new-section-name" placeholder="Название раздела" style="padding:8px 12px;border:2px solid #dee2e6;border-radius:6px;font-size:13px;flex:1;">
+    <input type="text" id="new-section-icon" placeholder="Иконка (например 🏫)" style="padding:8px 12px;border:2px solid #dee2e6;border-radius:6px;font-size:13px;width:80px;">
+    <select id="new-section-parent">
+      <option value="">— Корень меню —</option>
+    </select>
+    <button onclick="confirmAddSection()" style="background:#2d6a4f;color:#fff;border:none;border-radius:6px;padding:8px 20px;font-weight:600;cursor:pointer;">✅ Добавить</button>
+    <button onclick="document.getElementById('add-section-form').style.display='none'" style="background:#e9ecef;border:none;border-radius:6px;padding:8px 20px;cursor:pointer;">✕</button>
+  </div>
+</div>
+
+<!-- ====== TAB: РЕДАКТОР СТРАНИЦЫ ====== -->
+<div class="tab-content" id="tab-editor">
+  <div class="block-editor">
+    <div class="block-editor__header">
+      <div class="block-editor__title">
+        📝 Редактор страницы
+        <span class="page-indicator" id="current-page-name">Главная</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <select id="page-selector" onchange="switchPage(this.value)" style="padding:8px 12px;border:2px solid #dee2e6;border-radius:6px;font-size:13px;">
+          <option value="home">🏠 Главная</option>
+        </select>
+        <button onclick="savePage()" style="padding:8px 16px;background:#2d6a4f;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;">💾 Сохранить</button>
+        <button onclick="publishPage()" style="padding:8px 16px;background:#1b4332;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;">📢 Опубликовать</button>
+      </div>
+    </div>
+
+    <!-- Список блоков страницы -->
+    <div class="blocks-list" id="blocks-list">
+      <!-- Генерируется JS -->
+    </div>
+
+    <!-- Добавление блока -->
+    <div class="add-block-bar">
+      <select id="new-block-type">
+        <option value="">— Выбери тип блока —</option>
+        <option value="hero">🧱 Hero / Баннер</option>
+        <option value="text">📝 Текст</option>
+        <option value="image">🖼️ Изображение</option>
+        <option value="gallery">📸 Галерея</option>
+        <option value="video">🎬 Видео (Rutube/VK)</option>
+        <option value="table">📊 Таблица</option>
+        <option value="cards">🏗️ Карточки / Плитки</option>
+        <option value="documents">📄 Документы</option>
+        <option value="form">📋 Форма</option>
+        <option value="divider">➖ Разделитель</option>
+      </select>
+      <button onclick="addBlock()">➕ Добавить блок</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TAB: НАСТРОЙКИ ====== -->
+<div class="tab-content" id="tab-settings">
+  <div class="section-title">
+    ⚙️ Настройки сайта
+    <span class="badge">глобальные</span>
+  </div>
+  <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);max-width:600px;">
+    <div class="field"><label>🔗 VK</label><input type="url" value="https://vk.com/zolotarevka" placeholder="https://vk.com/..."></div>
+    <div class="field"><label>✈️ Telegram</label><input type="url" value="https://t.me/zolotarevka" placeholder="https://t.me/..."></div>
+    <div class="field"><label>👥 OK</label><input type="url" value="#" placeholder="https://ok.ru/..."></div>
+    <div class="field"><label>📡 RSS</label><input type="url" value="https://zolotarevka.yupiterpro.ru/feed"></div>
+    <div class="field"><label>📧 Email</label><input type="email" value="info@zolotarevka.ru"></div>
+    <div class="field"><label>📞 Телефон</label><input type="text" value=""></div>
+    <div class="field"><label>📍 Адрес</label><input type="text" value=""></div>
+    <div class="field"><label>🏷️ Теглайн</label><input type="text" value="Неофициальный портал села"></div>
+    <div class="field"><label>©️ Копирайт</label><input type="text" value="© 2026 Неофициальный портал села Золотаревка."></div>
+    <button style="padding:10px 24px;background:#2d6a4f;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px;">💾 Сохранить настройки</button>
+  </div>
+</div>
+
+<!-- ====== MODAL: НАСТРОЙКА БЛОКА ====== -->
+<div class="modal-overlay" id="block-modal">
+  <div class="modal">
+    <h2><span id="modal-icon">🧱</span> <span id="modal-title">Настройка блока</span></h2>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModal()">Отмена</button>
+      <button class="btn-save" onclick="saveBlockConfig()">💾 Сохранить блок</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  💡 Это прототип новой архитектуры. Добавляй разделы, редактируй блоки — всё работает интерактивно!
+</div>
+
+<script>
+// ====== DATA ======
+let sections = [
+  { id: 'home', name: 'Главная', icon: '🏠', parent: null, order: 0 },
+  { id: 'school', name: 'Школа', icon: '📚', parent: null, order: 1 },
+  { id: 'school-news', name: 'Новости школы', icon: '📰', parent: 'school', order: 0 },
+  { id: 'school-docs', name: 'Документы', icon: '📄', parent: 'school', order: 1 },
+  { id: 'kindergarten', name: 'Детский сад', icon: '🧸', parent: null, order: 2 },
+  { id: 'farm', name: 'Совхоз', icon: '🌾', parent: null, order: 3 },
+  { id: 'sports', name: 'Спорт', icon: '⚽', parent: null, order: 4 },
+  { id: 'sports-team', name: 'Команда', icon: '👥', parent: 'sports', order: 0 },
+  { id: 'sports-matches', name: 'Матчи', icon: '🏆', parent: 'sports', order: 1 },
+  { id: 'village-life', name: 'Жизнь села', icon: '🏘️', parent: null, order: 5 },
+  { id: 'bulletin', name: 'Объявления', icon: '📋', parent: 'village-life', order: 0 },
+  { id: 'media', name: 'Медиа', icon: '📸', parent: null, order: 6 },
+  { id: 'news', name: 'Новости', icon: '📰', parent: null, order: 7 },
+];
+
+let nextId = 100;
+let pageBlocks = {
+  home: [
+    { id: 'b1', type: 'hero', name: 'Hero-баннер', config: { title: 'Добро пожаловать в Золотаревку!', subtitle: 'Неофициальный портал нашего села', btn_text: 'Исследовать разделы →', bg_color: '#1b4332' } },
+    { id: 'b2', type: 'cards', name: 'Бенто-сетка разделов', config: { columns: 3 } },
+    { id: 'b3', type: 'text', name: 'Приветственный текст', config: { content: '<p>Добро пожаловать на наш портал! Здесь вы найдёте всё самое важное о жизни села.</p>' } },
+    { id: 'b4', type: 'gallery', name: 'Фото села', config: { images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'] } },
+  ],
+  school: [
+    { id: 'b5', type: 'hero', name: 'Заголовок школы', config: { title: '📚 Школа села Золотаревка', subtitle: 'Новости учебной жизни, достижения учеников', btn_text: '', bg_color: '#4a90d9' } },
+    { id: 'b6', type: 'text', name: 'О школе', config: { content: '<p>Наша школа — центр образования и воспитания подрастающего поколения.</p>' } },
+    { id: 'b7', type: 'documents', name: 'Документы школы', config: { docs: [{ title: 'Устав школы', url: '#' }, { title: 'Расписание звонков', url: '#' }] } },
+  ]
+};
+let currentPage = 'home';
+let editingBlockId = null;
+
+// ====== RENDER TREE ======
+function renderTree() {
+  const roots = sections.filter(s => !s.parent).sort((a,b) => a.order - b.order);
+  const ul = document.getElementById('site-tree');
+  ul.innerHTML = '';
+  roots.forEach(s => {
+    const li = renderNode(s, 0);
+    ul.appendChild(li);
+  });
+  
+  // Update page selector
+  const sel = document.getElementById('page-selector');
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  sections.sort((a,b) => a.order - b.order).forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    const prefix = s.parent ? '  └ ' : '';
+    opt.textContent = prefix + s.icon + ' ' + s.name;
+    if (s.id === currentVal || (!currentVal && s.id === 'home')) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  
+  // Update parent selector for new sections
+  const parentSel = document.getElementById('new-section-parent');
+  parentSel.innerHTML = '<option value="">— Корень меню —</option>';
+  roots.forEach(s => {
+    if (s.id !== '__new') {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.icon + ' ' + s.name + ' (как подраздел)';
+      parentSel.appendChild(opt);
+    }
+  });
+}
+
+function renderNode(s, depth) {
+  const li = document.createElement('li');
+  if (depth === 0) li.classList.add('tree-root');
+  
+  const children = sections.filter(c => c.parent === s.id).sort((a,b) => a.order - b.order);
+  
+  const div = document.createElement('div');
+  div.className = 'tree-item';
+  div.innerHTML = `
+    <span class="icon">${s.icon}</span>
+    <span class="name">${s.name}</span>
+    <span class="type">${depth === 0 ? 'раздел' : 'подраздел'}</span>
+    <span class="actions">
+      <button class="btn-edit" onclick="editSection('${s.id}')">✏️</button>
+      <button class="btn-add" onclick="addSubTo('${s.id}')">➕</button>
+      ${s.id !== 'home' ? `<button class="btn-del" onclick="deleteSection('${s.id}')">🗑️</button>` : ''}
+    </span>
+  `;
+  li.appendChild(div);
+  
+  if (children.length > 0) {
+    const subUl = document.createElement('ul');
+    subUl.className = 'tree';
+    children.forEach(c => subUl.appendChild(renderNode(c, depth + 1)));
+    li.appendChild(subUl);
+  }
+  
+  return li;
+}
+
+// ====== SECTION CRUD ======
+let pendingParent = null;
+
+function addSection() {
+  pendingParent = null;
+  document.getElementById('new-section-parent').value = '';
+  document.getElementById('new-section-name').value = '';
+  document.getElementById('new-section-icon').value = '';
+  document.getElementById('add-section-form').style.display = 'flex';
+  document.getElementById('new-section-name').focus();
+}
+
+function addSubSection() {
+  pendingParent = null;
+  document.getElementById('add-section-form').style.display = 'flex';
+  document.getElementById('new-section-name').focus();
+}
+
+function addSubTo(parentId) {
+  pendingParent = parentId;
+  document.getElementById('new-section-parent').value = parentId;
+  document.getElementById('new-section-name').value = '';
+  document.getElementById('new-section-icon').value = '';
+  document.getElementById('add-section-form').style.display = 'flex';
+  document.getElementById('new-section-name').focus();
+}
+
+function confirmAddSection() {
+  const name = document.getElementById('new-section-name').value.trim();
+  const icon = document.getElementById('new-section-icon').value.trim() || '📄';
+  const parent = document.getElementById('new-section-parent').value || pendingParent || null;
+  
+  if (!name) { alert('Введите название раздела!'); return; }
+  
+  const id = 'section-' + (nextId++);
+  const maxOrder = sections.filter(s => s.parent === parent).reduce((max, s) => Math.max(max, s.order), -1);
+  
+  sections.push({ id, name, icon, parent, order: maxOrder + 1 });
+  pageBlocks[id] = [];
+  
+  document.getElementById('add-section-form').style.display = 'none';
+  document.getElementById('new-section-name').value = '';
+  renderTree();
+}
+
+function deleteSection(id) {
+  if (id === 'home') return;
+  if (!confirm(`Удалить раздел "${sections.find(s => s.id === id)?.name}" и все его подразделы?`)) return;
+  
+  // Remove children too
+  const toRemove = [id];
+  const children = sections.filter(s => s.parent === id);
+  children.forEach(c => toRemove.push(c.id));
+  // Grandchildren
+  children.forEach(c => {
+    sections.filter(s => s.parent === c.id).forEach(gc => toRemove.push(gc.id));
+  });
+  
+  sections = sections.filter(s => !toRemove.includes(s.id));
+  toRemove.forEach(rid => delete pageBlocks[rid]);
+  
+  if (currentPage === id) {
+    currentPage = 'home';
+    renderBlocks();
+  }
+  renderTree();
+}
+
+function editSection(id) {
+  const s = sections.find(x => x.id === id);
+  if (!s) return;
+  const name = prompt('Название раздела:', s.name);
+  if (name && name.trim()) {
+    s.name = name.trim();
+    renderTree();
+  }
+}
+
+// ====== BLOCK EDITOR ======
+function switchPage(pageId) {
+  currentPage = pageId;
+  document.getElementById('current-page-name').textContent = sections.find(s => s.id === pageId)?.icon + ' ' + (sections.find(s => s.id === pageId)?.name || pageId);
+  renderBlocks();
+}
+
+function renderBlocks() {
+  const blocks = pageBlocks[currentPage] || [];
+  const list = document.getElementById('blocks-list');
+  list.innerHTML = '';
+  
+  if (blocks.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:#999;background:#f8f9fa;border-radius:8px;">Пока нет блоков. Добавьте первый блок 👇</div>';
+    return;
+  }
+  
+  blocks.forEach((b, idx) => {
+    const div = document.createElement('div');
+    div.className = 'block-item';
+    div.innerHTML = `
+      <div class="block-header">
+        <span class="drag-handle" title="Перетащить">⠿</span>
+        <span class="icon">${getBlockIcon(b.type)}</span>
+        <span class="name">${b.name}</span>
+        <span style="font-size:11px;color:#888;background:#e9ecef;padding:2px 8px;border-radius:4px;">${getBlockTypeLabel(b.type)}</span>
+      </div>
+      <div class="block-preview">${getBlockPreview(b)}</div>
+      <div class="block-actions">
+        <button class="btn-config" onclick="openBlockConfig('${b.id}')">⚙️ Настроить</button>
+        <button onclick="moveBlock(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>⬆</button>
+        <button onclick="moveBlock(${idx}, 1)" ${idx === blocks.length - 1 ? 'disabled style="opacity:0.3"' : ''}>⬇</button>
+        <button class="btn-del" onclick="deleteBlock('${b.id}')">🗑️</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function getBlockIcon(type) {
+  const icons = { hero: '🧱', text: '📝', image: '🖼️', gallery: '📸', video: '🎬', table: '📊', cards: '🏗️', documents: '📄', form: '📋', divider: '➖' };
+  return icons[type] || '📦';
+}
+
+function getBlockTypeLabel(type) {
+  const labels = { hero: 'Баннер', text: 'Текст', image: 'Изображение', gallery: 'Галерея', video: 'Видео', table: 'Таблица', cards: 'Плитки', documents: 'Документы', form: 'Форма', divider: 'Разделитель' };
+  return labels[type] || type;
+}
+
+function getBlockPreview(block) {
+  switch(block.type) {
+    case 'hero':
+      return `🏞️ Заголовок: "${block.config.title || ''}" | Фон: ${block.config.bg_color || '#1b4332'}`;
+    case 'text':
+      return `📝 ${(block.config.content || '').replace(/<[^>]*>/g, '').slice(0, 80)}...`;
+    case 'image':
+      return block.config.src ? `🖼️ ${block.config.src.slice(0, 50)}` : '🖼️ Изображение не выбрано';
+    case 'gallery':
+      return `📸 ${(block.config.images || []).length} фото | Сетка: ${block.config.columns || 3} колонки`;
+    case 'video':
+      return `🎬 ${block.config.url || 'Ссылка не указана'}`;
+    case 'table':
+      return `📊 ${(block.config.rows || 0)} строк × ${(block.config.cols || 0)} колонок`;
+    case 'cards':
+      return `🏗️ ${(block.config.items || []).length} карточек | ${block.config.columns || 3} колонки`;
+    case 'documents':
+      return `📄 ${(block.config.docs || []).length} документов`;
+    case 'form':
+      return `📋 Форма: ${block.config.form_type === 'suggest' ? 'Предложить новость' : 'Обратная связь'}`;
+    case 'divider':
+      return `➖ Разделитель`;
+    default:
+      return JSON.stringify(block.config).slice(0, 60);
+  }
+}
+
+function addBlock() {
+  const type = document.getElementById('new-block-type').value;
+  if (!type) { alert('Выбери тип блока!'); return; }
+  
+  const blocks = pageBlocks[currentPage] || [];
+  const id = 'block-' + (nextId++);
+  
+  const defaultConfigs = {
+    hero: { title: 'Заголовок', subtitle: 'Подзаголовок', btn_text: '', btn_url: '', bg_color: '#1b4332', bg_image: '' },
+    text: { content: '<p>Текст абзаца</p>' },
+    image: { src: '', alt: '', caption: '' },
+    gallery: { images: [], columns: 3 },
+    video: { url: '', title: '', description: '' },
+    table: { headers: ['Колонка 1', 'Колонка 2'], rows: 3, cols: 2 },
+    cards: { items: [{ title: 'Карточка 1', text: 'Описание', link: '#' }], columns: 3 },
+    documents: { docs: [{ title: 'Документ', url: '#', description: '' }] },
+    form: { form_type: 'suggest', title: 'Форма' },
+    divider: { style: 'solid' },
+  };
+  
+  const names = { hero: 'Баннер', text: 'Текстовый блок', image: 'Изображение', gallery: 'Галерея', video: 'Видео', table: 'Таблица', cards: 'Плитки', documents: 'Документы', form: 'Форма', divider: 'Разделитель' };
+  
+  blocks.push({ id, type, name: names[type] || 'Новый блок', config: defaultConfigs[type] || {} });
+  pageBlocks[currentPage] = blocks;
+  renderBlocks();
+  document.getElementById('new-block-type').value = '';
+}
+
+function moveBlock(idx, dir) {
+  const blocks = pageBlocks[currentPage] || [];
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= blocks.length) return;
+  [blocks[idx], blocks[newIdx]] = [blocks[newIdx], blocks[idx]];
+  renderBlocks();
+}
+
+function deleteBlock(id) {
+  const blocks = pageBlocks[currentPage] || [];
+  pageBlocks[currentPage] = blocks.filter(b => b.id !== id);
+  renderBlocks();
+}
+
+// ====== BLOCK MODAL ======
+function openBlockConfig(id) {
+  const blocks = pageBlocks[currentPage] || [];
+  const block = blocks.find(b => b.id === id);
+  if (!block) return;
+  editingBlockId = id;
+  
+  document.getElementById('modal-icon').textContent = getBlockIcon(block.type);
+  document.getElementById('modal-title').textContent = 'Настройка: ' + block.name;
+  
+  const fields = document.getElementById('modal-fields');
+  fields.innerHTML = '';
+  
+  // Name field
+  addField('text', 'Название блока', 'block-name', block.name);
+  
+  // Type-specific fields
+  switch(block.type) {
+    case 'hero':
+      addField('text', 'Заголовок', 'hero-title', block.config.title);
+      addField('textarea', 'Подзаголовок', 'hero-subtitle', block.config.subtitle);
+      addField('text', 'Текст кнопки', 'hero-btn', block.config.btn_text);
+      addField('text', 'Ссылка кнопки', 'hero-url', block.config.btn_url);
+      addField('color', 'Цвет фона', 'hero-bg', block.config.bg_color);
+      addField('text', 'Фоновое изображение (URL)', 'hero-image', block.config.bg_image);
+      break;
+      
+    case 'text':
+      addField('textarea', 'Текст (HTML)', 'text-content', block.config.content);
+      break;
+      
+    case 'image':
+      addField('text', 'URL изображения', 'image-src', block.config.src);
+      addField('text', 'Alt текст', 'image-alt', block.config.alt);
+      addField('text', 'Подпись', 'image-caption', block.config.caption);
+      break;
+      
+    case 'gallery':
+      addField('number', 'Колонок в сетке', 'gallery-cols', block.config.columns || 3);
+      addField('text', 'URL фото (через запятую)', 'gallery-images', (block.config.images || []).join(', '));
+      break;
+      
+    case 'video':
+      addField('text', 'Ссылка (Rutube/VK)', 'video-url', block.config.url);
+      addField('text', 'Название', 'video-title', block.config.title);
+      addField('text', 'Описание', 'video-desc', block.config.description);
+      break;
+      
+    case 'table':
+      addField('text', 'Заголовки колонок (через | )', 'table-headers', (block.config.headers || []).join(' | '));
+      addField('number', 'Количество строк', 'table-rows', block.config.rows);
+      break;
+      
+    case 'cards':
+      addField('number', 'Колонок', 'cards-cols', block.config.columns || 3);
+      addField('textarea', 'Карточки (каждая с новой строки: Название | Описание | Ссылка)', 'cards-items', (block.config.items || []).map(i => `${i.title} | ${i.text} | ${i.link}`).join('\n'));
+      break;
+      
+    case 'documents':
+      addField('textarea', 'Документы (каждый с новой строки: Название | URL | Описание)', 'docs-items', (block.config.docs || []).map(d => `${d.title} | ${d.url} | ${d.description || ''}`).join('\n'));
+      break;
+      
+    case 'form':
+      addField('select', 'Тип формы', 'form-type', block.config.form_type, [
+        { value: 'suggest', label: 'Предложить новость' },
+        { value: 'feedback', label: 'Обратная связь' },
+        { value: 'contact', label: 'Контакты' },
+      ]);
+      addField('text', 'Заголовок формы', 'form-title', block.config.title);
+      break;
+      
+    case 'divider':
+      addField('select', 'Стиль', 'divider-style', block.config.style, [
+        { value: 'solid', label: 'Сплошная' },
+        { value: 'dashed', label: 'Пунктирная' },
+        { value: 'dotted', label: 'Точечная' },
+      ]);
+      break;
+  }
+  
+  document.getElementById('block-modal').classList.add('open');
+}
+
+function addField(type, label, name, value, options) {
+  const fields = document.getElementById('modal-fields');
+  const div = document.createElement('div');
+  div.className = 'field';
+  
+  let input = '';
+  if (type === 'textarea') {
+    input = `<textarea id="field-${name}" rows="4">${escapeHtml(value || '')}</textarea>`;
+  } else if (type === 'select' && options) {
+    input = `<select id="field-${name}">${options.map(o => `<option value="${o.value}" ${(value || '') === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}</select>`;
+  } else if (type === 'color') {
+    input = `<input type="color" id="field-${name}" value="${value || '#1b4332'}">`;
+  } else if (type === 'number') {
+    input = `<input type="number" id="field-${name}" value="${value || 0}" min="1" max="12">`;
+  } else {
+    input = `<input type="text" id="field-${name}" value="${escapeHtml(value || '')}">`;
+  }
+  
+  div.innerHTML = `<label>${label}</label>${input}`;
+  fields.appendChild(div);
+}
+
+function escapeHtml(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function saveBlockConfig() {
+  const blocks = pageBlocks[currentPage] || [];
+  const block = blocks.find(b => b.id === editingBlockId);
+  if (!block) return;
+  
+  // Save name
+  block.name = document.getElementById('field-block-name')?.value || block.name;
+  
+  // Save type-specific config
+  switch(block.type) {
+    case 'hero':
+      block.config.title = getVal('hero-title');
+      block.config.subtitle = getVal('hero-subtitle');
+      block.config.btn_text = getVal('hero-btn');
+      block.config.btn_url = getVal('hero-url');
+      block.config.bg_color = getVal('hero-bg');
+      block.config.bg_image = getVal('hero-image');
+      break;
+    case 'text':
+      block.config.content = getVal('text-content');
+      break;
+    case 'image':
+      block.config.src = getVal('image-src');
+      block.config.alt = getVal('image-alt');
+      block.config.caption = getVal('image-caption');
+      break;
+    case 'gallery':
+      block.config.columns = parseInt(getVal('gallery-cols')) || 3;
+      block.config.images = getVal('gallery-images').split(',').map(s => s.trim()).filter(Boolean);
+      break;
+    case 'video':
+      block.config.url = getVal('video-url');
+      block.config.title = getVal('video-title');
+      block.config.description = getVal('video-desc');
+      break;
+    case 'table':
+      block.config.headers = getVal('table-headers').split('|').map(s => s.trim()).filter(Boolean);
+      block.config.rows = parseInt(getVal('table-rows')) || 3;
+      block.config.cols = block.config.headers.length;
+      break;
+    case 'cards':
+      block.config.columns = parseInt(getVal('cards-cols')) || 3;
+      block.config.items = getVal('cards-items').split('\n').filter(Boolean).map(line => {
+        const parts = line.split('|').map(s => s.trim());
+        return { title: parts[0] || '', text: parts[1] || '', link: parts[2] || '#' };
+      });
+      break;
+    case 'documents':
+      block.config.docs = getVal('docs-items').split('\n').filter(Boolean).map(line => {
+        const parts = line.split('|').map(s => s.trim());
+        return { title: parts[0] || '', url: parts[1] || '#', description: parts[2] || '' };
+      });
+      break;
+    case 'form':
+      block.config.form_type = getVal('form-type');
+      block.config.title = getVal('form-title');
+      break;
+    case 'divider':
+      block.config.style = getVal('divider-style');
+      break;
+  }
+  
+  closeModal();
+  renderBlocks();
+}
+
+function getVal(name) {
+  const el = document.getElementById('field-' + name);
+  return el ? el.value : '';
+}
+
+function closeModal() {
+  document.getElementById('block-modal').classList.remove('open');
+  editingBlockId = null;
+}
+
+function savePage() {
+  alert('✅ Страница «' + (sections.find(s => s.id === currentPage)?.name || currentPage) + '» сохранена! (черновик)');
+}
+
+function publishPage() {
+  alert('📢 Страница «' + (sections.find(s => s.id === currentPage)?.name || currentPage) + '» опубликована!');
+}
+
+// ====== TAB SWITCHING ======
+document.querySelectorAll('.admin-menu button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-menu button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ====== INIT ======
+renderTree();
+switchPage('home');
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% set src = block.config.src|default('') %}
+{% set title = block.config.title|default('Видео') %}
+<div class="content-section container">
+    <div class="video-block">
+        {% if 'rutube' in src %}
+            {% set video_id = src.split('/')[-1] %}
+            <div class="video-block__embed">
+                <iframe src="https://rutube.ru/play/embed/{{ video_id }}" frameborder="0" allowfullscreen title="{{ title }}"></iframe>
+            </div>
+        {% elif 'vk.com' in src or 'vkvideo' in src %}
+            {% set video_id = src.split('video')[-1] if 'video' in src else src %}
+            <div class="video-block__embed">
+                <iframe src="https://vk.com/video_ext.php?{{ video_id }}" frameborder="0" allowfullscreen title="{{ title }}"></iframe>
+            </div>
+        {% elif src %}
+            <div class="video-block__embed">
+                <iframe src="{{ src }}" frameborder="0" allowfullscreen title="{{ title }}"></iframe>
+            </div>
+        {% else %}
+            <p class="video-block__empty">Видео не указано</p>
+        {% endif %}
+        {% if block.config.description %}
+            <p class="video-block__description">{{ block.config.description }}</p>
+        {% endif %}
+    </div>
+</div>

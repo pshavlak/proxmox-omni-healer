@@ -1,129 +1,106 @@
-  <section class="page-header">
-    <div class="container">
-      <h1 class="page-header__title">🏘️ Жизнь села Золотаревка</h1>
-      <div class="page-header__breadcrumb">
-        <a href="<?php echo esc_url(zolo_url('')); ?>">Главная</a> / Жизнь села
-      </div>
+<?php
+$slug = 'village-life';
+$is_preview = isset($_GET['zolo_preview']) && $_GET['zolo_preview'] === $slug && current_user_can('zolo_edit_site_content');
+$c = $is_preview ? zolo_get_page_content_draft($slug) : zolo_get_page_content($slug);
+?>
+<?php if ($is_preview): ?>
+<div style="position:sticky;top:0;z-index:99999;background:#ffc107;color:#000;text-align:center;padding:8px;font-weight:bold;">
+  👁 РЕЖИМ ПРЕДПРОСМОТРА — показан черновик
+</div>
+<?php endif; ?>
+
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-header__title"><?php echo esc_html($c['page_title']); ?></h1>
+    <div class="page-header__breadcrumb">
+      <a href="<?php echo esc_url(zolo_url('')); ?>">Главная</a> / Жизнь села
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="content-section">
-    <div class="container">
+<section class="content-section">
+  <div class="container">
 
-      <!-- История -->
-      <h2>📜 История села</h2>
-      <p>Село Золотаревка было основано в середине XIX века переселенцами из центральных губерний России. Название село получило благодаря живописным золотистым полям пшеницы, которые окружают его со всех сторон.</p>
-      <p>В разные годы Золотаревка была центром сельсовета, здесь располагалась усадьба помещика, а после революции — коллективное хозяйство. Сегодня село продолжает развиваться, сохраняя свои традиции и самобытность.</p>
+    <!-- История -->
+    <h2><?php echo esc_html($c['history_title']); ?></h2>
+    <?php echo wpautop(esc_html($c['history_text'])); ?>
 
-      <!-- Выдающиеся земляки -->
-      <h2>⭐ Выдающиеся земляки</h2>
-      <div class="pride-grid">
+    <!-- Выдающиеся земляки -->
+    <h2><?php echo esc_html($c['residents_title']); ?></h2>
+    <div class="pride-grid">
+      <?php foreach ($c['notable_residents'] as $resident): ?>
         <div class="pride-card">
-          <div class="pride-card__icon">🎖️</div>
-          <div class="pride-card__name">Иван Алексеевич Новиков</div>
-          <div class="pride-card__role">Герой Социалистического Труда</div>
-          <div class="pride-card__desc">Уроженец села, награжден за выдающиеся достижения в сельском хозяйстве.</div>
+          <div class="pride-card__icon"><?php echo esc_html($resident['icon'] ?? '🎖️'); ?></div>
+          <div class="pride-card__name"><?php echo esc_html($resident['name'] ?? ''); ?></div>
+          <div class="pride-card__role"><?php echo esc_html($resident['role'] ?? ''); ?></div>
+          <div class="pride-card__desc"><?php echo esc_html($resident['desc'] ?? ''); ?></div>
         </div>
-        <div class="pride-card">
-          <div class="pride-card__icon">📖</div>
-          <div class="pride-card__name">Мария Петровна Соколова</div>
-          <div class="pride-card__role">Заслуженный учитель РФ</div>
-          <div class="pride-card__desc">Более 50 лет проработала в школе села, воспитала не одно поколение золотаревцев.</div>
-        </div>
-        <div class="pride-card">
-          <div class="pride-card__icon">🎭</div>
-          <div class="pride-card__name">Николай Дмитриевич Белов</div>
-          <div class="pride-card__role">Художественный руководитель ДК</div>
-          <div class="pride-card__desc">Основал народный хор, который выступал на областных сценах.</div>
-        </div>
-      </div>
-
-      <!-- Дом Культуры -->
-      <h2 id="culture">🎭 Дом Культуры</h2>
-      <p>Дом Культуры села Золотаревка — центр культурной жизни. Здесь проходят праздники, концерты, работают кружки и секции для детей и взрослых.</p>
-
-      <h3>📅 Афиша мероприятий</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Мероприятие</th>
-              <th>Время</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1 июня 2026</td>
-              <td>День защиты детей — праздничный концерт</td>
-              <td>11:00</td>
-            </tr>
-            <tr>
-              <td>12 июня 2026</td>
-              <td>День России — гуляния на площади</td>
-              <td>14:00</td>
-            </tr>
-            <tr>
-              <td>20 июня 2026</td>
-              <td>Выставка местных художников и мастеров</td>
-              <td>16:00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>🎨 Кружки и секции</h3>
-      <div class="cards-grid">
-        <div class="info-card">
-          <div class="info-card__icon">🎤</div>
-          <h3 class="info-card__title">Вокальный кружок</h3>
-          <p class="info-card__text">Занятия по вторникам и четвергам в 17:00. Руководитель: Белов Н.Д.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-card__icon">💃</div>
-          <h3 class="info-card__title">Танцевальный кружок</h3>
-          <p class="info-card__text">Занятия по понедельникам, средам и пятницам в 18:00.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-card__icon">🎨</div>
-          <h3 class="info-card__title">Изостудия</h3>
-          <p class="info-card__text">Рисование для детей и взрослых. Суббота в 14:00.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-card__icon">🧶</div>
-          <h3 class="info-card__title">Рукоделие</h3>
-          <p class="info-card__text">Вязание, вышивка, лоскутное шитье. Среда и пятница в 15:00.</p>
-        </div>
-      </div>
-
-      <!-- Доска объявлений -->
-      <h2 id="bulletin">📋 Доска объявлений</h2>
-      <p style="color: var(--color-text-light); margin-bottom: 16px;">Куплю, продам, услуги местных мастеров.</p>
-
-      <?php
-      $bulletin_q = new WP_Query([
-          'post_type'      => 'bulletin_board',
-          'posts_per_page' => 10,
-          'post_status'    => 'publish',
-      ]);
-      while ($bulletin_q->have_posts()) : $bulletin_q->the_post();
-          // Determine tag from post meta or taxonomy
-          $tag = 'Продам';
-          $terms = wp_get_post_terms(get_the_ID(), 'content_section');
-          if (!empty($terms) && !is_wp_error($terms)) {
-              $tag = $terms[0]->name;
-          }
-      ?>
-      <div class="bulletin-item">
-        <div class="bulletin-item__title"><?php the_title(); ?></div>
-        <div class="bulletin-item__meta">
-          <span class="bulletin-item__tag"><?php echo esc_html($tag); ?></span>
-          <span>📅 <?php echo get_the_date('j F Y'); ?></span>
-        </div>
-        <div class="bulletin-item__text"><?php echo get_the_excerpt(); ?></div>
-      </div>
-      <?php endwhile; wp_reset_postdata(); ?>
-
+      <?php endforeach; ?>
     </div>
-  </section>
 
+    <!-- Дом Культуры -->
+    <h2 id="culture"><?php echo esc_html($c['culture_title']); ?></h2>
+    <p><?php echo esc_html($c['culture_description']); ?></p>
+
+    <h3><?php echo esc_html($c['culture_events_title']); ?></h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Мероприятие</th>
+            <th>Время</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($c['culture_events'] as $event): ?>
+            <tr>
+              <td><?php echo esc_html($event['date'] ?? ''); ?></td>
+              <td><?php echo esc_html($event['event'] ?? ''); ?></td>
+              <td><?php echo esc_html($event['time'] ?? ''); ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+
+    <h3><?php echo esc_html($c['culture_circles_title']); ?></h3>
+    <div class="cards-grid">
+      <?php foreach ($c['culture_circles'] as $circle): ?>
+        <div class="info-card">
+          <div class="info-card__icon"><?php echo esc_html($circle['icon'] ?? '🎤'); ?></div>
+          <h3 class="info-card__title"><?php echo esc_html($circle['title'] ?? ''); ?></h3>
+          <p class="info-card__text"><?php echo esc_html($circle['text'] ?? ''); ?></p>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- Доска объявлений -->
+    <h2 id="bulletin"><?php echo esc_html($c['bulletin_title']); ?></h2>
+    <p style="color: var(--color-text-light); margin-bottom: 16px;"><?php echo esc_html($c['bulletin_description']); ?></p>
+
+    <?php
+    $bulletin_q = new WP_Query([
+        'post_type'      => 'bulletin_board',
+        'posts_per_page' => (int) ($c['bulletin_count'] ?? 10),
+        'post_status'    => 'publish',
+    ]);
+    while ($bulletin_q->have_posts()) : $bulletin_q->the_post();
+        $tag = 'Продам';
+        $terms = wp_get_post_terms(get_the_ID(), 'content_section');
+        if (!empty($terms) && !is_wp_error($terms)) {
+            $tag = $terms[0]->name;
+        }
+    ?>
+    <div class="bulletin-item">
+      <div class="bulletin-item__title"><?php the_title(); ?></div>
+      <div class="bulletin-item__meta">
+        <span class="bulletin-item__tag"><?php echo esc_html($tag); ?></span>
+        <span>📅 <?php echo get_the_date('j F Y'); ?></span>
+      </div>
+      <div class="bulletin-item__text"><?php echo get_the_excerpt(); ?></div>
+    </div>
+    <?php endwhile; wp_reset_postdata(); ?>
+
+  </div>
+</section>

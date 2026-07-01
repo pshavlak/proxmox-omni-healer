@@ -1,0 +1,20 @@
+<section class="hero" style="background: {{ block.config.bg_color|default(settings.hero_bg_color|default('linear-gradient(135deg, #1b4332, #2d6a4f)')) }}{% if block.config.bg_image %}, url('{{ block.config.bg_image }}'){% endif %};{% if block.config.bg_image %} background-size: cover; background-position: center;{% endif %}">
+    <div class="hero__overlay"></div>
+    <div class="container hero__content">
+        <h1 class="hero__title">{{ block.config.title|default(settings.hero_title|default('Добро пожаловать в Золотаревку!')) }}</h1>
+        {% if block.config.subtitle %}
+            <p class="hero__subtitle">{{ block.config.subtitle }}</p>
+        {% elif settings.hero_subtitle %}
+            <p class="hero__subtitle">{{ settings.hero_subtitle }}</p>
+        {% endif %}
+        {% if block.config.btn_text %}
+            <a href="{{ block.config.btn_url|default('#') }}" class="hero__btn btn btn--accent">
+                {{ block.config.btn_text }}
+            </a>
+        {% elif settings.hero_btn_text %}
+            <a href="{{ block.config.btn_url|default('#sections') }}" class="hero__btn btn btn--accent">
+                {{ settings.hero_btn_text }}
+            </a>
+        {% endif %}
+    </div>
+</section>

@@ -1,0 +1,74 @@
+<div class="modal" id="suggestModal" aria-hidden="true">
+    <div class="modal__content" role="dialog" aria-labelledby="suggestModalTitle">
+        <button class="modal__close" id="suggestModalClose" aria-label="Закрыть">&times;</button>
+        <h3 class="modal__title" id="suggestModalTitle">{{ settings.suggest_title|default('Предложить новость') }}</h3>
+
+        {% if settings.suggest_text %}
+            <p class="modal__description" style="margin-bottom:16px;color:var(--color-text-light);">{{ settings.suggest_text }}</p>
+        {% endif %}
+
+        <form class="form" id="suggestForm" action="/api/suggest" method="POST">
+            <div class="form__group">
+                <label for="suggestName" class="form__label">Ваше имя</label>
+                <input type="text" id="suggestName" name="name" class="form__input" placeholder="Иван Иванов" required>
+            </div>
+
+            <div class="form__group">
+                <label for="suggestEmail" class="form__label">Email</label>
+                <input type="email" id="suggestEmail" name="email" class="form__input" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form__group">
+                <label for="suggestCategory" class="form__label">Категория</label>
+                <select id="suggestCategory" name="category" class="form__input form__select" required>
+                    <option value="news">Новость</option>
+                    <option value="event">Событие</option>
+                    <option value="photo">Фото</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+
+            <div class="form__group">
+                <label for="suggestText" class="form__label">Текст</label>
+                <textarea id="suggestText" name="text" class="form__input form__textarea" rows="5" placeholder="Опишите вашу новость..." required></textarea>
+            </div>
+
+            <button type="submit" class="form__submit btn btn--primary">
+                Отправить на модерацию
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var suggestForm = document.getElementById('suggestForm');
+    if (suggestForm) {
+        suggestForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(suggestForm);
+            var data = {};
+            formData.forEach(function(value, key) { data[key] = value; });
+
+            fetch('/api/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+                if (result.success) {
+                    alert('Спасибо! Ваша новость отправлена на модерацию.');
+                    suggestForm.reset();
+                    document.getElementById('suggestModal').classList.remove('open');
+                } else {
+                    alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(function() {
+                alert('Произошла ошибка при отправке. Попробуйте позже.');
+            });
+        });
+    }
+});
+</script>

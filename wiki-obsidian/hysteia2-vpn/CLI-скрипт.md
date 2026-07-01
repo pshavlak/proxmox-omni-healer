@@ -16,5 +16,7 @@
 
 Пароль генерируется через `openssl rand -base64 24 | tr -d '/+=' | head -c 20`.
 
+См. также структурированную версию: [[concepts/user-management]].
+
 ## Источники
 - `sources/Hysteria2/manager/hysteria-users.sh`
