@@ -27,6 +27,8 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 2500);
 }
 
+function showToast(msg, type) { toast(msg); }
+
 function generatePageSlug() {
   const name = document.getElementById('new-page-name').value.trim();
   const slug = name.toLowerCase()
@@ -990,15 +992,15 @@ async function loadUsers() {
 
     tbody.innerHTML = users.map(u => {
       const canDelete = !(users.length === 1 && u.id === users[0].id); // не последнего
-      <tr>
+      return `<tr>
         <td style="padding:10px 14px; font-weight:600; color:#495057; font-size:13px;">${escapeHtml(u.id)}</td>
         <td style="padding:10px 14px; font-weight:600;">${escapeHtml(u.username)}</td>
         <td style="padding:10px 14px;"><span class="badge" style="background:#d0bfff; color:#1a1a2e; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;">${escapeHtml(u.role)}</span></td>
         <td style="padding:10px 14px; color:#6c757d; font-size:12px;">${u.created_at ? u.created_at.substring(0, 10) : ''}</td>
         <td style="padding:10px 14px;">
-          ${canDelete ? `<button onclick="deleteUser(${escapeHtml(u.id)})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:13px;" title="Удалить">✕</button>` : ''}
+          ${canDelete ? `<button onclick="deleteUser(${u.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:13px;" title="Удалить">✕</button>` : ''}
         </td>
-      </tr>
+      </tr>`;
     }).join('');
   } catch (e) {
     showToast('Ошибка загрузки пользователей: ' + e.message, 'error');

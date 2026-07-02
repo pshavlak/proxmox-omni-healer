@@ -75,6 +75,18 @@
 |- Настроен HTTP → HTTPS редирект
 |- Удалён крон zolotarevka-ssl (certbot автообновление вместо acme.sh)
 |- Сайт доступен по https://золотаревка.рф (через Cloudflare proxy)
+|
+|## [2026-07-01] fix | Полный аудит безопасности + исправление 25 уязвимостей
+|- Проведён автоматический аудит кода (25 находок: 5 critical, 5 high, 9 medium, 6 low)
+|- **RBAC**: middleware проверяет роль admin для критичных API (users, roles, settings)
+|- **bcrypt**: пароли хэшируются с солью (вместо SHA256)
+|- **Rate limiting**: 10 попыток/мин на логин, 5/10мин на suggest
+|- **CSRF**: проверка Origin/Referer для write-запросов
+|- **SQL injection**: whitelist колонок в api_update_page
+|- **Админ-панель**: escapeHtml на всех динамических данных
+|- **Пользователи**: добавлен CRUD (создание/удаление/смена пароля)
+|- **Nginx**: security headers + server_tokens off
+|- **Пароль админа**: мигрирован на bcrypt (текущий пароль сохранён)
 ## [2026-05-30] deploy | Вывод сайта в интернет (золотаревка.рф)
 - Настроен WireGuard туннель VPS (62.113.105.38) ↔ LXC (192.168.1.64), 10.0.0.0/24
 - Настроен nginx reverse proxy на VPS для zolotarevka.yupiterpro.ru (временный домен)
