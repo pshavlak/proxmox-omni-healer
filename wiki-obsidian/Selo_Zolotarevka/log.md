@@ -87,6 +87,11 @@
 |- **Пользователи**: добавлен CRUD (создание/удаление/смена пароля)
 |- **Nginx**: security headers + server_tokens off
 |- **Пароль админа**: мигрирован на bcrypt (текущий пароль сохранён)
+|
+|## [2026-07-02] fix | autossh tunnel + logout button
+|- Reverse tunnel переведён с plain SSH на **autossh** — авто-переподключение при обрывах
+|- Добавлена кнопка **🚪 Выйти** в админ-панель (header справа)
+|- Создан скрипт восстановления: `deploy/fix-tunnel.sh`
 ## [2026-05-30] deploy | Вывод сайта в интернет (золотаревка.рф)
 - Настроен WireGuard туннель VPS (62.113.105.38) ↔ LXC (192.168.1.64), 10.0.0.0/24
 - Настроен nginx reverse proxy на VPS для zolotarevka.yupiterpro.ru (временный домен)
