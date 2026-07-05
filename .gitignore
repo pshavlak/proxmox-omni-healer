@@ -7,6 +7,7 @@ __pycache__/
 venv/
 ENV/
 env/
+.venv/
 
 # Database
 *.db
@@ -17,10 +18,19 @@ backend/app/db/
 *.log
 backend/logs/
 
-# Environment
+# Environment & Secrets
+config.env
 config.env.local
 .env
 .env.local
+*.env
+
+# SSH keys and credentials
+*.key
+*.pem
+*.cert
+id_*
+~/.ssh/
 
 # IDE
 .vscode/
@@ -32,3 +42,8 @@ config.env.local
 .DS_Store
 Thumbs.db
 .aider*
+
+# Archives and release tarballs
+*.tar.gz
+*.tgz
+*.zip
