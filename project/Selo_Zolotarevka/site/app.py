@@ -9,6 +9,7 @@ import sqlite3
 import uuid
 import bcrypt
 import struct
+import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -101,8 +102,8 @@ suggest_limiter = RateLimiter(max_requests=5, window_sec=600)  # 5 за 10 ми�
 
 
 # ====== Auth middleware ======
-PUBLIC_API_PREFIXES = ("/api/content/", "/api/suggest", "/api/feedback")
-PUBLIC_PATHS = {"/", "/login", "/logout"}
+PUBLIC_API_PREFIXES = ("/api/content/", "/api/feedback")
+PUBLIC_PATHS = {"/", "/login", "/logout", "/api/suggest"}
 
 ADMIN_WRITE_METHODS = {"POST", "PUT", "DELETE", "PATCH"}
 
@@ -110,6 +111,7 @@ ADMIN_ROUTES = {  # пути, требующие роль admin
     "/api/users", "/api/users/",
     "/api/roles", "/api/roles/",
     "/api/settings",
+    "/api/suggestions",
 }
 
 @app.middleware("http")
@@ -216,7 +218,17 @@ def login_post(
         "SELECT id, username, role, password_hash FROM users WHERE username = ?",
         (username,),
     ).fetchone()
-    if not user or not bcrypt.checkpw(password.encode(), user['password_hash'].encode()):
+    if not user:
+        conn.close()
+        return HTMLResponse(
+            render("login.html", error="Неверный логин или пароль"),
+            status_code=401,
+        )
+    try:
+        password_valid = bcrypt.checkpw(password.encode(), user['password_hash'].encode())
+    except ValueError:
+        password_valid = False
+    if not password_valid:
         conn.close()
         return HTMLResponse(
             render("login.html", error="Неверный логин или пароль"),
@@ -625,7 +637,16 @@ def api_get_settings():
     conn.close()
     result = {}
     for r in rows:
-        result[r["key"]] = list_from_json(r["value"]) if r["key"] in ("menu_groups_config",) else r["value"]
+        val = r["value"]
+        # Try to parse as JSON if it looks like a dict or list
+        if val and val.strip().startswith(("{", "[")):
+            try:
+                parsed = json.loads(val)
+                if isinstance(parsed, (dict, list)):
+                    val = parsed
+            except (json.JSONDecodeError, TypeError):
+                pass
+        result[r["key"]] = val
     return result
 
 
@@ -658,7 +679,7 @@ def api_get_media():
 
 
 @app.post("/api/media/upload")
-async def api_upload_media(file: UploadFile = File(...), alt_text: str = ""):
+async def api_upload_media(file: UploadFile = File(...), alt_text: str = Form("")):
     ext = Path(file.filename).suffix.lower()
     if ext not in cfg.ALLOWED_EXTENSIONS:
         raise HTTPException(400, f"Недопустимый тип файла: {ext}")
@@ -850,9 +871,18 @@ def web_index(request: Request):
 
 @app.get("/{slug:path}", response_class=HTMLResponse)
 def web_page(slug: str, request: Request):
-    # Игнорируем api/admins пути
-    if slug.startswith("api/") or slug.startswith("admin"):
-        raise HTTPException(404)
+    # Если API-путь не обработан другими маршрутами — JSON 404
+    if slug.startswith("api/"):
+        return JSONResponse({"error": "Not found"}, status_code=404)
+
+    # Если админский путь не обработан монтированием — редирект на логин
+    if slug.startswith("admin"):
+        session_token = request.cookies.get("session")
+        if session_token:
+            # Есть сессия, но путь не найден — 404
+            return HTMLResponse(render("errors/404.html", slug=slug))
+
+        return RedirectResponse(url="/login", status_code=302)
 
     slug = slug.rstrip("/").split("/")[-1]  # last segment
     conn = get_db()
