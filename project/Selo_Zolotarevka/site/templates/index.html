@@ -30,7 +30,7 @@
         {# Bento grid of sections #}
         <section id="sections" class="bento-section container">
             <h2 class="section__title">Разделы сайта</h2>
-            <div class="bento-grid">
+            <div class="bento__grid">
                 {% for section in sections|default([]) %}
                     <a href="/{{ section.id }}" class="bento__card">
                         {% if section.icon %}

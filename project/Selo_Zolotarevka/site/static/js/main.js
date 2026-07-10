@@ -4,31 +4,70 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ---------- Mobile Menu Toggle ----------
+  // ---------- Mobile Menu Toggle (off-canvas) ----------
   const mobileToggle = document.querySelector('.mobile-toggle');
   const nav = document.querySelector('.nav');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function closeMenu() {
+    nav.classList.remove('open');
+    if (navOverlay) navOverlay.classList.remove('open');
+    if (mobileToggle) mobileToggle.textContent = '☰';
+    document.body.style.overflow = '';
+  }
+
+  function openMenu() {
+    nav.classList.add('open');
+    if (navOverlay) navOverlay.classList.add('open');
+    if (mobileToggle) mobileToggle.textContent = '✕';
+    document.body.style.overflow = 'hidden';
+  }
 
   if (mobileToggle && nav) {
     mobileToggle.addEventListener('click', function() {
-      nav.classList.toggle('open');
-      mobileToggle.textContent = nav.classList.contains('open') ? '✕' : '☰';
+      if (nav.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     });
+
+    // Close on overlay click
+    if (navOverlay) {
+      navOverlay.addEventListener('click', closeMenu);
+    }
 
     // Close menu on link click (mobile)
     nav.querySelectorAll('.nav__link').forEach(link => {
       link.addEventListener('click', function(e) {
-        // Don't close if it has a mega-menu (dropdown)
         const parent = this.closest('.nav__item');
         if (parent && parent.querySelector('.mega-menu')) {
           if (window.innerWidth <= 768) {
             e.preventDefault();
             parent.classList.toggle('open');
+            return;
           }
-        } else {
-          nav.classList.remove('open');
-          if (mobileToggle) mobileToggle.textContent = '☰';
         }
+        closeMenu();
       });
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        closeMenu();
+      }
+    });
+
+    // Close on resize to desktop
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        if (window.innerWidth > 768 && nav.classList.contains('open')) {
+          closeMenu();
+        }
+      }, 200);
     });
   }
 

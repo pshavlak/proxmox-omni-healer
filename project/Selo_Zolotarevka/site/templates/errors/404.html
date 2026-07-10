@@ -11,7 +11,14 @@
                 Извините, запрашиваемая страница не существует или была перемещена.<br>
                 Возможно, вы перешли по устаревшей ссылке или допустили опечатку в адресе.
             </p>
-            <a href="/" class="error-page__btn btn btn--primary">Вернуться на главную</a>
+            <a href="/" class="error-page__btn btn btn--primary" style="animation: none;">🏠 Вернуться на главную</a>
+
+            <div class="error-page__search" style="margin: 32px 0;">
+                <form action="/search" method="GET" class="error-page__search-form" style="display:flex; gap:8px; max-width:400px; margin:0 auto;">
+                    <input type="text" name="q" placeholder="Поиск по сайту..." class="form__input" style="flex:1;" required>
+                    <button type="submit" class="btn btn--primary">Найти</button>
+                </form>
+            </div>
 
             <div class="error-page__links">
                 <h3 class="error-page__links-title">Основные разделы:</h3>

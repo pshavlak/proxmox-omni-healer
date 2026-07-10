@@ -2,6 +2,9 @@
    СЕЛО ЗОЛОТАРЕВКА — Основной стиль сайта
    ============================================ */
 
+/* Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 /* ---------- CSS Variables / Theme ---------- */
 :root {
   --color-primary: #2d6a4f;
@@ -25,7 +28,8 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --transition: 0.3s ease;
-  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-main: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --max-width: 1200px;
 }
 
@@ -267,6 +271,24 @@ ul {
   cursor: pointer;
   padding: 8px;
   color: var(--color-text);
+  z-index: 1001;
+  position: relative;
+}
+
+/* Off-canvas overlay */
+.nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-overlay.open {
+  display: block;
+  opacity: 1;
 }
 
 /* ---------- Hero Banner ---------- */
@@ -286,6 +308,10 @@ ul {
   inset: 0;
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
   z-index: 0;
+  /* Parallax effect */
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
 }
 
 .hero__bg::after {
@@ -296,11 +322,31 @@ ul {
   opacity: 0.3;
 }
 
+/* Gradient overlay */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.2) 100%);
+  z-index: 0;
+}
+
 .hero__content {
   position: relative;
   z-index: 1;
   padding: 60px 20px;
   max-width: 700px;
+  animation: heroFadeIn 0.8s ease forwards;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero__title {
@@ -308,12 +354,16 @@ ul {
   font-weight: 800;
   margin-bottom: 12px;
   text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  letter-spacing: -0.02em;
 }
 
 .hero__subtitle {
   font-size: 1.2rem;
   opacity: 0.9;
   margin-bottom: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero__btn {
@@ -324,12 +374,26 @@ ul {
   font-weight: 600;
   border-radius: 50px;
   transition: transform var(--transition), box-shadow var(--transition);
+  animation: heroBtnPulse 2s ease-in-out infinite;
+}
+
+@keyframes heroBtnPulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
 .hero__btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   color: var(--color-text);
+  animation: none;
+}
+
+/* Disable parallax on mobile for performance */
+@media (max-width: 768px) {
+  .hero__bg {
+    background-attachment: scroll;
+  }
 }
 
 /* ---------- Bento Grid (плитки) ---------- */
@@ -974,30 +1038,63 @@ tbody tr:hover {
   }
 }
 
+@media (max-width: 992px) {
+  .page-layout {
+    flex-direction: column;
+  }
+  .page-layout__sidebar {
+    flex: none;
+    width: 100%;
+  }
+  .sidebar-nav {
+    position: static;
+  }
+  .hero__title {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .mobile-toggle {
     display: block;
   }
 
+  .nav-overlay {
+    display: block;
+    pointer-events: none;
+  }
+  .nav-overlay.open {
+    pointer-events: auto;
+  }
+
   .nav {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    overflow-y: auto;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
     background: var(--color-white);
     box-shadow: var(--shadow-lg);
-    padding: 16px;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    padding: 80px 16px 24px;
+    z-index: 999;
+    transition: left 0.3s ease;
+    display: flex !important;
   }
 
   .nav.open {
-    display: flex;
+    left: 0;
   }
 
   .nav__item {
     width: 100%;
+  }
+
+  .nav__link {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
   }
 
   .mega-menu {
@@ -1007,22 +1104,40 @@ tbody tr:hover {
     visibility: visible;
     transform: none;
     display: none;
-    padding: 8px 0 8px 16px;
+    padding: 0 0 4px 16px;
   }
 
   .nav__item.open .mega-menu {
     display: block;
   }
 
+  .mega-menu__item {
+    padding: 8px 12px;
+  }
+
+  .hero {
+    min-height: 320px;
+  }
   .hero__title {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
-
   .hero__subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+  .hero__content {
+    padding: 40px 16px;
   }
 
-  .bento__grid {
+  .bento__grid,
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .bento-section,
+  .news-section {
+    padding: 40px 0;
+  }
+
+  .news-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1033,11 +1148,95 @@ tbody tr:hover {
 
   .footer__grid {
     grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
 
   .top-bar__info {
     flex-direction: column;
     gap: 4px;
+  }
+  .top-bar .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cta-block {
+    padding: 32px 20px;
+  }
+
+  .form-block {
+    padding: 20px;
+  }
+
+  .page-header {
+    padding: 32px 0;
+  }
+  .page-header__title {
+    font-size: 1.6rem;
+  }
+
+  .section__title {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .content-section {
+    padding: 30px 0;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .logo__text {
+    font-size: 1rem;
+  }
+  .logo__icon {
+    font-size: 1.5rem;
+  }
+
+  .hero {
+    min-height: 260px;
+  }
+  .hero__title {
+    font-size: 1.3rem;
+  }
+  .hero__btn {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal__content {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  .pride-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1488,69 +1687,47 @@ tbody tr:hover {
   z-index: 0;
 }
 
-/* ---------- Bento grid in index ---------- */
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+/* ---------- Social icon hover ---------- */
+.top-bar__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background var(--transition), transform var(--transition), color var(--transition);
+  color: var(--color-accent-light);
+}
+.top-bar__social-link:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.15);
+  color: var(--color-white);
 }
 
-.bento-section {
-  padding: 60px 0;
+/* ---------- Card hover enhancements ---------- */
+.bento__card,
+.info-card,
+.news-card,
+.pride-card,
+.bulletin-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
-
-/* ---------- News section in index ---------- */
-.news-section {
-  padding: 60px 0;
-}
-
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.news-card {
-  background: var(--color-white);
-  border-radius: var(--radius-md);
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), box-shadow var(--transition);
-}
-
+.bento__card:hover,
+.info-card:hover,
 .news-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
 
-.news-card__icon {
-  font-size: 2rem;
-  margin-bottom: 12px;
+/* ---------- Animate on scroll (IntersectionObserver) ---------- */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
-
-.news-card__title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--color-primary-dark);
-}
-
-.news-card__excerpt {
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-  margin-bottom: 12px;
-}
-
-.news-card__link {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.news-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--color-text-light);
-  padding: 40px;
+.animate-on-scroll.animate {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ---------- CTA block ---------- */
