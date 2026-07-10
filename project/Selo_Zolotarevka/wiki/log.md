@@ -1,5 +1,42 @@
 # Change Log
 
+## 2026-07-10 — Фаза 4: Автоматизация (бэкап, мониторинг, Makefile, документация)
+### Добавлено
+- **Резервное копирование** — `deploy/backup.sh`
+  - Бэкап SQLite (с VACUUM) + uploads + конфиги
+  - Архивация в tar.gz, хранение 30 дней
+  - Telegram уведомления
+- **Мониторинг SQLite** — `deploy/check_db.sh`
+  - Проверка размера (предупреждение 300MB, VACUUM 500MB)
+  - Проверка целостности (PRAGMA integrity_check)
+  - Статистика по таблицам
+  - Мониторинг WAL файла
+- **Makefile** — полная автоматизация
+  - `make deploy` — rsync на сервер
+  - `make restart` — systemctl restart
+  - `make deploy-full` — файлы + перезапуск
+  - `make backup / check-db / test / logs / clean`
+- **Обновление документации**
+  - `wiki/SCHEMA.md` — полная архитектура, таблицы, эндпоинты, фазы
+  - `wiki/deployment.md` — гайд по деплою с Makefile
+  - `CHANGELOG.md` — создан
+
+## 2026-07-10 — Фаза 3: Дизайн и UX (адаптивность, шрифт, hero, микроанимации, 404)
+### Добавлено
+- Off-canvas мобильное меню (выезжает слева, overlay)
+- Google Fonts Inter (700, 800, 900)
+- Параллакс на hero (background-attachment: fixed)
+- Анимация heroFadeIn + пульсация кнопки
+- Микроанимации для соц-иконок и карточек
+- Форма поиска на странице 404
+- animate-on-scroll классы в блоках text, image, form
+
+### Изменено
+- Рефакторинг CSS: удалены дублирующиеся классы (.bento-grid, .news-section, .news-grid)
+- Шаблон index.html переведён на .bento__grid
+- Мобильное меню: закрытие по Escape, клик по overlay, при resize
+- Hero min-height: 320px / 260px на мобильных
+
 ## 2026-07-10 — Фаза 2: Версионирование, CAPTCHA, загрузка, виджеты
 ### Добавлено
 - **Версионирование блоков** — таблица `blocks_history`, история изменений

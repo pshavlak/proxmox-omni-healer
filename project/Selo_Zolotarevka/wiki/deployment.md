@@ -1,73 +1,91 @@
-# Фаза 1: Базовая безопасность и стабильность (✅ Выполнено 10.07.2026)
+# Деплой сайта Золотаревка
 
-## 1.1 HTTPS/SSL
-- **На VPS**: Let's Encrypt (ECDSA), сертификат действителен до 29.09.2026
-- Добавлен **HSTS** (max-age=31536000; includeSubDomains; preload)
-- Добавлен **OCSP Stapling** (предупреждение — нет OCSP responder в сертификате, игнорируется)
-- HTTP → HTTPS редирект (через nginx)
-- Security headers: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
+## Быстрый старт (локально)
 
-## 1.2 UFW (Фаервол)
-- Установлен `ufw` на LXC wordpress
-- Разрешены порты: 22/tcp (SSH), 80/tcp (HTTP), 443/tcp (HTTPS)
-- Дефолт: deny incoming, allow outgoing
-- Скрипт: `deploy/setup-ufw.sh`
+```bash
+# Клонировать
+git clone https://github.com/pshavlak/proxmox-omni-healer
+cd proxmox-omni-healer/project/Selo_Zolotarevka
 
-## 1.3 Health Check
-- Эндпоинт `GET /health` → `{"status": "ok", "timestamp": "..."}`
-- Скрипт мониторинга: `deploy/healthcheck.sh` (проверяет /health, /, /admin/, /api/pages)
-- Telegram алерты: `deploy/telegram-alert.sh`
+# Установить
+make install
 
-## 1.4 Rate Limiting
-- Глобальный middleware: 60 POST/PUT/DELETE/PATCH запросов/мин к `/api/`
-- In-memory `RateLimiter` класс (чистка устаревших записей)
+# Запустить (нужен ZOLO_SECRET)
+export ZOLO_SECRET="my-secret-key"
+make run
 
-## 1.5 Debug Mode
-- Переменная окружения `DEBUG=false` в `/etc/zolotarevka/env`
-- Uvicorn reload только при DEBUG=true
+# Или вручную:
+cd site && source .venv/bin/activate && uvicorn app:app --reload --port 8000
+```
 
-## 1.6 Кеширование
-- nginx: static/ — 7d, uploads/ — 30d
-- Прокси-кеш для публичных страниц (1 час, bypass по cookie session)
+## Деплой на сервер
 
-# Фаза 2: Улучшение функционала (✅ Частично выполнено 10.07.2026)
+```bash
+# Первый раз
+make deploy SERVER=root@your-server.com
+make restart SERVER=root@your-server.com
 
-## 2.1 Полнотекстовый поиск (FTS5) ✅
-- Виртуальная таблица `pages_fts` с триггерами синхронизации
-- Эндпоинт `GET /api/search?q=...` (JSON)
-- Страница `GET /search?q=...` (Jinja2 шаблон)
-- Поиск: `unicode61` токенайзер, подсветка результатов через `snippet()`
+# Последующие разы
+make deploy-full SERVER=root@your-server.com
+```
 
-## 2.2 Sitemap & Robots ✅
-- `GET /sitemap.xml` — динамический XML со всеми published страницами
-- `GET /robots.txt` — с Disallow для /admin/ и /api/
-- `<link rel="sitemap">` в base.html
+## Systemd сервис
 
-## 2.3 Форма поиска в шапке ✅
-- Поле поиска в `partials/header.html`
-- Отправляет GET /search?q=...
+```bash
+# Копировать юнит
+sudo cp deploy/zolotarevka.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now zolotarevka
 
-## 2.4-2.7 ❌ Не выполнены
-- Версионирование блоков
-- CAPTCHA (Cloudflare Turnstile)
-- Множественная загрузка файлов
-- Виджеты на главной
+# Переменные окружения
+sudo mkdir -p /etc/zolotarevka
+sudo tee /etc/zolotarevka/env <<EOF
+ZOLO_SECRET=your-secret-here
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+EOF
+```
 
-# Структура сервера
+## Nginx
 
-## LXC wordpress (192.168.1.64)
-- FastAPI: `/var/www/zolotarevka-fastapi/`
-- База: `site.db` (SQLite)
-- systemd: `zolotarevka-fastapi.service`
-- Запуск: uvicorn app.main:app --host 0.0.0.0 --port 8000
+```bash
+sudo cp deploy/nginx-zolotarevka.conf /etc/nginx/sites-available/zolotarevka
+sudo ln -s /etc/nginx/sites-available/zolotarevka /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
 
-## VPS (31.56.208.248)
-- Nginx reverse proxy: `xn--80aaflivdxbvu.xn--p1ai` → 127.0.0.1:8000
-- Cloudflare поверх
-- WordPress legacy: `zolotarevka.yupiterpro.ru` → 127.0.0.1:8080 (через reverse tunnel)
+## Резервное копирование
 
-# Следующие шаги
-1. Версионирование блоков (history)
-2. CAPTCHA Cloudflare Turnstile
-3. Множественная загрузка медиа
-4. Виджеты на главной
+```bash
+# Ежедневный бэкап (через cron)
+0 3 * * * /opt/zolotarevka/deploy/backup.sh
+
+# Мониторинг БД
+0 6 * * * /opt/zolotarevka/deploy/check_db.sh
+```
+
+Настройка Telegram уведомлений:
+
+```bash
+sudo tee /etc/zolotarevka/telegram.env <<EOF
+TG_BOT_TOKEN=your-bot-token
+TG_CHAT_ID=your-chat-id
+EOF
+```
+
+## Makefile команды
+
+```bash
+make help        # Справка
+make install     # Установка зависимостей
+make run         # Локальный запуск
+make test        # Проверка API
+make deploy      # Копирование на сервер
+make restart     # Перезапуск сервиса
+make deploy-full # Деплой + перезапуск
+make logs        # Логи сервиса
+make backup      # Локальный бэкап
+make check-db    # Проверка БД
+make clean       # Очистка
+```
