@@ -185,5 +185,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  console.log('🌾 Село Золотаревка — сайт загружен!');
+    // ---------- Фаза 2: Виджет случайного фото ----------
+  const randomMediaWidget = document.getElementById('randomMediaWidget');
+  if (randomMediaWidget) {
+    fetch('/api/content/random-media?limit=1')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          var media = data[0];
+          var content = document.getElementById('randomMediaContent');
+          if (content) {
+            var html = '<div class="random-media-card">';
+            if (media.mime_type && media.mime_type.startsWith('video')) {
+              html += '<video src="' + media.url + '" controls class="random-media__media"></video>';
+            } else {
+              html += '<img src="' + media.url + '" alt="' + (media.alt_text || '') + '" class="random-media__media">';
+            }
+            html += '<p class="random-media__caption">' + (media.alt_text || media.original_name || '') + '</p>';
+            html += '</div>';
+            content.innerHTML = html;
+            randomMediaWidget.style.display = '';
+          }
+        }
+      })
+      .catch(function() {});
+  }
+
+  // ---------- Фаза 2: Виджет последних новостей (динамический) ----------
+  var newsWidget = document.querySelector('.news-section');
+  if (newsWidget) {
+    fetch('/api/content/recent?limit=6')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          var grid = newsWidget.querySelector('.news-grid');
+          if (grid) {
+            grid.innerHTML = '';
+            data.forEach(function(item) {
+              var art = document.createElement('article');
+              art.className = 'news-card';
+              art.innerHTML = '<div class="news-card__icon">' + (item.icon || '📰') + '</div>' +
+                '<h3 class="news-card__title">' + item.name + '</h3>' +
+                '<p class="news-card__excerpt">Новости и события из жизни села Золотаревка</p>' +
+                '<a href="/' + item.id + '" class="news-card__link">Читать →</a>';
+              grid.appendChild(art);
+            });
+          }
+        }
+      })
+      .catch(function() {});
+  }
+
+  console.log('🌾 Село Золотаревка — сайт загружен! (Фаза 2: виджеты)');
 });

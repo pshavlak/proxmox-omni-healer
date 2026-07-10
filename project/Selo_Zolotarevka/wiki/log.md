@@ -1,5 +1,37 @@
 # Change Log
 
+## 2026-07-10 — Фаза 2: Версионирование, CAPTCHA, загрузка, виджеты
+### Добавлено
+- **Версионирование блоков** — таблица `blocks_history`, история изменений
+  - `GET /api/blocks/{block_id}/history` — получить историю
+  - `POST /api/blocks/{block_id}/restore/{version_id}` — восстановить версию
+  - Авто-сохранение текущей версии при перезаписи блоков страницы
+- **Cloudflare Turnstile CAPTCHA** — бесплатная защита от ботов
+  - Виджет в форме "Предложить новость" (`suggest_modal.html`)
+  - Виджет в блочной форме (`form.html`)
+  - Эндпоинт `/api/captcha/config` — получение site key
+  - Эндпоинт `/api/captcha/verify` — проверка токена
+  - Настройка через `captcha_config` таблицу (turnstile_site_key, turnstile_secret_key)
+- **Множественная загрузка файлов**
+  - `/api/media/upload-multiple` — загрузка до 20 файлов за раз
+  - `/api/media/upload` — сохранён для совместимости
+  - Уникальные имена через MD5 хеш
+- **Виджеты на главной (динамическая подгрузка)**
+  - `GET /api/content/random-media` — случайное фото/видео
+  - Виджет "Случайное фото" на главной (AJAX)
+  - Виджет "Последние новости" (динамическая замена через AJAX)
+
+### Изменено
+- `database.py` — добавлены таблицы `blocks_history`, `captcha_config`, функция `migrate_db()`
+- `app.py` — добавлены эндпоинты истории, CAPTCHA, множественной загрузки, виджетов
+- `requirements.txt` — добавлен `httpx>=0.27.0`
+- `base.html` — подключён Cloudflare Turnstile API скрипт
+- `suggest_modal.html` — Turnstile виджет, обработка в JS
+- `form.html` — Turnstile виджет в форму
+- `index.html` — секция случайного фото
+- `main.js` — динамические виджеты (random-media, recent news)
+- `style.css` — стили для random-media-widget, cf-turnstile
+
 ## 2026-07-10 — Фазы 1-2: Безопасность + Поиск
 ### Добавлено
 - `/health` endpoint для мониторинга

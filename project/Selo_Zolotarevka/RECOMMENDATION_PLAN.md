@@ -67,26 +67,26 @@
 - [ ] Для публичных страниц добавить `Cache-Control: public, max-age=3600`.
 - [ ] Рассмотреть `fastapi-cache` для кеширования эндпоинтов `/api/content/pages` и `/api/content/recent`.
 
-### 2.4 Версионирование блоков (history)
-- [ ] Создать таблицу `blocks_history`: `id`, `block_id`, `config_snapshot`, `created_at`, `user_id`.
-- [ ] При сохранении блока (`PUT /api/pages/{page_id}/blocks`) сохранять предыдущую версию.
-- [ ] Эндпоинты: `GET /api/blocks/{block_id}/history`, `POST /api/blocks/{block_id}/restore/{version_id}`.
-- [ ] В админ-панель добавить кнопку "История".
+### 2.4 Версионирование блоков (history) ✅
+- [x] Создать таблицу `blocks_history`: `id`, `block_id`, `config_snapshot`, `created_at`, `user_id`.
+- [x] При сохранении блока (`PUT /api/pages/{page_id}/blocks`) сохранять предыдущую версию.
+- [x] Эндпоинты: `GET /api/blocks/{block_id}/history`, `POST /api/blocks/{block_id}/restore/{version_id}`.
+- [x] В админ-панель добавить кнопку "История".
 
-### 2.5 CAPTCHA для формы "Предложить новость"
-- [ ] Подключить Cloudflare Turnstile (бесплатно, без капчи для пользователей).
-- [ ] В `suggest_modal.html` добавить `<div class="cf-turnstile" ...>`.
-- [ ] На сервере (`api_suggest`) проверять токен через `POST /siteverify`.
+### 2.5 CAPTCHA для формы "Предложить новость" ✅
+- [x] Подключить Cloudflare Turnstile (бесплатно, без капчи для пользователей).
+- [x] В `suggest_modal.html` добавить `<div class="cf-turnstile" ...>`.
+- [x] На сервере (`api_suggest`) проверять токен через `POST /siteverify`.
 
-### 2.6 Загрузка нескольких файлов в медиа-центр
-- [ ] В `api_upload_media`: `UploadFile` → `List[UploadFile] = File(...)`.
-- [ ] На клиенте (админка) drag-and-drop + множественный выбор.
-- [ ] Уникальные имена файлов, запись в БД.
+### 2.6 Загрузка нескольких файлов в медиа-центр ✅
+- [x] В `api_upload_media`: `UploadFile` → `List[UploadFile] = File(...)`.
+- [x] На клиенте (админка) drag-and-drop + множественный выбор.
+- [x] Уникальные имена файлов, запись в БД.
 
-### 2.7 Виджеты на главной (последние новости, случайное фото)
-- [ ] Сервер: `GET /api/content/recent` (уже есть), `GET /api/content/random-media`.
-- [ ] В `index.html` динамическая подгрузка через AJAX.
-- [ ] Placeholder при отсутствии данных.
+### 2.7 Виджеты на главной (последние новости, случайное фото) ✅
+- [x] Сервер: `GET /api/content/recent` (уже есть), `GET /api/content/random-media`.
+- [x] В `index.html` динамическая подгрузка через AJAX.
+- [x] Placeholder при отсутствии данных.
 
 ---
 

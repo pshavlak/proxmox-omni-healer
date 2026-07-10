@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {# Виджет: случайное фото (Фаза 2) #}
+    <section class="random-media-widget container" id="randomMediaWidget" style="display:none;">
+        <h2 class="section__title">Случайное фото</h2>
+        <div id="randomMediaContent"></div>
+    </section>
+
     {# Render blocks defined for the home page if they exist #}
     {% if blocks is defined and blocks %}
         {% for block in blocks %}

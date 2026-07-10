@@ -31,6 +31,9 @@
                     <label for="form-text-{{ block.id }}" class="form__label">Текст</label>
                     <textarea id="form-text-{{ block.id }}" name="text" class="form__input form__textarea" rows="5" placeholder="Опишите вашу новость..." required></textarea>
                 </div>
+                {% if settings.turnstile_site_key %}
+                <div class="cf-turnstile" data-sitekey="{{ settings.turnstile_site_key }}"></div>
+                {% endif %}
                 <button type="submit" class="form__submit btn btn--primary">Отправить на модерацию</button>
             </form>
 

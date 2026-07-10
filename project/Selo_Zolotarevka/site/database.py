@@ -8,6 +8,68 @@ from datetime import datetime
 from config import DATABASE_PATH
 
 
+def migrate_db():
+    """Миграции для существующих БД (Фаза 2)."""
+    conn = get_db()
+    cur = conn.cursor()
+    
+    # blocks_history
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS blocks_history (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id    TEXT,
+            config_snapshot TEXT NOT NULL,
+            user_id     INTEGER,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # captcha_config
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS captcha_config (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+    """)
+    
+    # Добавляем колонку turnstile_site_key в settings, если нет
+    try:
+        cur.execute("SELECT turnstile_site_key FROM settings LIMIT 1")
+    except sqlite3.OperationalError:
+        # settings — key-value, колонки не добавляем
+        pass
+    
+    # Миграция: пересоздаём blocks_history с правильным FK (без CASCADE)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS blocks_history_new (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id    TEXT,
+            config_snapshot TEXT NOT NULL,
+            user_id     INTEGER,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    cur.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='blocks_history'")
+    if cur.fetchone()[0] > 0:
+        cur.execute("INSERT OR IGNORE INTO blocks_history_new SELECT * FROM blocks_history")
+        cur.execute("DROP TABLE blocks_history")
+        cur.execute("ALTER TABLE blocks_history_new RENAME TO blocks_history")
+    
+    conn.commit()
+    conn.close()
+
+
+def save_block_version(block_id: str, config_snapshot: dict, user_id: int = None):
+    """Сохраняет версию блока в history."""
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO blocks_history (block_id, config_snapshot, user_id) VALUES (?, ?, ?)",
+        (block_id, json.dumps(config_snapshot, ensure_ascii=False), user_id),
+    )
+    conn.commit()
+    conn.close()
+
+
 def get_db():
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
@@ -104,6 +166,21 @@ def init_db():
             page_id     TEXT NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
             sort_order  INTEGER DEFAULT 0,
             PRIMARY KEY (group_id, page_id)
+        );
+
+        -- Фаза 2: Версионирование блоков
+        CREATE TABLE IF NOT EXISTS blocks_history (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id    TEXT,
+            config_snapshot TEXT NOT NULL,
+            user_id     INTEGER,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Фаза 2: CAPTCHA настройки
+        CREATE TABLE IF NOT EXISTS captcha_config (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
         );
     """)
 
@@ -252,10 +329,10 @@ def seed_db():
         )
 
     # ---- Admin user (создаётся только если нет) ----
-    import hashlib
+    import hashlib, bcrypt
     admin_exists = cur.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     if admin_exists == 0:
-        pw_hash = hashlib.sha256("admin123".encode()).hexdigest()
+        pw_hash = bcrypt.hashpw("admin123".encode(), bcrypt.gensalt()).decode()
         cur.execute(
             "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
             ("admin", pw_hash, "admin")

@@ -33,7 +33,9 @@
                 <textarea id="suggestText" name="text" class="form__input form__textarea" rows="5" placeholder="Опишите вашу новость..." required></textarea>
             </div>
 
-            <button type="submit" class="form__submit btn btn--primary">
+            <div class="cf-turnstile" data-sitekey="{{ settings.turnstile_site_key|default('') }}" data-callback="onTurnstileSuccess"></div>
+
+            <button type="submit" class="form__submit btn btn--primary" id="suggestSubmitBtn" disabled>
                 Отправить на модерацию
             </button>
         </form>
@@ -42,6 +44,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Turnstile каллбэк
+    window.onTurnstileSuccess = function(token) {
+        document.getElementById('suggestSubmitBtn').disabled = false;
+    };
+
     var suggestForm = document.getElementById('suggestForm');
     if (suggestForm) {
         suggestForm.addEventListener('submit', function(e) {
@@ -49,6 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
             var formData = new FormData(suggestForm);
             var data = {};
             formData.forEach(function(value, key) { data[key] = value; });
+
+            // Добавляем Turnstile токен
+            var turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+            if (turnstileResponse && turnstileResponse.value) {
+                data.turnstile_token = turnstileResponse.value;
+            }
+
+            var submitBtn = document.getElementById('suggestSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
 
             fetch('/api/suggest', {
                 method: 'POST',
@@ -60,13 +77,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.success) {
                     alert('Спасибо! Ваша новость отправлена на модерацию.');
                     suggestForm.reset();
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Отправить на модерацию';
                     document.getElementById('suggestModal').classList.remove('open');
+                    // Сбрасываем Turnstile
+                    if (window.turnstile) {
+                        turnstile.reset();
+                    }
                 } else {
                     alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить на модерацию';
                 }
             })
             .catch(function() {
                 alert('Произошла ошибка при отправке. Попробуйте позже.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Отправить на модерацию';
             });
         });
     }

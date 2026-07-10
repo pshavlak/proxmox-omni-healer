@@ -4,6 +4,7 @@
 Запуск: uvicorn app:app --reload
 """
 import os
+from typing import Optional
 import json
 import sqlite3
 import uuid
@@ -27,8 +28,8 @@ if not SECRET_KEY:
     raise RuntimeError("ZOLO_SECRET не задан! Установите переменную окружения.")
 
 import config as cfg
-from database import get_db, init_db
-from models import PageCreate, PageUpdate, BlockCreate, RoleCreate, SuggestionCreate, ReorderRequest, MenuGroupCreate, MenuGroupUpdate
+from database import get_db, init_db, save_block_version
+from models import PageCreate, PageUpdate, BlockCreate, RoleCreate, SuggestionCreate, ReorderRequest
 
 
 # ====== Jinja2 шаблоны ======
@@ -110,7 +111,7 @@ api_limiter = RateLimiter(max_requests=30, window_sec=60)  # 30 write-запро
 
 
 # ====== Auth middleware ======
-PUBLIC_API_PREFIXES = ("/api/content/", "/api/feedback", "/api/menu")
+PUBLIC_API_PREFIXES = ("/api/content/", "/api/feedback", "/api/menu", "/api/captcha/", "/api/blocks/")
 PUBLIC_PATHS = {"/", "/login", "/logout", "/api/suggest"}
 
 ADMIN_WRITE_METHODS = {"POST", "PUT", "DELETE", "PATCH"}
@@ -191,6 +192,24 @@ async def check_admin_auth(request: Request, call_next):
 
 
 # ====== HELPERS ======
+def get_current_user_id(request: Request) -> Optional[int]:
+    """Возвращает user_id из сессии или None."""
+    token = request.cookies.get("session")
+    if not token:
+        return None
+    try:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT u.id FROM sessions s JOIN users u ON s.user_id = u.id "
+            "WHERE s.token = ? AND s.expires_at > datetime('now')",
+            (token,),
+        ).fetchone()
+        conn.close()
+        return row["id"] if row else None
+    except Exception:
+        return None
+
+
 def row_to_dict(row):
     if row is None:
         return None
@@ -421,11 +440,39 @@ def api_get_blocks(page_id: str):
 
 
 @app.put("/api/pages/{page_id}/blocks")
-def api_save_blocks(page_id: str, blocks: list = Body(...)):
+def api_save_blocks(page_id: str, blocks: list = Body(...), request: Request = None):
+    # request не обязательный, получаем user_id если есть
     """Сохраняет все блоки страницы (заменяет существующие)."""
     if not api_limiter.check("api:save_blocks"):
         raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
+    
+    # Сохраняем предыдущие версии в историю (Фаза 2)
+    old_blocks = conn.execute(
+        "SELECT * FROM blocks WHERE page_id = ?", (page_id,)
+    ).fetchall()
+    # Получаем user_id
+    uid = None
+    if request:
+        token = request.cookies.get("session")
+        if token:
+            try:
+                row = conn.execute(
+                    "SELECT u.id FROM sessions s JOIN users u ON s.user_id = u.id "
+                    "WHERE s.token = ? AND s.expires_at > datetime('now')",
+                    (token,),
+                ).fetchone()
+                if row:
+                    uid = row["id"]
+            except Exception:
+                pass
+    # Сохраняем версии ДО удаления (в том же коннекшне, чтобы избежать CASCADE)
+    for old in old_blocks:
+        conn.execute(
+            "INSERT INTO blocks_history (block_id, config_snapshot, user_id) VALUES (?, ?, ?)",
+            (old["id"], json.dumps(json.loads(old["config"]), ensure_ascii=False), uid),
+        )
+    
     conn.execute("DELETE FROM blocks WHERE page_id = ?", (page_id,))
     for i, b in enumerate(blocks):
         bid = b.get("id")
@@ -487,6 +534,61 @@ def api_move_block(block_id: str, direction: str = "down"):
 
     conn.close()
     return {"success": True}
+
+
+# ====== API: Block History (Фаза 2) ======
+@app.get("/api/blocks/{block_id}/history")
+def api_block_history(block_id: str):
+    """История изменений блока."""
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT h.*, u.username FROM blocks_history h "
+        "LEFT JOIN users u ON h.user_id = u.id "
+        "WHERE h.block_id = ? ORDER BY h.created_at DESC",
+        (block_id,),
+    ).fetchall()
+    conn.close()
+    result = []
+    for r in rows:
+        d = row_to_dict(r)
+        d["config_snapshot"] = json.loads(d.get("config_snapshot", "{}"))
+        result.append(d)
+    return result
+
+
+@app.post("/api/blocks/{block_id}/restore/{version_id}")
+def api_restore_block_version(block_id: str, version_id: int, request: Request):
+    """Восстанавливает версию блока из истории."""
+    if not api_limiter.check("api:restore_block"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
+    conn = get_db()
+    version = conn.execute(
+        "SELECT * FROM blocks_history WHERE id = ? AND block_id = ?",
+        (version_id, block_id),
+    ).fetchone()
+    if not version:
+        conn.close()
+        raise HTTPException(404, "Версия не найдена")
+    
+    # Сохраняем текущую версию перед восстановлением
+    current = conn.execute(
+        "SELECT config, updated_at FROM blocks WHERE id = ?", (block_id,)
+    ).fetchone()
+    if current:
+        user_id = get_current_user_id(request)
+        save_block_version(block_id, json.loads(current["config"]), user_id)
+    
+    # Восстанавливаем
+    conn.execute(
+        "UPDATE blocks SET config = ?, updated_at = datetime('now') WHERE id = ?",
+        (version["config_snapshot"], block_id),
+    )
+    conn.commit()
+    block = conn.execute("SELECT * FROM blocks WHERE id = ?", (block_id,)).fetchone()
+    conn.close()
+    d = row_to_dict(block)
+    d["config"] = json.loads(d["config"])
+    return d
 
 
 # ====== API: Roles ======
@@ -724,6 +826,30 @@ def api_get_media():
 
 @app.post("/api/media/upload")
 async def api_upload_media(file: UploadFile = File(...), alt_text: str = Form("")):
+    """Загрузка одного файла (совместимость)."""
+    return await _upload_single_file(file, alt_text)
+
+
+@app.post("/api/media/upload-multiple")
+async def api_upload_multiple_media(files: list[UploadFile] = File(...), alt_text: str = Form("")):
+    """Загрузка нескольких файлов (Фаза 2)."""
+    if not api_limiter.check("api:upload_multiple"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
+    if len(files) > 20:
+        raise HTTPException(400, "Не более 20 файлов за раз")
+    results = []
+    errors = []
+    for file in files:
+        try:
+            result = await _upload_single_file(file, alt_text)
+            results.append(result)
+        except HTTPException as e:
+            errors.append({"filename": file.filename, "error": e.detail})
+    return {"results": results, "errors": errors}
+
+
+async def _upload_single_file(file: UploadFile, alt_text: str = ""):
+    """Внутренняя загрузка одного файла."""
     if not api_limiter.check("api:upload_media"):
         raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     ext = Path(file.filename).suffix.lower()
@@ -813,6 +939,50 @@ def api_get_suggestions():
     return [row_to_dict(r) for r in rows]
 
 
+# ====== API: CAPTCHA (Фаза 2 — Turnstile) ======
+@app.get("/api/captcha/config")
+def api_captcha_config():
+    """Возвращает site key для Turnstile."""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT value FROM captcha_config WHERE key = 'turnstile_site_key'"
+    ).fetchone()
+    conn.close()
+    return {"site_key": row["value"] if row else ""}
+
+
+@app.post("/api/captcha/verify")
+async def api_captcha_verify(token: str = Form(...)):
+    """Проверяет Turnstile токен через Cloudflare."""
+    import httpx
+    secret_key = ""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT value FROM captcha_config WHERE key = 'turnstile_secret_key'"
+    ).fetchone()
+    conn.close()
+    
+    if row:
+        secret_key = row["value"]
+    else:
+        # Fallback — без секрета пропускаем (до настройки)
+        return {"success": True, "message": "CAPTCHA не настроена"}
+    
+    if not secret_key:
+        return {"success": True, "message": "CAPTCHA не настроена"}
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                data={"secret": secret_key, "response": token},
+            )
+            result = resp.json()
+            return {"success": result.get("success", False)}
+    except Exception:
+        return {"success": False, "error": "Ошибка проверки CAPTCHA"}
+
+
 # ====== API: Content (для публичного сайта) ======
 @app.get("/api/content/pages")
 def api_content_pages():
@@ -828,7 +998,7 @@ def api_content_pages():
 @app.get("/api/content/recent")
 def api_content_recent(limit: int = 6):
     """Последние опубликованные страницы (имитация новостной ленты)."""
-    limit = min(max(limit, 1), 50)  # ограничение 1-50
+    limit = min(max(limit, 1), 50)
     conn = get_db()
     rows = conn.execute(
         "SELECT id, name, icon, updated_at FROM pages WHERE status='published' ORDER BY updated_at DESC LIMIT ?",
@@ -836,6 +1006,23 @@ def api_content_recent(limit: int = 6):
     ).fetchall()
     conn.close()
     return [row_to_dict(r) for r in rows]
+
+
+@app.get("/api/content/random-media")
+def api_content_random_media(limit: int = 1):
+    """Случайные медиа-файлы (Фаза 2 — виджет на главной)."""
+    limit = min(max(limit, 1), 10)
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM media ORDER BY RANDOM() LIMIT ?", (limit,)
+    ).fetchall()
+    conn.close()
+    result = []
+    for r in rows:
+        d = row_to_dict(r)
+        d["url"] = f"/static/uploads/{d['filename']}"
+        result.append(d)
+    return result
 
 
 # ====== Публичный сайт (Jinja2) ======
