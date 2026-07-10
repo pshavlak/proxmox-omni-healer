@@ -28,7 +28,7 @@ if not SECRET_KEY:
 
 import config as cfg
 from database import get_db, init_db
-from models import PageCreate, PageUpdate, BlockCreate, RoleCreate, SuggestionCreate, ReorderRequest
+from models import PageCreate, PageUpdate, BlockCreate, RoleCreate, SuggestionCreate, ReorderRequest, MenuGroupCreate, MenuGroupUpdate
 
 
 # ====== Jinja2 шаблоны ======
@@ -53,8 +53,9 @@ def render(template_name: str, **kwargs) -> str:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Инициализация при запуске."""
-    from database import init_db, seed_db
+    from database import init_db, seed_db, migrate_db
     init_db()
+    migrate_db()
     seed_db()
     # Создаём директорию для загрузок
     os.makedirs(cfg.UPLOAD_DIR, exist_ok=True)
@@ -80,6 +81,12 @@ if cfg.ADMIN_ENABLED and os.path.isdir(cfg.ADMIN_DIR):
     app.mount("/admin", StaticFiles(directory=cfg.ADMIN_DIR, html=True), name="admin")
 
 
+# ====== Health Check ======
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 # ====== Rate limiter ======
 class RateLimiter:
     """Простой in-memory rate limiter."""
@@ -99,10 +106,11 @@ class RateLimiter:
 
 login_limiter = RateLimiter(max_requests=10, window_sec=60)  # 10 попыток в минуту
 suggest_limiter = RateLimiter(max_requests=5, window_sec=600)  # 5 за 10 минут
+api_limiter = RateLimiter(max_requests=30, window_sec=60)  # 30 write-запросов в минуту
 
 
 # ====== Auth middleware ======
-PUBLIC_API_PREFIXES = ("/api/content/", "/api/feedback")
+PUBLIC_API_PREFIXES = ("/api/content/", "/api/feedback", "/api/menu")
 PUBLIC_PATHS = {"/", "/login", "/logout", "/api/suggest"}
 
 ADMIN_WRITE_METHODS = {"POST", "PUT", "DELETE", "PATCH"}
@@ -151,13 +159,19 @@ async def check_admin_auth(request: Request, call_next):
             return JSONResponse({"error": "Unauthorized"}, status_code=401)
         return RedirectResponse(url="/login", status_code=302)
 
-    conn = get_db()
-    row = conn.execute(
-        "SELECT u.id, u.username, u.role FROM sessions s JOIN users u ON s.user_id = u.id "
-        "WHERE s.token = ? AND s.expires_at > datetime('now')",
-        (session_token,),
-    ).fetchone()
-    conn.close()
+    conn = None
+    try:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT u.id, u.username, u.role FROM sessions s JOIN users u ON s.user_id = u.id "
+            "WHERE s.token = ? AND s.expires_at > datetime('now')",
+            (session_token,),
+        ).fetchone()
+    except sqlite3.Error as e:
+        return JSONResponse({"error": "Database error"}, status_code=500)
+    finally:
+        if conn is not None:
+            conn.close()
 
     if not row:
         if path.startswith("/api/"):
@@ -307,6 +321,8 @@ def api_get_pages():
 
 @app.post("/api/pages")
 def api_create_page(data: PageCreate):
+    if not api_limiter.check("api:create_page"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     data.id = data.id.strip().lower().replace(" ", "-").replace("--", "-")
     # Проверка уникальности
@@ -326,6 +342,8 @@ def api_create_page(data: PageCreate):
 
 @app.put("/api/pages/{page_id}")
 def api_update_page(page_id: str, data: PageUpdate):
+    if not api_limiter.check("api:update_page"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     existing = conn.execute("SELECT * FROM pages WHERE id = ?", (page_id,)).fetchone()
     if not existing:
@@ -353,6 +371,8 @@ def api_update_page(page_id: str, data: PageUpdate):
 
 @app.delete("/api/pages/{page_id}")
 def api_delete_page(page_id: str):
+    if not api_limiter.check("api:delete_page"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     if page_id == "home":
         raise HTTPException(400, "Главную страницу нельзя удалить")
     conn = get_db()
@@ -374,6 +394,8 @@ def api_delete_page(page_id: str):
 
 @app.put("/api/pages/reorder")
 def api_reorder_pages(data: ReorderRequest):
+    if not api_limiter.check("api:reorder_pages"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     for item in data.items:
         conn.execute("UPDATE pages SET sort_order = ? WHERE id = ?", (item.sort_order, item.id))
@@ -401,6 +423,8 @@ def api_get_blocks(page_id: str):
 @app.put("/api/pages/{page_id}/blocks")
 def api_save_blocks(page_id: str, blocks: list = Body(...)):
     """Сохраняет все блоки страницы (заменяет существующие)."""
+    if not api_limiter.check("api:save_blocks"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     conn.execute("DELETE FROM blocks WHERE page_id = ?", (page_id,))
     for i, b in enumerate(blocks):
@@ -418,10 +442,14 @@ def api_save_blocks(page_id: str, blocks: list = Body(...)):
         if existing and existing["page_id"] != page_id:
             bid = f"b{hashlib.md5(f'{bid}_{datetime.now()}'.encode()).hexdigest()[:12]}"
 
-        conn.execute(
-            "INSERT INTO blocks (id, page_id, type, name, sort_order, config) VALUES (?, ?, ?, ?, ?, ?)",
-            (bid, page_id, btype, bname, i, bconfig),
-        )
+        try:
+            conn.execute(
+                "INSERT INTO blocks (id, page_id, type, name, sort_order, config) VALUES (?, ?, ?, ?, ?, ?)",
+                (bid, page_id, btype, bname, i, bconfig),
+            )
+        except sqlite3.IntegrityError as e:
+            conn.close()
+            raise HTTPException(400, f"Ошибка базы данных: {e}")
     conn.commit()
     conn.close()
     return {"success": True}
@@ -430,6 +458,8 @@ def api_save_blocks(page_id: str, blocks: list = Body(...)):
 @app.post("/api/blocks/{block_id}/move")
 def api_move_block(block_id: str, direction: str = "down"):
     """Переместить блок вверх или вниз."""
+    if not api_limiter.check("api:move_block"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     block = conn.execute("SELECT * FROM blocks WHERE id = ?", (block_id,)).fetchone()
     if not block:
@@ -478,6 +508,8 @@ def api_get_roles():
 
 @app.post("/api/roles")
 def api_create_role(data: RoleCreate):
+    if not api_limiter.check("api:create_role"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     rid = data.id or f"role_{data.name.lower().replace(' ', '_')}"
     conn.execute(
@@ -492,6 +524,8 @@ def api_create_role(data: RoleCreate):
 
 @app.put("/api/roles/{role_id}")
 def api_update_role(role_id: str, data: RoleCreate):
+    if not api_limiter.check("api:update_role"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     existing = conn.execute("SELECT * FROM roles WHERE id = ?", (role_id,)).fetchone()
     if not existing:
@@ -509,6 +543,8 @@ def api_update_role(role_id: str, data: RoleCreate):
 
 @app.delete("/api/roles/{role_id}")
 def api_delete_role(role_id: str):
+    if not api_limiter.check("api:delete_role"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     if role_id == "admin":
         raise HTTPException(400, "Роль администратора нельзя удалить")
     conn = get_db()
@@ -554,6 +590,8 @@ def api_create_user(
     password: str = Form(...),
     role: str = Form("admin"),
 ):
+    if not api_limiter.check(f"api:create_user"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     current = _get_current_user(request)
     if current["role"] != "admin":
         raise HTTPException(403, "Только администратор может создавать пользователей")
@@ -583,6 +621,8 @@ def api_create_user(
 
 @app.delete("/api/users/{user_id}")
 def api_delete_user(user_id: int, request: Request):
+    if not api_limiter.check("api:delete_user"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     current = _get_current_user(request)
     if current["role"] != "admin":
         raise HTTPException(403, "Только администратор может удалять пользователей")
@@ -603,6 +643,8 @@ def api_change_password(
     old_password: str = Form(...),
     new_password: str = Form(...),
 ):
+    if not api_limiter.check("api:change_password"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     current = _get_current_user(request)
     if len(new_password) < 8:
         raise HTTPException(400, "Новый пароль должен быть минимум 8 символов")
@@ -652,6 +694,8 @@ def api_get_settings():
 
 @app.put("/api/settings")
 def api_update_settings(settings: dict):
+    if not api_limiter.check("api:update_settings"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     for k, v in settings.items():
         if isinstance(v, (dict, list)):
@@ -680,6 +724,8 @@ def api_get_media():
 
 @app.post("/api/media/upload")
 async def api_upload_media(file: UploadFile = File(...), alt_text: str = Form("")):
+    if not api_limiter.check("api:upload_media"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     ext = Path(file.filename).suffix.lower()
     if ext not in cfg.ALLOWED_EXTENSIONS:
         raise HTTPException(400, f"Недопустимый тип файла: {ext}")
@@ -708,6 +754,8 @@ async def api_upload_media(file: UploadFile = File(...), alt_text: str = Form(""
 @app.post("/api/feedback")
 def api_feedback(request: Request, data: SuggestionCreate):
     """Обратная связь — сохраняет как suggestion."""
+    if not api_limiter.check("api:feedback"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     conn.execute(
         "INSERT INTO suggestions (name, email, category, text) VALUES (?, ?, ?, ?)",
@@ -720,6 +768,8 @@ def api_feedback(request: Request, data: SuggestionCreate):
 
 @app.delete("/api/media/{media_id}")
 def api_delete_media(media_id: int):
+    if not api_limiter.check("api:delete_media"):
+        raise HTTPException(429, "Слишком много запросов. Попробуйте позже.")
     conn = get_db()
     item = conn.execute("SELECT * FROM media WHERE id = ?", (media_id,)).fetchone()
     if not item:
@@ -913,4 +963,9 @@ def web_page(slug: str, request: Request):
 # ====== Запуск ======
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    debug_mode = os.getenv("DEBUG", "false").lower() == "true"
+    reload_mode = debug_mode # Only reload if debug mode is true
+    port = int(os.getenv("PORT", 8000)) # Allow port to be configurable via env var
+    host = os.getenv("HOST", "0.0.0.0")
+
+    uvicorn.run("app:app", host=host, port=port, reload=reload_mode)

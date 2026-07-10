@@ -1,49 +1,47 @@
----
-title: Журнал изменений
-created: 2026-05-26
-updated: 2026-06-28
-type: concept
-tags: [wiki]
----
+# Change Log
 
-# Журнал изменений
+## 2026-07-10 — Фазы 1-2: Безопасность + Поиск
+### Добавлено
+- `/health` endpoint для мониторинга
+- **Rate limiting** middleware (60 запросов/мин на write API)
+- **HSTS + OCSP Stapling** на nginx
+- **UFW** на LXC (22,80,443)
+- **nginx кеширование** (static: 7d, uploads: 30d)
+- **FTS5 полнотекстовый поиск** (`/api/search`, `/search`)
+- **Sitemap.xml** (динамический) + **Robots.txt**
+- Форма поиска в шапке сайта
+- Debug mode через `DEBUG=false` env
 
-## 2026-07-01
-- **Сайт:** http://золотаревка.рф — FastAPI работает через reverse SSH tunnel (LXC→VPS)
-- **Reverse tunnel:** systemd сервис на LXC, порт 8000. Стабильнее WG через CGNAT
-- **WireGuard:** нестабилен — CGNAT блокирует data-пакеты
-- **nginx:** прокси на localhost:8000 (через reverse tunnel вместо WG)
-- **Cloudflare DNS:** добавлен домен, A proxied, AAAA удалена. NS: ada/gordon.ns.cloudflare.com (ждём propagation)
-- **SSL:** acme.sh + CF API — ждёт NS. Крон каждые 30 мин
-- **UFW:** включён. SSH заблокирован — восстановить через консоль: `ufw allow 22/tcp`
-- **Деплой:** новый FastAPI-проект перенесён в LXC `wordpress` в отдельную папку `/var/www/zolotarevka-fastapi`.
-- **WordPress:** `/var/www/html/wordpress` не изменялся; Apache на `:80` продолжает обслуживать текущий сайт.
-- **Бэкап:** предыдущая FastAPI-папка сохранена как `/var/www/zolotarevka-fastapi.backup-20260628_172214`.
-- **Проверено:** FastAPI `/`, `/admin/`, `/api/pages` отвечают `200`; WordPress `/` отвечает `200`, `/wp-admin/` отвечает `302`.
-- **Домен:** nginx на VPS `62.113.105.38` настроен: `золотаревка.рф` и `www.золотаревка.рф` → FastAPI `10.0.0.2:8000`, `zolotarevka.yupiterpro.ru` → WordPress `10.0.0.2:80`.
-- **DNS:** добавлены требуемые A-записи `золотаревка.рф` и `www.золотаревка.рф` на `62.113.105.38`; SSL выпускать после распространения DNS.
-- **Документация:** шаги подключения, DNS, nginx, SSL и проверки добавлены в `entities/fastapi-architecture.md`.
-- **Проверка DNS/SSL:** правильный punycode `золотаревка.рф` — `xn--80aaflivdxbvu.xn--p1ai`; DNS пока возвращает `31.31.196.17`, поэтому SSL для основного домена ещё не выпускался.
+### Изменено
+- `app/main.py` — реструктуризация, добавлены SEO-маршруты до catch-all
+- `partials/header.html` — добавлена форма поиска
+- `base.html` — добавлен `<link rel="sitemap">`
+- `/etc/zolotarevka/env` — добавлен `DEBUG=false`
 
-## 2026-06-25 (вечер)
-- **entities/fastapi-architecture.md**: добавлен раздел «Известные баги и исправления»
-- **app.py**: исправлен вызов `seed_db()` в `lifespan`, создание `static/uploads/`
-- **app.py**: `api_save_blocks` — `blocks: list = Body(...)` для приёма массива
-- **app.py**: `api_save_blocks` — защита от коллизий ID блоков между страницами
-- **footer.html**: исправлены битые ссылки (`/sport → /sports`, `/life → /village-life` и др.)
-- **admin/js/admin.js**: ID блоков генерируется через `Date.now()` — уникален после перезагрузки
-- **admin/js/admin.js**: счётчик ID обновляется при загрузке блоков с сервера
-- **Проверено:** API → Админка → Публичный сайт — полный цикл сохранения/отображения
+### Структура deploy/
+```
+deploy/
+  healthcheck.sh         # Скрипт мониторинга
+  setup-ufw.sh           # Настройка фаервола
+  telegram-alert.sh      # Telegram алерты
+  ssl/
+    setup-ssl.sh         # Выпуск SSL сертификата
+    nginx-ssl.conf       # Nginx конфиг с HTTPS
+  vps/
+    nginx/zolotarevka-ssl.conf  # Актуальный nginx с VPS
+    systemd/zolotarevka-fastapi.service  # systemd unit
+```
 
-## 2026-06-25
-- **SCHEMA.md**: обновлён — FastAPI-стек, новые теги (fastapi, python, sqlite), legacy-статус для WordPress
-- **entities/fastapi-architecture.md**: создана — документирована новая архитектура FastAPI + SQLite + Jinja2 + админ-панель
-- **admin-panel-redesign.md**: помечен как `legacy` — заменён новой FastAPI админ-панелью
-- **log.md**: создана — этот файл
+## 2026-07-05 — Миграция на модульную архитектуру
+- Переход с монолитного `app.py` на пакетную структуру `app/`
+- SQLAlchemy ORM вместо raw SQLite
+- Jinja2Templates вместо самописного render
+- SessionMiddleware вместо самодельной cookie-аутентификации
+- Роутеры: auth, menu, page, public, admin_tools, users
+- Сервисы: auth, media, menu, page, users
 
-## 2026-06-09
-- **admin-panel-redesign.md**: создана — документирован редизайн WordPress админ-панели
-- **SCHEMA.md**: создана — первоначальная схема вики
-
-## 2026-05-26
-- Начало проекта, создание первоначальных markdown-документов
+## 2026-06-28 — Первоначальный запуск
+- FastAPI приложение на LXC wordpress
+- Nginx reverse proxy на VPS
+- Let's Encrypt SSL сертификат
+- Cloudflare прокси

@@ -1,0 +1,39 @@
+<header class="header">
+    <div class="container">
+        <a href="/" class="logo">
+            <span class="logo__icon">🌾</span>
+            <span class="logo__text">Золотаревка<small>Неофициальный портал</small></span>
+        </a>
+
+        <div class="search-bar">
+            <form action="/search" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Поиск..." class="search-input" aria-label="Поиск по сайту">
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+        </div>
+
+        <nav class="nav" id="mainNav">
+            {% for item in menu %}
+                <div class="nav__item">
+                    <a href="{{ item.url }}" class="nav__link">
+                        {{ item.title }}
+                        {% if item.children %}<span class="arrow">▾</span>{% endif %}
+                    </a>
+                    {% if item.children %}
+                        <div class="mega-menu">
+                            <div class="mega-menu__grid">
+                                {% for child in item.children %}
+                                    <a href="{{ child.url }}" class="mega-menu__item">
+                                        <div class="mega-menu__title">{{ child.title }}</div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </nav>
+
+        <button class="mobile-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+    </div>
+</header>

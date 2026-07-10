@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <div class="container page-header__inner">
+        <h1>Поиск: {{ query }}</h1>
+    </div>
+</section>
+<div class="page-layout container">
+    <div class="page-layout__content page-layout__content--full">
+        {% if results %}
+            <ul class="search-results">
+            {% for r in results %}
+                <li class="search-result-item">
+                    <a href="/{{ r.slug }}" class="search-result-link">{{ r.title }}</a>
+                    <p class="search-result-snippet">{{ r.snippet|safe }}</p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Ничего не найдено по запросу «{{ query }}».</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

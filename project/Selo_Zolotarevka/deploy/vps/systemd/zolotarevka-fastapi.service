@@ -1,0 +1,15 @@
+[Unit]
+Description=Zolotarevka FastAPI Site
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/zolotarevka/env
+Type=simple
+User=root
+WorkingDirectory=/var/www/zolotarevka-fastapi
+ExecStart=/var/www/zolotarevka-fastapi/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
