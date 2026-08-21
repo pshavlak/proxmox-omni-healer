@@ -1,0 +1,10 @@
+[Unit]
+Description=Expire VPN subscriptions and send reminders
+After=telegram-miniapp.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/backend/expire_subscriptions.py
+User=root

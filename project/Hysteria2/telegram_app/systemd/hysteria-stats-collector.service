@@ -1,0 +1,10 @@
+[Unit]
+Description=Collect Hysteria traffic stats for Telegram Mini App
+After=telegram-miniapp.service hysteria-server.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/backend/collect_hysteria_stats.py
+User=root

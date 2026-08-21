@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Hysteria traffic stats collector every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=hysteria-stats-collector.service
+
+[Install]
+WantedBy=timers.target

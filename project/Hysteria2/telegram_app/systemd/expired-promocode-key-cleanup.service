@@ -1,0 +1,10 @@
+[Unit]
+Description=Telegram Mini App expired promocode key cleanup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/backend/cleanup_expired_promocode_keys.py

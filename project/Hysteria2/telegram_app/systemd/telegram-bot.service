@@ -1,0 +1,15 @@
+[Unit]
+Description=Telegram Bot for Cascade VPN Mini App
+After=network.target telegram-miniapp.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/bot/bot.py
+Restart=on-failure
+RestartSec=5s
+User=root
+
+[Install]
+WantedBy=multi-user.target

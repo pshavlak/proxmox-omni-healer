@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup app.db and send to Telegram admins
+After=telegram-miniapp.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/backend/backup_db.py
+User=root

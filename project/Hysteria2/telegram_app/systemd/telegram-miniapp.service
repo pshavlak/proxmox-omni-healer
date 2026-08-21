@@ -1,0 +1,15 @@
+[Unit]
+Description=Telegram Mini App for Cascade VPN
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/telegram-miniapp.env
+WorkingDirectory=/opt/telegram-miniapp
+ExecStart=/usr/bin/python3 /opt/telegram-miniapp/backend/server.py
+Restart=on-failure
+RestartSec=5s
+User=root
+
+[Install]
+WantedBy=multi-user.target
